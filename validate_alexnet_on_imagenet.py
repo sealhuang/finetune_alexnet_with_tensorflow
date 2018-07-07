@@ -56,7 +56,7 @@ with tf.Session() as sess:
         img = img.reshape((1, 227, 227, 3))
         # Run the session and calculate the class probability
         fc8_out, probs = sess.run([score, softmax], feed_dict={x: img, keep_prob: 1})
-        print fc8.shape
+        print fc8_out.shape
         # Get the class name of the class with the highest probability
         class_name = class_names[np.argmax(probs)]
         print ('Image %s - Class: %s, probability: %.4f'%(i+1, class_name, probs[0,np.argmax(probs)]))
