@@ -60,3 +60,5 @@ with tf.Session() as sess:
         # Get the class name of the class with the highest probability
         class_name = class_names[np.argmax(probs)]
         print ('Image %s - Class: %s, probability: %.4f'%(i+1, class_name, probs[0,np.argmax(probs)]))
+        print fc8_out[0, np.argmax(probs)]
+
