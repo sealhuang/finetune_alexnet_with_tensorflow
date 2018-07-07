@@ -117,11 +117,15 @@ class ImageDataGenerator(object):
         img_string = tf.read_file(filename)
         #img_decoded = tf.image.decode_png(img_string, channels=3)
         img_decoded = tf.image.decode_jpeg(img_string, channels=3)
-        img_resized = tf.image.resize_images(img_decoded, [227, 227])
+        #img_resized = tf.image.resize_images(img_decoded, [227, 227])
+        img_resized = tf.image.resize_images(img_decoded, [256, 256])
         """
         Dataaugmentation comes here.
         """
-        img_centered = tf.subtract(img_resized, IMAGENET_MEAN)
+        img_distorted = tf.random_crop(img_resized, [227, 227, 3])
+        img_distorted = tf.image.random_flip_left_right(img_distorted)
+        img_centered = tf.subtract(img_distorted, IMAGENET_MEAN)
+        #img_centered = tf.subtract(img_resized, IMAGENET_MEAN)
 
         # RGB -> BGR
         img_bgr = img_centered[:, :, ::-1]
