@@ -26,6 +26,7 @@ img_files = [os.path.join(image_dir, f) for f in os.listdir(image_dir)
 # load all images
 imgs = []
 for f in img_files:
+    print f
     imgs.append(cv2.imread(f))
 
 # placeholder for input and dropout rate
