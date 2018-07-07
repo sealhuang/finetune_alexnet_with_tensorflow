@@ -24,9 +24,9 @@ train_file = os.path.join(current_dir, 'affectNet', 'train_list.txt')
 val_file = os.path.join(current_dir, 'affectNet', 'val_list.txt')
 
 # Learning params
-learning_rate = 0.01
+learning_rate = 0.0001
 num_epochs = 50
-batch_size = 128
+batch_size = 64
 
 # Network params
 dropout_rate = 0.5
