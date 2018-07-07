@@ -46,7 +46,7 @@ Main Part of the finetuning Script.
 
 # Create parent path if it doesn't exist
 if not os.path.isdir(checkpoint_path):
-    os.makedirs(checkpoint_path, mode=755)
+    os.makedirs(checkpoint_path)
 
 # Place data loading and preprocessing on the cpu
 with tf.device('/cpu:0'):
