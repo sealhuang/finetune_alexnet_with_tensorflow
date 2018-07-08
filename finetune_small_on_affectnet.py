@@ -24,14 +24,14 @@ train_file = os.path.join(current_dir, 'affectNet', 'train_list.txt')
 val_file = os.path.join(current_dir, 'affectNet', 'val_list.txt')
 
 # Learning params
-learning_rate = 0.001
-num_epochs = 50
+learning_rate = 0.0002
+num_epochs = 200
 batch_size = 128
 
 # Network params
 dropout_rate = 0.5
 num_classes = 4
-train_layers = ['fc8', 'fc7', 'fc6', 'conv5']
+train_layers = ['fc8', 'fc7', 'fc6', 'conv5', 'conv4']
 
 # How often we want to write the tf.summary data to disk
 display_step = 20

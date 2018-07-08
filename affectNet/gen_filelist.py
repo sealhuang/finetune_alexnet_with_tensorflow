@@ -15,7 +15,7 @@ for i, l in enumerate(all_labels):
         class_dir = os.path.join(current_dir, 'train_class', 'class00%s'%(i+1))
         imglist = os.listdir(class_dir)
         for img in imglist:
-            train_list_f.write('%s %s\n'%(os.path.join(class_dir, img), sel_labels.index(l)+1))
+            train_list_f.write('%s %s\n'%(os.path.join(class_dir, img), sel_labels.index(l)))
 train_list_f.close()
 
 val_list_f = open('val_list.txt', 'wb')
@@ -24,6 +24,6 @@ for i, l in enumerate(all_labels):
         class_dir = os.path.join(current_dir, 'val_class', 'class00%s'%(i+1))
         imglist = os.listdir(class_dir)
         for img in imglist:
-            val_list_f.write('%s %s\n'%(os.path.join(class_dir, img), sel_labels.index(l)+1))
+            val_list_f.write('%s %s\n'%(os.path.join(class_dir, img), sel_labels.index(l)))
 val_list_f.close()
 
