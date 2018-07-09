@@ -37,8 +37,8 @@ train_layers = ['fc8', 'fc7', 'fc6', 'conv5', 'conv4']
 display_step = 20
 
 # Path for tf.summary.FileWriter and to store model checkpoints
-filewriter_path = os.path.join(current_dir, 'tmp', 'tensorboard')
-checkpoint_path = os.path.join(current_dir, 'tmp', 'checkpoints')
+filewriter_path = os.path.join(current_dir, 'log', 'tensorboard')
+checkpoint_path = os.path.join(current_dir, 'log', 'checkpoints')
 
 """
 Main Part of the finetuning Script.
