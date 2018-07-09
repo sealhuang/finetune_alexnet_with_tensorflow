@@ -133,6 +133,9 @@ saver = tf.train.Saver()
 train_batches_per_epoch = int(np.floor(tr_data.data_size/batch_size))
 val_batches_per_epoch = int(np.floor(val_data.data_size / batch_size))
 
+val_acc_file = os.path.join(checkpoint_path, 'val_acc.txt')
+val_acc_f = open(val_acc_file, 'wb')
+
 # Start Tensorflow session
 with tf.Session() as sess:
 
@@ -191,6 +194,7 @@ with tf.Session() as sess:
         test_acc /= test_count
         print("{} Validation Accuracy = {:.4f}".format(datetime.now(),
                                                        test_acc))
+        val_acc_f.write('%s, %s\n'%(epoch+1, test_acc))
         print("{} Saving checkpoint of model...".format(datetime.now()))
 
         # save checkpoint of the model

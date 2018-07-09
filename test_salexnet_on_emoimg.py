@@ -62,7 +62,8 @@ score = model.fc7
 
 # Evaluation op: Accuracy of the model
 with tf.name_scope("accuracy"):
-    correct_pred = tf.equal(tf.argmax(score, 1), tf.argmax(y, 1))
+    pred_label = tf.argmax(score, 1)
+    correct_pred = tf.equal(pred_label, tf.argmax(y, 1))
     accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 
 # Initialize an saver for store model checkpoints
@@ -71,7 +72,7 @@ saver = tf.train.Saver()
 # Get the number of test steps per epoch
 test_batches_per_epoch = int(np.floor(test_data.data_size / batch_size))
 
-correct_idx = np.array([])
+pred_label = np.array([])
 
 # Start Tensorflow session
 with tf.Session() as sess:
@@ -89,15 +90,15 @@ with tf.Session() as sess:
     test_count = 0
     for _ in range(test_batches_per_epoch):
         img_batch, label_batch = sess.run(next_batch)
-        cidx, acc = sess.run([correct_pred, accuracy],
-                             feed_dict={x: img_batch,
-                             y: label_batch,
-                             keep_prob: 1.})
+        pred_y, acc = sess.run([pred_label, accuracy],
+                               feed_dict={x: img_batch,
+                                          y: label_batch,
+                                          keep_prob: 1.})
         test_acc += acc
         test_count += 1
         # save correct indexs
-        correct_idx = np.concatenate((correct_idx, cidx))
+        pred_label = np.concatenate((pred_label, pred_y))
     test_acc /= test_count
     print("{} Test Accuracy = {:.4f}".format(datetime.now(), test_acc))
-    np.save('correct_idx_on_test.npy', correct_idx)
+    np.save('pred_label.npy', pred_label)
 
