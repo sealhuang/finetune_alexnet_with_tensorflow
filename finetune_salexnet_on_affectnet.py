@@ -9,7 +9,7 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 import numpy as np
 import tensorflow as tf
 
-from small_alexnet import AlexNet
+from salexnet import AlexNet
 from datagenerator import ImageDataGenerator
 from datetime import datetime
 from tensorflow.contrib.data import Iterator
@@ -80,10 +80,10 @@ model = AlexNet(x, keep_prob, num_classes, train_layers)
 
 # Link variable to model output
 score = model.fc7
-#score = model.fc8
 
 # List of trainable variables of the layers we want to train
-var_list = [v for v in tf.trainable_variables() if v.name.split('/')[0] in train_layers]
+var_list = [v for v in tf.trainable_variables()
+            if v.name.split('/')[0] in train_layers]
 
 # Op for calculating the loss
 with tf.name_scope("cross_ent"):
