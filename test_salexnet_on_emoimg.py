@@ -69,7 +69,7 @@ with tf.name_scope("accuracy"):
 saver = tf.train.Saver()
 
 # Get the number of test steps per epoch
-test_batches_per_epoch = int(np.floor(val_data.data_size / batch_size))
+test_batches_per_epoch = int(np.floor(test_data.data_size / batch_size))
 
 # Start Tensorflow session
 with tf.Session() as sess:
@@ -77,11 +77,8 @@ with tf.Session() as sess:
     # Initialize all variables
     sess.run(tf.global_variables_initializer())
 
-    # Add the model graph to TensorBoard
-    writer.add_graph(sess.graph)
-
     # Load the pretrained weights into the model
-    saver.restore(sess, os.path.join(checkpoint_path, 'model_epoch200.ckpt'))
+    saver.restore(sess, os.path.join(checkpoint_path, 'model_epoch197.ckpt'))
 
     # Test the model on the entire validation set
     print("{} Start test".format(datetime.now()))
