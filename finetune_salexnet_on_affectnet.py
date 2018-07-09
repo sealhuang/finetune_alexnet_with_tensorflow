@@ -25,7 +25,7 @@ val_file = os.path.join(current_dir, 'affectNet', 'val_list.txt')
 
 # Learning params
 learning_rate = 0.0003
-num_epochs = 200
+num_epochs = 400
 batch_size = 128
 
 # Network params

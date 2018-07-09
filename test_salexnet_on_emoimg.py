@@ -71,6 +71,8 @@ saver = tf.train.Saver()
 # Get the number of test steps per epoch
 test_batches_per_epoch = int(np.floor(test_data.data_size / batch_size))
 
+correct_idx = np.array([])
+
 # Start Tensorflow session
 with tf.Session() as sess:
 
@@ -78,7 +80,7 @@ with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
 
     # Load the pretrained weights into the model
-    saver.restore(sess, os.path.join(checkpoint_path, 'model_epoch197.ckpt'))
+    saver.restore(sess, os.path.join(checkpoint_path, 'model_epoch199.ckpt'))
 
     # Test the model on the entire validation set
     print("{} Start test".format(datetime.now()))
@@ -86,13 +88,16 @@ with tf.Session() as sess:
     test_acc = 0.
     test_count = 0
     for _ in range(test_batches_per_epoch):
-
         img_batch, label_batch = sess.run(next_batch)
-        acc = sess.run(accuracy, feed_dict={x: img_batch,
-                                            y: label_batch,
-                                            keep_prob: 1.})
+        cidx, acc = sess.run([correct_pred, accuracy],
+                             feed_dict={x: img_batch,
+                             y: label_batch,
+                             keep_prob: 1.})
         test_acc += acc
         test_count += 1
+        # save correct indexs
+        correct_idx = np.concatenate((correct_idx, cidx))
     test_acc /= test_count
     print("{} Test Accuracy = {:.4f}".format(datetime.now(), test_acc))
+    np.save('correct_idx_on_test.npy', correct_idx)
 
