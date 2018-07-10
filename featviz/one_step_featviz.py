@@ -17,23 +17,17 @@ from salexnet import AlexNet
 def savearray(a, dir_name, filename):
     if not os.path.exists(dir_name):
         os.makedirs(dir_name, mode=0755)
-    #a = np.uint8(np.clip(a, 0, 1)*255)
-    plt.imshow(a[:, :, 2], cmap='autumn')
-    plt.colorbar()
-    plt.savefig(os.path.join(dir_name, filename+'_R.png'))
-    plt.imshow(a[:, :, 1], cmap='summer')
-    plt.colorbar()
-    plt.savefig(os.path.join(dir_name, filename+'_G.png'))
-    plt.imshow(a[:, :, 0], cmap='winter')
-    plt.colorbar()
-    plt.savefig(os.path.join(dir_name, filename+'_B.png'))
+    print a.max(), a.min()
+    a = np.uint8(np.clip(a, 0, 1)*255)
+    plt.imshow(a)
+    plt.savefig(os.path.join(dir_name, filename+'.png'))
     plt.close()
     np.save(os.path.join(dir_name, filename+'.npy'), a)
 
 def visstd(a, s=0.1):
     """Normalize the image range for visualization"""
     #return (a-a.mean())/max(a.std(), 1e-4)*s + 0.5
-    return (a-a.mean())/max(a.std(), 1e-4)
+    return (a-a.min())/(a.max()-a.min())
 
 
 if __name__=='__main__':
