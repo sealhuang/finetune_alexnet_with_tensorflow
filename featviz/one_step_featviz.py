@@ -86,5 +86,5 @@ if __name__=='__main__':
                                     {t_input: img0, keep_prob: 1.})
                 savearray(visstd(g),
                     os.path.join(current_dir, 'test', '%s_%s'%(layer, channel)),
-                    '.'.join(os.path.basename(img_file).split('.')[-1]))
+                    '.'.join(os.path.basename(img_file).split('.')[:-1]))
 
