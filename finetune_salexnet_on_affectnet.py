@@ -21,11 +21,12 @@ current_dir = os.getcwd()
 
 # Path to the textfiles for the trainings and validation set
 train_file = os.path.join(current_dir, 'affectNet', 'train_list.txt')
-val_file = os.path.join(current_dir, 'affectNet', 'val_list.txt')
+#val_file = os.path.join(current_dir, 'affectNet', 'val_list.txt')
+val_file = os.path.join(current_dir, 'emoImg', 'test_list.txt')
 
 # Learning params
 learning_rate = 0.0002
-num_epochs = 150
+num_epochs = 100
 batch_size = 128
 
 # Network params
