@@ -70,6 +70,9 @@ class ImageDataGenerator(object):
         elif mode == 'inference':
             data = data.map(self._parse_function_inference, num_threads=8,
                       output_buffer_size=100*batch_size)
+        elif mode == 'test':
+            data = data.map(self._parse_function_test, num_threads=8,
+                      output_buffer_size=100*batch_size)
 
         else:
             raise ValueError("Invalid mode '%s'." % (mode))
@@ -139,6 +142,25 @@ class ImageDataGenerator(object):
         #img_decoded = tf.image.decode_png(img_string, channels=3)
         img_decoded = tf.image.decode_jpeg(img_string, channels=3)
         img_resized = tf.image.resize_images(img_decoded, [227, 227])
+        img_centered = tf.subtract(img_resized, IMAGENET_MEAN)
+
+        # RGB -> BGR
+        img_bgr = img_centered[:, :, ::-1]
+
+        return img_bgr, one_hot
+    
+    def _parse_function_test(self, filename, label):
+        """Input parser for samples of the test set."""
+        # convert label number into one-hot-encoding
+        one_hot = tf.one_hot(label, self.num_classes)
+
+        # load and preprocess the image
+        img_string = tf.read_file(filename)
+        #img_decoded = tf.image.decode_png(img_string, channels=3)
+        img_decoded = tf.image.decode_jpeg(img_string, channels=3)
+        img_aligned = tf.image.resize_image_with_crop_or_pad(img_decoded,
+                                                             380, 380)
+        img_resized = tf.image.resize_images(img_aligned, [227, 227])
         img_centered = tf.subtract(img_resized, IMAGENET_MEAN)
 
         # RGB -> BGR

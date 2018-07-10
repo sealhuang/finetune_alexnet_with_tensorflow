@@ -3,7 +3,7 @@
 
 import os
 os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
-os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+os.environ['CUDA_VISIBLE_DEVICES'] = '3'
 import numpy as np
 from scipy.ndimage import imread
 import matplotlib.pylab as plt
@@ -11,16 +11,17 @@ import tensorflow as tf
 
 import sys
 sys.path.append('../')
-import salexnet as Alexnet
+from salexnet import AlexNet
 
 
-def savearray(a, filename):
+def savearray(a, dir_name, filename):
+    if not os.path.join(dir_name):
+        os.makedirs(dir_name, mode=0755)
     a = np.uint8(np.clip(a, 0, 1)*255)
     plt.imshow(a, cmap='gray')
-    filename = filename.replace('/', '_')
-    plt.savefig(filename+'.png')
+    plt.savefig(os.path.join(dir_name, filename+'.png'))
     plt.close()
-    np.save(filename+'.npy', a)
+    np.save(os.path.join(dir_name, filename+'.npy'), a)
 
 def visstd(a, s=0.1):
     """Normalize the image range for visualization"""
@@ -28,20 +29,24 @@ def visstd(a, s=0.1):
 
 
 if __name__=='__main__':
-    base_dir = r'/nfs/home/huanglijie/repo/finetune_alexnet_woth_tensorflow'
-    model_dir = os.path.join(base_dir, 'log', 'checkpoints')
-    model_data = os.path.join(model_dir, 'sel_model_epoch10.ckpt')
+    base_dir = r'/nfs/home/huanglijie/repo/finetune_alexnet_with_tensorflow'
+    model_dir = os.path.join(base_dir, 'log_bak', 'checkpoints')
+    model_data = os.path.join(model_dir, 'sel_model_epoch17.ckpt')
+
+    current_dir = os.getcwd()
 
     # load test image info
     test_data_list = os.path.join(base_dir, 'emoImg', 'test_list.txt')
     test_data_list = open(test_data_list, 'r').readlines()
-    test_data_list = [line.strip().split(',')[0] for line in test_data_list]
-    test_data_list = test_data_list[0]
+    test_data_list = [line.strip().split()[0] for line in test_data_list]
+    test_data_list = test_data_list[0:1]
 
     # load the model
-    t_input = tf.placeholder(tf.float32, shape=(227, 227, 3))
+    t_input = tf.placeholder(tf.float32, shape=(380, 330, 3))
+    t_aligned = tf.image.resize_image_with_crop_or_pad(t_input, 380, 380)
+    t_resized = tf.image.resize_images(t_aligned, [227, 227])
     imagenet_mean = 117.0
-    t_preprocessed = tf.expand_dims(t_input-imagenet_mean, 0)
+    t_preprocessed = tf.expand_dims(t_resized-imagenet_mean, 0)
     keep_prob = tf.placeholder(tf.float32)
     net = AlexNet(t_preprocessed, keep_prob, 4, [])
     
@@ -75,10 +80,11 @@ if __name__=='__main__':
                 t_grad = tf.gradients(t_score, t_input)[0]
 
                 g, score = sess.run([t_grad, t_score],
-                                    {t_input: img, keep_prob: 1.})
+                                    {t_input: img0, keep_prob: 1.})
                 # normalizing the gradient, so the same step size should work
                 # for different layers and networks
                 g /= g.std() + 1e-8
-                print g.shape
-                #savearray(visstd(g[0, :, :]), '%s_%s'%(layer, channel))
+                savearray(visstd(g),
+                          os.path.join(current_dir, '%s_%s'%(layer, channel)),
+                          os.path.basename(img_file).split('.')[0])
 

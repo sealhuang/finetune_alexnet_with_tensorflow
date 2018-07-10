@@ -62,7 +62,7 @@ with tf.device('/cpu:0'):
                                   num_classes=num_classes,
                                   shuffle=False)
     test_data = ImageDataGenerator(test_file,
-                                   mode='inference',
+                                   mode='test',
                                    batch_size=batch_size,
                                    num_classes=num_classes,
                                    shuffle=False)

@@ -36,7 +36,7 @@ Main Part of the finetuning Script.
 # Place data loading and preprocessing on the cpu
 with tf.device('/cpu:0'):
     test_data = ImageDataGenerator(test_file,
-                                   mode='inference',
+                                   mode='test',
                                    batch_size=batch_size,
                                    num_classes=num_classes,
                                    shuffle=False)
@@ -81,7 +81,7 @@ with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
 
     # Load the pretrained weights into the model
-    saver.restore(sess, os.path.join(checkpoint_path, 'model_epoch6.ckpt'))
+    saver.restore(sess, os.path.join(checkpoint_path, 'sel_model_epoch44.ckpt'))
 
     # Test the model on the entire validation set
     print("{} Start test".format(datetime.now()))
@@ -100,5 +100,10 @@ with tf.Session() as sess:
         pred = np.concatenate((pred, pred_y))
     test_acc /= test_count
     print("{} Test Accuracy = {:.4f}".format(datetime.now(), test_acc))
-    np.save('pred_label.npy', pred)
+
+# save predicted label into text file
+f = open('pred_label.csv', 'wb')
+for item in pred:
+    f.write('%s\n'%(item+1))
+f.close()
 
