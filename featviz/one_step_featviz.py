@@ -17,7 +17,7 @@ from salexnet import AlexNet
 def savearray(a, dir_name, filename):
     if not os.path.exists(dir_name):
         os.makedirs(dir_name, mode=0755)
-    a[a>0.8] = 1
+    a[a<0.55] = 0
     a = np.uint8(np.clip(a, 0, 1)*255)
     plt.imshow(a)
     plt.savefig(os.path.join(dir_name, filename+'.png'))
