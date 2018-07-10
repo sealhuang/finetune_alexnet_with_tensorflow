@@ -25,7 +25,11 @@ def savearray(a, dir_name, filename):
 
 def visstd(a, s=0.1):
     """Normalize the image range for visualization"""
-    return (a-a.mean())/max(a.std(), 1e-4)*s
+    #return (a-a.mean())/max(a.std(), 1e-4)*s
+    b = a - a.mean(axis=2, keepdims=True)
+    b = (b - b.min()) / (b.max() - b.min())
+    b[b>0.6] = 1
+    return b
 
 
 if __name__=='__main__':
@@ -39,7 +43,6 @@ if __name__=='__main__':
     test_data_list = os.path.join(base_dir, 'emoImg', 'test_list.txt')
     test_data_list = open(test_data_list, 'r').readlines()
     test_data_list = [line.strip().split()[0] for line in test_data_list]
-    test_data_list = test_data_list[0:10]
 
     # load the model
     t_input = tf.placeholder(tf.float32, shape=(380, 330, 3))
@@ -58,7 +61,7 @@ if __name__=='__main__':
 
     # get Conv2D layer name
     layers = [op.name for op in graph.get_operations() if op.type=='Conv2D']
-    layers = layers[-2:]
+    layers = layers[-4:]
     feature_nums = [int(graph.get_tensor_by_name(name+':0').get_shape()[-1]) 
                         for name in layers]
     print('Number of layers', len(layers))
