@@ -5,14 +5,13 @@ import os
 os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 import numpy as np
-import h5py
 from functools import partial
 import matplotlib.pylab as plt
 import tensorflow as tf
 
 import sys
-sys.path.append('../cnn/')
-import model_large_promissing as sel_model
+sys.path.append('../')
+from salexnet import Alexnet
 
 """
 Laplacian Pyramid Gradient Normalization
@@ -89,21 +88,16 @@ if __name__=='__main__':
     base_dir = r'/nfs/home/huanglijie/repo/finetune_alexnet_with_tensorflow'
     model_data = os.path.join(base_dir,'log','checkpoints','model_epoch150.ckpt')
 
-
     # load the model
-    is_training = False
-    with tf.device('/gpu:0'):
-        t_input = tf.placeholder(tf.float32, shape=(1, 48, 48))
-        t_preprocessed = (t_input - image_mean) * image_scale
-        is_training_ph = tf.placeholder(tf.bool, shape=())
-        net = sel_model.get_model(t_preprocessed, is_training=is_training_ph,
-                                  cat_num=7, weight_decay=0.0, bn_decay=0.0)
+    t_input = tf.placeholder(tf.float32, name='input')
+    imagenet_mean = 117.0
+    t_preprocessed = tf.expand_dims(t_input - imagenet_mean, 0)
+    keep_prob = tf.placeholder(tf.float32)
+    net = AlexNet(t_preprocessed, keep_prob, 4, [])
+
     saver = tf.train.Saver()
     # create tensorflow session
-    config = tf.ConfigProto()
-    config.gpu_options.allow_growth = True
-    config.allow_soft_placement = True
-    sess = tf.Session(config=config)
+    sess = tf.Session()
     saver.restore(sess, model_data)
     graph = sess.graph
 
