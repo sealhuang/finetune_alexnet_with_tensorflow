@@ -17,7 +17,6 @@ from salexnet import AlexNet
 def savearray(a, dir_name, filename):
     if not os.path.exists(dir_name):
         os.makedirs(dir_name, mode=0755)
-    a[a<0.55] = 0
     a = np.uint8(np.clip(a, 0, 1)*255)
     plt.imshow(a)
     plt.savefig(os.path.join(dir_name, filename+'.png'))
@@ -26,8 +25,7 @@ def savearray(a, dir_name, filename):
 
 def visstd(a, s=0.1):
     """Normalize the image range for visualization"""
-    #return (a-a.mean())/max(a.std(), 1e-4)*s + 0.5
-    return (a-a.min())/(a.max()-a.min())
+    return (a-a.mean())/max(a.std(), 1e-4)*s
 
 
 if __name__=='__main__':
@@ -83,9 +81,6 @@ if __name__=='__main__':
 
                 g, score = sess.run([t_grad, t_score],
                                     {t_input: img0, keep_prob: 1.})
-                # normalizing the gradient, so the same step size should work
-                # for different layers and networks
-                g /= (g.std() + 1e-8)
                 savearray(visstd(g),
                     os.path.join(current_dir, 'test', '%s_%s'%(layer, channel)),
                     os.path.basename(img_file).split('.')[0])
