@@ -27,7 +27,7 @@ num_classes = 4
 batch_size = 32
 
 # Path to store model checkpoints
-checkpoint_path = os.path.join(current_dir, 'tmp', 'checkpoints')
+checkpoint_path = os.path.join(current_dir, 'log', 'checkpoints')
 
 """
 Main Part of the finetuning Script.
@@ -72,7 +72,7 @@ saver = tf.train.Saver()
 # Get the number of test steps per epoch
 test_batches_per_epoch = int(np.floor(test_data.data_size / batch_size))
 
-pred_label = np.array([])
+pred = np.array([])
 
 # Start Tensorflow session
 with tf.Session() as sess:
@@ -81,7 +81,7 @@ with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
 
     # Load the pretrained weights into the model
-    saver.restore(sess, os.path.join(checkpoint_path, 'model_epoch199.ckpt'))
+    saver.restore(sess, os.path.join(checkpoint_path, 'model_epoch100.ckpt'))
 
     # Test the model on the entire validation set
     print("{} Start test".format(datetime.now()))
@@ -97,8 +97,8 @@ with tf.Session() as sess:
         test_acc += acc
         test_count += 1
         # save correct indexs
-        pred_label = np.concatenate((pred_label, pred_y))
+        pred = np.concatenate((pred, pred_y))
     test_acc /= test_count
     print("{} Test Accuracy = {:.4f}".format(datetime.now(), test_acc))
-    np.save('pred_label.npy', pred_label)
+    np.save('pred_label.npy', pred)
 
