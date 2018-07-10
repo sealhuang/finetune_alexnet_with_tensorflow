@@ -15,7 +15,7 @@ from salexnet import AlexNet
 
 
 def savearray(a, dir_name, filename):
-    if not os.path.join(dir_name):
+    if not os.path.exists(dir_name):
         os.makedirs(dir_name, mode=0755)
     a = np.uint8(np.clip(a, 0, 1)*255)
     plt.imshow(a, cmap='gray')
@@ -30,8 +30,8 @@ def visstd(a, s=0.1):
 
 if __name__=='__main__':
     base_dir = r'/nfs/home/huanglijie/repo/finetune_alexnet_with_tensorflow'
-    model_dir = os.path.join(base_dir, 'log_bak', 'checkpoints')
-    model_data = os.path.join(model_dir, 'sel_model_epoch17.ckpt')
+    model_dir = os.path.join(base_dir, 'log', 'checkpoints')
+    model_data = os.path.join(model_dir, 'sel_model_epoch44.ckpt')
 
     current_dir = os.getcwd()
 
@@ -39,7 +39,7 @@ if __name__=='__main__':
     test_data_list = os.path.join(base_dir, 'emoImg', 'test_list.txt')
     test_data_list = open(test_data_list, 'r').readlines()
     test_data_list = [line.strip().split()[0] for line in test_data_list]
-    test_data_list = test_data_list[0:1]
+    test_data_list = test_data_list[0:10]
 
     # load the model
     t_input = tf.placeholder(tf.float32, shape=(380, 330, 3))
@@ -85,6 +85,6 @@ if __name__=='__main__':
                 # for different layers and networks
                 g /= g.std() + 1e-8
                 savearray(visstd(g),
-                          os.path.join(current_dir, '%s_%s'%(layer, channel)),
-                          os.path.basename(img_file).split('.')[0])
+                    os.path.join(current_dir, 'test', '%s_%s'%(layer, channel)),
+                    os.path.basename(img_file).split('.')[0])
 
