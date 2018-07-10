@@ -28,7 +28,7 @@ def visstd(a, s=0.1):
     #return (a-a.mean())/max(a.std(), 1e-4)*s
     b = a - a.mean(axis=2, keepdims=True)
     b = (b - b.min()) / (b.max() - b.min())
-    b[b>0.6] = 1
+    b[b>0.7] = 1
     return b
 
 
@@ -86,5 +86,5 @@ if __name__=='__main__':
                                     {t_input: img0, keep_prob: 1.})
                 savearray(visstd(g),
                     os.path.join(current_dir, 'test', '%s_%s'%(layer, channel)),
-                    os.path.basename(img_file).split('.')[0])
+                    '.'.join(os.path.basename(img_file).split('.')[-1]))
 
