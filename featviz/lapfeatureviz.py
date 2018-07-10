@@ -3,7 +3,7 @@
 
 import os
 os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
-os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+os.environ['CUDA_VISIBLE_DEVICES'] = '2'
 import numpy as np
 from functools import partial
 import matplotlib.pylab as plt
@@ -11,7 +11,7 @@ import tensorflow as tf
 
 import sys
 sys.path.append('../')
-from salexnet import Alexnet
+from salexnet import AlexNet
 
 """
 Laplacian Pyramid Gradient Normalization
@@ -33,8 +33,7 @@ def lap_split(img):
     """Split the image into low and high frequency components."""
     k = np.float32([1, 4, 6, 4, 1])
     k = np.outer(k, k)
-    k5x5 = np.expand_dims(np.expand_dims(k, -1), -1)
-    #k5x5 = k[:, :, None, None] / k.sum() * np.eye(3, dtype=np.float32)
+    k5x5 = k[:, :, None, None] / k.sum() * np.eye(3, dtype=np.float32)
     with tf.name_scope('split'):
         lo = tf.nn.conv2d(img, k5x5, [1, 2, 2, 1], 'SAME')
         lo2 = tf.nn.conv2d_transpose(lo, k5x5*4, tf.shape(img), [1, 2, 2, 1])
@@ -55,8 +54,7 @@ def lap_merge(levels):
     img = levels[0]
     k = np.float32([1, 4, 6, 4, 1])
     k = np.outer(k, k)
-    k5x5 = np.expand_dims(np.expand_dims(k, -1), -1)
-    #k5x5 = k[:, :, None, None] / k.sum() * np.eye(3, dtype=np.float32)
+    k5x5 = k[:, :, None, None] / k.sum() * np.eye(3, dtype=np.float32)
     for hi in levels[1:]:
         with tf.name_scope('merge'):
             img = tf.nn.conv2d_transpose(img, k5x5*4, tf.shape(hi),
@@ -69,9 +67,9 @@ def normalize_std(img, eps=1e-10):
         std = tf.sqrt(tf.reduce_mean(tf.square(img)))
         return img/tf.maximum(std, eps)
 
-def lap_normalize(img, scale_n=4):
+def lap_normalize(img, scale_n=5):
     """Perform the Laplacian pyramid normalization."""
-    img = tf.expand_dims(tf.expand_dims(img, -1), 0)
+    img = tf.expand_dims(img, 0)
     tlevels = lap_split_n(img, scale_n)
     tlevels = list(map(normalize_std, tlevels))
     out = lap_merge(tlevels)
@@ -80,16 +78,16 @@ def lap_normalize(img, scale_n=4):
 
 def resize(img, size):
     """Helper function that uses TF to resize an image"""
-    img = tf.expand_dims(tf.expand_dims(img, 0), -1)
-    return tf.image.resize_bilinear(img, size)[0, :, :, 0]
+    img = tf.expand_dims(img, 0)
+    return tf.image.resize_bilinear(img, size)[0, :, :, :]
 
 
 if __name__=='__main__':
     base_dir = r'/nfs/home/huanglijie/repo/finetune_alexnet_with_tensorflow'
-    model_data = os.path.join(base_dir,'log','checkpoints','model_epoch150.ckpt')
+    model_data = os.path.join(base_dir,'log_2conv_100epoch_00002','checkpoints','model_epoch100.ckpt')
 
     # load the model
-    t_input = tf.placeholder(tf.float32, name='input')
+    t_input = tf.placeholder(tf.float32, shape=(227, 227, 3))
     imagenet_mean = 117.0
     t_preprocessed = tf.expand_dims(t_input - imagenet_mean, 0)
     keep_prob = tf.placeholder(tf.float32)
@@ -103,6 +101,7 @@ if __name__=='__main__':
 
     # get Conv2D layer name
     layers = [op.name for op in graph.get_operations() if op.type=='Conv2D']
+    layers = layers[-2:]
     feature_nums = [int(graph.get_tensor_by_name(name+':0').get_shape()[-1]) 
                         for name in layers]
     print('Number of layers', len(layers))
@@ -121,7 +120,7 @@ if __name__=='__main__':
             return wrapper
         return wrap
 
-    def calc_grad_tiled(img, t_grad, tile_size=48):
+    def calc_grad_tiled(img, t_grad, tile_size=227):
         """Compute the value of tensor t_grad over the image in a tiled way.
         Random shifts are applied to the image to blur tile boundaries over
         multiple iterations.
@@ -134,9 +133,8 @@ if __name__=='__main__':
         for y in range(0, max(h-sz//2, sz), sz):
             for x in range(0, max(w-sz//2, sz), sz):
                 sub = img_shift[y:y+sz, x:x+sz]
-                g = sess.run(t_grad, {t_input: np.expand_dims(sub, 0),
-                                      is_training_ph: is_training})
-                grad[y:y+sz, x:x+sz] = g[0, :, :]
+                g = sess.run(t_grad, {t_input: sub, keep_prob: 1.})
+                grad[y:y+sz, x:x+sz] = g
         return np.roll(np.roll(grad, -sx, 1), -sy, 0)
     
     resize = tffunc(np.float32, np.int32)(resize)
@@ -148,7 +146,7 @@ if __name__=='__main__':
         channel_num = int(graph.get_tensor_by_name(layer+':0').get_shape()[-1])
         for channel in range(channel_num):
             # start with a gray image with a little noise
-            img_noise = np.random.uniform(size=(48, 48)) + 115.0
+            img_noise = np.random.uniform(size=(227, 227, 3)) + 100.0
             print 'Viz feature of Layer %s, Channel %s'%(layer, channel)
             t_obj = graph.get_tensor_by_name('%s:0'%layer)[:, :, :, channel]
  
@@ -158,14 +156,14 @@ if __name__=='__main__':
             t_grad = tf.gradients(t_score, t_input)[0]
 
             img = img_noise.copy()
-            for octave in range(2):
+            for octave in range(3):
                 if octave>0:
                     hw = np.float32(img.shape[:2]) * 1.5
                     img = resize(img, np.int32(hw))
-                for i in range(200):
+                for i in range(30):
                     g = calc_grad_tiled(img, t_grad)
                     g = lap_norm_func(g)
-                    img += g[:, :, 0]*1.0
+                    img += g*1.0
                     print '.',
             savearray(visstd(img), '%s_%s'%(layer, channel))
  

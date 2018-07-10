@@ -81,7 +81,7 @@ with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
 
     # Load the pretrained weights into the model
-    saver.restore(sess, os.path.join(checkpoint_path, 'model_epoch100.ckpt'))
+    saver.restore(sess, os.path.join(checkpoint_path, 'model_epoch6.ckpt'))
 
     # Test the model on the entire validation set
     print("{} Start test".format(datetime.now()))
