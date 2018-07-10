@@ -21,12 +21,12 @@ current_dir = os.getcwd()
 
 # Path to the textfiles for the trainings and validation set
 train_file = os.path.join(current_dir, 'affectNet', 'train_list.txt')
-#val_file = os.path.join(current_dir, 'affectNet', 'val_list.txt')
-val_file = os.path.join(current_dir, 'emoImg', 'test_list.txt')
+val_file = os.path.join(current_dir, 'affectNet', 'val_list.txt')
+test_file = os.path.join(current_dir, 'emoImg', 'test_list.txt')
 
 # Learning params
-learning_rate = 0.0002
-num_epochs = 100
+learning_rate = 0.0001
+num_epochs = 50
 batch_size = 128
 
 # Network params
@@ -61,6 +61,11 @@ with tf.device('/cpu:0'):
                                   batch_size=batch_size,
                                   num_classes=num_classes,
                                   shuffle=False)
+    test_data = ImageDataGenerator(test_file,
+                                   mode='inference',
+                                   batch_size=batch_size,
+                                   num_classes=num_classes,
+                                   shuffle=False)
 
     # create an reinitializable iterator given the dataset structure
     iterator = Iterator.from_structure(tr_data.data.output_types,
@@ -70,6 +75,7 @@ with tf.device('/cpu:0'):
 # Ops for initializing the two different iterators
 training_init_op = iterator.make_initializer(tr_data.data)
 validation_init_op = iterator.make_initializer(val_data.data)
+test_init_op = iterator.make_initializer(test_data.data)
 
 # TF placeholder for graph input and output
 x = tf.placeholder(tf.float32, [batch_size, 227, 227, 3])
@@ -132,11 +138,12 @@ writer = tf.summary.FileWriter(filewriter_path)
 saver = tf.train.Saver()
 
 # Get the number of training/validation steps per epoch
-train_batches_per_epoch = int(np.floor(tr_data.data_size/batch_size))
+train_batches_per_epoch = int(np.floor(tr_data.data_size / batch_size))
 val_batches_per_epoch = int(np.floor(val_data.data_size / batch_size))
+test_batches_per_epoch = int(np.floor(test_data.data_size / batch_size))
 
-val_acc_file = os.path.join(checkpoint_path, 'val_acc.txt')
-val_acc_f = open(val_acc_file, 'wb')
+vt_acc_file = os.path.join(checkpoint_path, 'val_test_acc.txt')
+vt_acc_f = open(vt_acc_file, 'wb')
 
 # Start Tensorflow session
 with tf.Session() as sess:
@@ -183,10 +190,24 @@ with tf.Session() as sess:
         # Validate the model on the entire validation set
         print("{} Start validation".format(datetime.now()))
         sess.run(validation_init_op)
+        val_acc = 0.
+        val_count = 0
+        for _ in range(val_batches_per_epoch):
+            img_batch, label_batch = sess.run(next_batch)
+            acc = sess.run(accuracy, feed_dict={x: img_batch,
+                                                y: label_batch,
+                                                keep_prob: 1.})
+            val_acc += acc
+            val_count += 1
+        val_acc /= val_count
+        print("{} Validation Accuracy = {:.4f}".format(datetime.now(), val_acc))
+        
+        # Test the model on the entire test set
+        print("{} Start test".format(datetime.now()))
+        sess.run(test_init_op)
         test_acc = 0.
         test_count = 0
-        for _ in range(val_batches_per_epoch):
-
+        for _ in range(test_batches_per_epoch):
             img_batch, label_batch = sess.run(next_batch)
             acc = sess.run(accuracy, feed_dict={x: img_batch,
                                                 y: label_batch,
@@ -194,15 +215,23 @@ with tf.Session() as sess:
             test_acc += acc
             test_count += 1
         test_acc /= test_count
-        print("{} Validation Accuracy = {:.4f}".format(datetime.now(),
-                                                       test_acc))
-        val_acc_f.write('%s, %s\n'%(epoch+1, test_acc))
+        print("{} Test Accuracy = {:.4f}".format(datetime.now(), test_acc))
+
+        vt_acc_f.write('%s, %s, %s\n'%(epoch+1, val_acc, test_acc))
+        
         print("{} Saving checkpoint of model...".format(datetime.now()))
 
         # save checkpoint of the model
         checkpoint_name = os.path.join(checkpoint_path,
                                        'model_epoch'+str(epoch+1)+'.ckpt')
         save_path = saver.save(sess, checkpoint_name)
+
+        if val_acc>0.72 and test_acc>0.81:
+            print 'Select!'
+            checkpoint_name = os.path.join(checkpoint_path,
+                                        'sel_model_epoch'+str(epoch+1)+'.ckpt')
+            save_path = saver.save(sess, checkpoint_name)
+
 
         print("{} Model checkpoint saved at {}".format(datetime.now(),
                                                        checkpoint_name))
