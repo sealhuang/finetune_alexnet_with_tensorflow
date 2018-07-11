@@ -72,7 +72,7 @@ for layer in layers:
             img_feat[..., c] = a
             c += 1
             print c
-        outfile = os.path.join(current_dir, 'test',
+        outfile = os.path.join(current_dir, 'feats',
                                '%s_%s_feats.npy'%(layer, channel))
         np.save(outfile, img_feat)
 
