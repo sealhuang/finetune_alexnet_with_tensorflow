@@ -46,9 +46,9 @@ if __name__=='__main__':
         # mean feature across all images
         mean_feats = feats.mean(axis=3)
         savearray(visstd(mean_feats), feat_dir, basename+'_mean')
-        # mean feature across each emotion type and gender
-        for cond in indexs:
-            cond_feats = feats[..., indexs[cond]]
-            mean_feats = cond_feats.mean(axis=3)
-            savearray(visstd(mean_feats), feat_dir, basename+'_mean_'+cond)
+        ## mean feature across each emotion type and gender
+        #for cond in indexs:
+        #    cond_feats = feats[..., indexs[cond]]
+        #    mean_feats = cond_feats.mean(axis=3)
+        #    savearray(visstd(mean_feats), feat_dir, basename+'_mean_'+cond)
 
