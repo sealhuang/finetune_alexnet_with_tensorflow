@@ -61,7 +61,7 @@ if __name__=='__main__':
 
     # get Conv2D layer name
     layers = [op.name for op in graph.get_operations() if op.type=='Conv2D']
-    layers = layers[-4:]
+    layers = layers[-2:]
     feature_nums = [int(graph.get_tensor_by_name(name+':0').get_shape()[-1]) 
                         for name in layers]
     print('Number of layers', len(layers))
@@ -72,6 +72,8 @@ if __name__=='__main__':
         for channel in range(channel_num):
             print 'Viz feature of Layer %s, Channel %s'%(layer, channel)
             # start with a selected image from testing images
+            img_feat = np.zeros((380, 330, 3, 800), dtype=np.float32)
+            c = 0
             for img_file in test_data_list:
                 img0 = imread(img_file, mode='RGB')
                 t_obj = graph.get_tensor_by_name('%s:0'%layer)[:, :, :, channel]
@@ -84,7 +86,18 @@ if __name__=='__main__':
 
                 g, score = sess.run([t_grad, t_score],
                                     {t_input: img0, keep_prob: 1.})
-                savearray(visstd(g),
-                    os.path.join(current_dir, 'test', '%s_%s'%(layer, channel)),
-                    '.'.join(os.path.basename(img_file).split('.')[:-1]))
+    
+                a = g - g.mean(axis=2, keepdims=True)
+                a = (a - a.min()) / (a.max() - a.min())
+                a[a>0.7] = 1
+                img_feat[..., c] = a
+                c += 1
+                print c
+            outfile = os.path.join(current_dir, 'test',
+                                   '%s_%s_feats.npy'%(layer, channel))
+            np.save(outfile, img_feat)
+                
+            #savearray(visstd(g),
+            #        os.path.join(current_dir, 'test', '%s_%s'%(layer, channel)),
+            #        '.'.join(os.path.basename(img_file).split('.')[:-1]))
 
