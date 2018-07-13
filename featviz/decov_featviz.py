@@ -63,7 +63,7 @@ for layer in layers:
     for channel in range(channel_num):
         print 'Viz feature of Layer %s, Channel %s'%(layer, channel)
 
-        is_success = deconv_visualization(sess_graph_path=None,
+        is_success = deconv_visualization(sess_graph_path=sess,
                                           value_feed_dict={t_preprocessed: img0,
                                           #value_feed_dict={t_input: img0,
                                                            keep_prob: 1.},
