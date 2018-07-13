@@ -12,6 +12,7 @@ import sys
 sys.path.append('../')
 from salexnet import AlexNet
 
+from tf_cnnvis import *
 
 base_dir = r'/nfs/home/huanglijie/repo/finetune_alexnet_with_tensorflow'
 model_data = os.path.join(base_dir,'log','checkpoints','sel_model_epoch44.ckpt')
@@ -47,6 +48,9 @@ feature_nums = [int(graph.get_tensor_by_name(name+':0').get_shape()[-1])
 print('Number of layers', len(layers))
 print('Total number of feature channels:', sum(feature_nums))
 
+# load test image
+img0 = imread(test_data_list[0], mode='RGB')
+
 for layer in layers:
     channel_num = int(graph.get_tensor_by_name(layer+':0').get_shape()[-1])
     for channel in range(channel_num):
@@ -58,30 +62,4 @@ for layer in layers:
                                           layers=layer,
                                           path_logdir='EmoNetLog',
                                           path_outdir='EmoNetOut')
-
-        # defining the optimization objective
-        t_obj = graph.get_tensor_by_name('%s:0'%layer)[:, :, :, channel]
-        t_score = tf.reduce_mean(t_obj)
-        #t_score = tf.reduce_max(t_obj)
-        # behold the power of automatic differentiation!
-        t_grad = tf.gradients(t_score, t_input)[0]
-
-        # feature array
-        img_feat = np.zeros((380, 330, 3, 800), dtype=np.float32)
-        c = 0
-        # start with a selected image from testing images
-        for img_file in test_data_list:
-            img0 = imread(img_file, mode='RGB')
-            g, score = sess.run([t_grad, t_score],
-                                {t_input: img0, keep_prob: 1.})
-            # normalize
-            a = g - g.mean(axis=2, keepdims=True)
-            a = (a - a.min()) / (a.max() - a.min())
-            a[a>0.7] = 1
-            img_feat[..., c] = a
-            c += 1
-            print c
-        outfile = os.path.join(current_dir, 'feats',
-                               '%s_%s_feats.npy'%(layer, channel))
-        np.save(outfile, img_feat)
 
