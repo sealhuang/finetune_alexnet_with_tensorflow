@@ -84,8 +84,6 @@ with tf.Session() as sess:
     # Load the pretrained weights into the model
     saver.restore(sess, os.path.join(checkpoint_path, 'sel_model_epoch44.ckpt'))
     graph = sess.graph
-    #pool5_1_out = graph.get_tensor_by_name('Conv2D_6:0')
-    #pool5_2_out = graph.get_tensor_by_name('Conv2D_7:0')
     pool5 = graph.get_tensor_by_name('pool5:0')
 
     # Test the model on the entire validation set
@@ -96,8 +94,6 @@ with tf.Session() as sess:
         p5 = sess.run(pool5, feed_dict={x: img_batch,
                                         y: label_batch,
                                         keep_prob: 1.})
-        print p5.shape
-        #tmp = np.concatenate((p51, p52), axis=3)
         if p5_out.sum():
             p5_out = np.concatenate((p5_out, p5), axis=0)
         else:
