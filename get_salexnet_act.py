@@ -5,7 +5,7 @@
 
 import os
 os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
-os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 import numpy as np
 import tensorflow as tf
 
@@ -73,8 +73,8 @@ with tf.Session() as sess:
     # Load the pretrained weights into the model
     saver.restore(sess, os.path.join(checkpoint_path, 'sel_model_epoch44.ckpt'))
     graph = sess.graph
-    pool5_1_out = graph.get_tensor_bu_name('Conv2D_6:0')
-    pool5_2_out = graph.get_tensor_bu_name('Conv2D_7:0')
+    pool5_1_out = graph.get_tensor_by_name('Conv2D_6:0')
+    pool5_2_out = graph.get_tensor_by_name('Conv2D_7:0')
 
     # Test the model on the entire validation set
     print("{} Start test".format(datetime.now()))
