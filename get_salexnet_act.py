@@ -28,7 +28,7 @@ test_info = open(test_file, 'r').readlines()
 test_info = [line.strip().split() for line in test_info]
 test_info = [[os.path.join(current_dir, 'emoImg', 'imgs', line[0]), line[1]]
              for line in test_info]
-ntest_file = os.path.join(curent_dir, 'emoImg', 'tmp_'+img_list_file)
+ntest_file = os.path.join(current_dir, 'emoImg', 'tmp_'+img_list_file)
 with open(ntest_file, 'w') as f:
     for line in test_info:
         f.write(' '.join(line)+'\n')
@@ -75,7 +75,7 @@ saver = tf.train.Saver()
 # Get the number of test steps per epoch
 test_batches_per_epoch = int(np.floor(test_data.data_size / batch_size))
 
-pred = np.array([])
+p5_out = np.array([])
 
 # Start Tensorflow session
 with tf.Session() as sess:
@@ -96,8 +96,10 @@ with tf.Session() as sess:
                             feed_dict={x: img_batch,
                                        y: label_batch,
                                        keep_prob: 1.})
-        #pred = np.concatenate((pred, pred_y))
-        print p51.shape
-        print p52.shape
+        tmp = np.concatenate((p51, p52), axis=3)
+        p5_out = np.concatenate((p5_out, tmp), axis=0)
 
+print p5_out.shape
+np_file = img_list_file.split('.')[0]+'_pool5.npy'
+np.save(np_file, p5_out)
 
