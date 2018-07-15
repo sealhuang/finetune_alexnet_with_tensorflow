@@ -97,7 +97,7 @@ with tf.Session() as sess:
                                        y: label_batch,
                                        keep_prob: 1.})
         tmp = np.concatenate((p51, p52), axis=3)
-        if x.sum():
+        if p5_out.sum():
             p5_out = np.concatenate((p5_out, tmp), axis=0)
         else:
             p5_out = tmp
