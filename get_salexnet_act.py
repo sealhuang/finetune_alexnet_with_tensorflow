@@ -23,6 +23,17 @@ img_list_file = 'S1_stimuli_1.txt'
 # Path to the textfiles for test set
 test_file = os.path.join(current_dir, 'emoImg', 'stimseq', img_list_file)
 
+# image list preprocessing
+test_info = open(test_file, 'r').readlines()
+test_info = [line.strip().split() for line in test_info]
+test_info = [[os.path.join(current_dir, 'emoImg', 'imgs', line[0]), line[1]]
+             for line in test_info]
+ntest_file = os.path.join(curent_dir, 'emoImg', 'tmp_'+img_list_file)
+with open(ntest_file, 'w') as f:
+    for line in test_info:
+        f.write(' '.join(line)+'\n')
+test_file = ntest_file
+
 # Network params
 num_classes = 4
 batch_size = 16

@@ -156,8 +156,6 @@ class ImageDataGenerator(object):
         one_hot = tf.one_hot(label, self.num_classes)
 
         # load and preprocess the image
-        if not os.path.exists(filename):
-            filename = os.path.join('/nfs/home/huanglijie/repo/finetune_alexnet_with_tensorflow/emoImg/imgs', filename)
         img_string = tf.read_file(filename)
         #img_decoded = tf.image.decode_png(img_string, channels=3)
         img_decoded = tf.image.decode_jpeg(img_string, channels=3)
