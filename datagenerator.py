@@ -1,6 +1,7 @@
 
 """Containes a helper class for image input pipelines in tensorflow."""
 
+import os
 import tensorflow as tf
 import numpy as np
 
