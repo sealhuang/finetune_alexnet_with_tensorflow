@@ -79,8 +79,12 @@ class AlexNet(object):
         fc6 = fc(flattened, 6*6*256, 4096, name='fc6')
         dropout6 = dropout(fc6, self.KEEP_PROB)
 
-        # 7th Layer: FC and return unscaled activations
-        self.fc7 = fc(dropout6, 4096, 1, relu=False, name='fc7')
+        # 7th Layer: FC (w Relu) -> Dropout
+        fc7 = fc(dropout6, 4096, 4096, name='fc7')
+        dropout7 = dropout(fc7, self.KEEP_PROB)
+
+        # 8th Layer: FC and return unscaled activations
+        self.fc8 = fc(dropout6, 4096, 1, relu=False, name='fc8')
 
 
     def load_initial_weights(self, session):
