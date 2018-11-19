@@ -185,7 +185,7 @@ with tf.Session() as sess:
                                                    keep_prob: 1.})
             val_loss += l
             val_count += 1
-            print c
+            #print c
         val_loss /= val_count
         print("{} Validation Loss = {:.4f}".format(datetime.now(), val_loss))
         
