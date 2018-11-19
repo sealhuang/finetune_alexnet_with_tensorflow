@@ -26,7 +26,7 @@ val_file = os.path.join(current_dir, 'bazhong', 'val_list.csv')
 
 # Learning params
 learning_rate = 0.00001
-num_epochs = 30
+num_epochs = 10
 batch_size = 20
 
 # Network params
@@ -189,6 +189,26 @@ with tf.Session() as sess:
         val_loss /= val_count
         print("{} Validation Loss = {:.4f}".format(datetime.now(), val_loss))
         
+    # get the validate data
+    print("{} Start validation".format(datetime.now()))
+    val_f = open('val_res.txt', w)
+    sess.run(validation_init_op)
+    val_loss = 0.
+    val_count = 0
+    for _ in range(val_batches_per_epoch):
+        img_batch, label_batch = sess.run(next_batch)
+        [l, c] = sess.run([loss, score], feed_dict={x: img_batch,
+                                                   y: label_batch,
+                                                   keep_prob: 1.})
+        val_loss += l
+        val_count += 1
+        for item in c:
+            val_f.write('%s\n'%(item))
+        #print c
+    val_loss /= val_count
+    print("{} Validation Loss = {:.4f}".format(datetime.now(), val_loss))
+    val_f.close()
+    
         ## Test the model on the entire test set
         #print("{} Start test".format(datetime.now()))
         #sess.run(test_init_op)
