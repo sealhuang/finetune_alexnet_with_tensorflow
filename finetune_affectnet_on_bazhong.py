@@ -4,13 +4,13 @@
 """Script to finetune AffectNet using Tensorflow."""
 
 import os
-#os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
-#os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 import numpy as np
 import tensorflow as tf
 
 from salexnet4reg import AlexNet
-from genius_datagenerator import ImageDataGenerator
+from bazhong_datagenerator import ImageDataGenerator
 from datetime import datetime
 from tensorflow.contrib.data import Iterator
 
@@ -20,8 +20,8 @@ Configuration Part.
 current_dir = os.getcwd()
 
 # Path to the textfiles for the trainings and validation set
-train_file = os.path.join(current_dir, 'genius', 'train_list.csv')
-val_file = os.path.join(current_dir, 'genius', 'val_list.csv')
+train_file = os.path.join(current_dir, 'bazhong', 'train_list.csv')
+val_file = os.path.join(current_dir, 'bazhong', 'val_list.csv')
 #test_file = os.path.join(current_dir, 'genius', 'test_list.csv')
 
 # Learning params
@@ -31,14 +31,14 @@ batch_size = 20
 
 # Network params
 dropout_rate = 0.5
-train_layers = ['fc7', 'fc6']
+train_layers = ['fc7', 'fc6', 'conv5']
 
 # How often we want to write the tf.summary data to disk
 display_step = 20
 
 # Path for tf.summary.FileWriter and to store model checkpoints
-filewriter_path = os.path.join(current_dir, 'log', 'genius_tensorboard')
-checkpoint_path = os.path.join(current_dir, 'log', 'genius_checkpoints')
+filewriter_path = os.path.join(current_dir, 'log', 'bazhong_tensorboard')
+checkpoint_path = os.path.join(current_dir, 'log', 'bazhong_checkpoints')
 
 """
 Main Part of the finetuning Script.
