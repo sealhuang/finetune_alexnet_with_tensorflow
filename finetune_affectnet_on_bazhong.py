@@ -26,8 +26,8 @@ val_file = os.path.join(current_dir, 'bazhong', 'val_list.csv')
 
 # Learning params
 learning_rate = 0.00001
-num_epochs = 10
-batch_size = 20
+num_epochs = 20
+batch_size = 8
 
 # Network params
 dropout_rate = 0.5
@@ -188,7 +188,6 @@ with tf.Session() as sess:
             val_loss += l
             val_count += 1
             #print c
-            print c.shape
         val_loss /= val_count
         print("{} Validation Loss = {:.4f}".format(datetime.now(), val_loss))
         
@@ -206,7 +205,7 @@ with tf.Session() as sess:
         val_loss += l
         val_count += 1
         for item in c:
-            val_f.write('%s\n'%(item))
+            val_f.write('%s\n'%(item[0]))
         #print c
     val_loss /= val_count
     print("{} Validation Loss = {:.4f}".format(datetime.now(), val_loss))
