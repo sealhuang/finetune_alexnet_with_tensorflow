@@ -127,6 +127,8 @@ saver = tf.train.Saver()
 train_batches_per_epoch = int(np.floor(tr_data.data_size / batch_size))
 val_batches_per_epoch = int(np.floor(val_data.data_size / batch_size))
 #test_batches_per_epoch = int(np.floor(test_data.data_size / batch_size))
+print 'Train data batches per epoch: %s'%(train_batches_per_epoch)
+print 'Val data batches per epoch: %s'%(val_batches_per_epoch)
 
 #vt_acc_file = os.path.join(checkpoint_path, 'val_test_acc.txt')
 #vt_acc_f = open(vt_acc_file, 'wb')
@@ -186,6 +188,7 @@ with tf.Session() as sess:
             val_loss += l
             val_count += 1
             #print c
+            print c.shape
         val_loss /= val_count
         print("{} Validation Loss = {:.4f}".format(datetime.now(), val_loss))
         
