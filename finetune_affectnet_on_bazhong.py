@@ -31,7 +31,7 @@ batch_size = 20
 
 # Network params
 dropout_rate = 0.5
-train_layers = ['fc7', 'fc6', 'conv5']
+train_layers = ['fc7', 'fc6']
 
 # How often we want to write the tf.summary data to disk
 display_step = 20
@@ -191,7 +191,7 @@ with tf.Session() as sess:
         
     # get the validate data
     print("{} Start validation".format(datetime.now()))
-    val_f = open('val_res.txt', w)
+    val_f = open('val_res.txt', 'w')
     sess.run(validation_init_op)
     val_loss = 0.
     val_count = 0
