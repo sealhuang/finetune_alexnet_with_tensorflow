@@ -102,7 +102,7 @@ class AlexNet(object):
         for op_name in weights_dict:
 
             # Check if layer should be trained from scratch
-            if op_name not in self.SKIP_LAYER:
+            if not op_name in self.SKIP_LAYER:
 
                 with tf.variable_scope(op_name, reuse=True):
 
