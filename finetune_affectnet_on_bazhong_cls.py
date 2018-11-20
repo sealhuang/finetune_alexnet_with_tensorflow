@@ -203,7 +203,7 @@ with tf.Session() as sess:
             val_acc += acc
             val_count += 1
             preds = np.concatenate((preds, pl))
-            trues = np.concatename((trues, tl))
+            trues = np.concatenate((trues, tl))
         val_acc /= val_count
         print("{} Validation Accuracy = {:.4f}".format(datetime.now(), val_acc))
         print 'Confusion matrix'
