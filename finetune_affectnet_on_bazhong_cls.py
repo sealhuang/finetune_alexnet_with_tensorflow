@@ -200,7 +200,7 @@ with tf.Session() as sess:
                                                                  keep_prob: 1.})
             val_acc += acc
             val_count += 1
-            pl.shape
+            print pl.shape
         val_acc /= val_count
         print("{} Validation Accuracy = {:.4f}".format(datetime.now(), val_acc))
         
