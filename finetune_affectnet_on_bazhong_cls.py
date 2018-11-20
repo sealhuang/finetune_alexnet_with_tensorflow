@@ -121,6 +121,7 @@ tf.summary.scalar('cross-ent', loss)
 
 # Evaluation op: Accuracy of the model
 with tf.name_scope('accuracy'):
+    perd_label = tf.argmax(y, 1)
     correct_pred = tf.equal(tf.argmax(score, 1), tf.argmax(y, 1))
     accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 tf.summary.scalar('accuracy', accuracy)
@@ -191,13 +192,15 @@ with tf.Session() as sess:
         sess.run(validation_init_op)
         val_acc = 0.
         val_count = 0
+        preds = []
         for _ in range(val_batches_per_epoch):
             img_batch, label_batch = sess.run(next_batch)
-            acc = sess.run(accuracy, feed_dict={x: img_batch,
-                                                y: label_batch,
-                                                keep_prob: 1.})
+            acc, pl = sess.run([accuracy, pred_label], feed_dict={x: img_batch,
+                                                                 y: label_batch,
+                                                                 keep_prob: 1.})
             val_acc += acc
             val_count += 1
+            pl.shape
         val_acc /= val_count
         print("{} Validation Accuracy = {:.4f}".format(datetime.now(), val_acc))
         
