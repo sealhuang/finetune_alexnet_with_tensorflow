@@ -48,7 +48,7 @@ class AlexNet(object):
         self.SKIP_LAYER = skip_layer
 
         if weights_path == 'DEFAULT':
-            self.WEIGHTS_PATH = 'affectnet_params.npy'
+            self.WEIGHTS_PATH = 'affectnet_params.npz'
         else:
             self.WEIGHTS_PATH = weights_path
 
