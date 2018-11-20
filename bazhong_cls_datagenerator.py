@@ -19,7 +19,7 @@ class ImageDataGenerator(object):
     Requires Tensorflow >= version 1.12rc0
     """
 
-    def __init__(self, txt_file, mode, batch_size, shuffle=True,
+    def __init__(self, txt_file, mode, batch_size, num_classes, shuffle=True,
                  buffer_size=1000):
         """Create a new ImageDataGenerator.
 
@@ -34,6 +34,7 @@ class ImageDataGenerator(object):
             mode: Either 'training' or 'validation'. Depending on this value,
                 different parsing functions will be used.
             batch_size: Number of images per batch.
+            num_classes: Number of classes in the dataset.
             shuffle: Wether or not to shuffle the data in the dataset and the
                 initial file list.
             buffer_size: Number of images used as buffer for TensorFlows
@@ -44,7 +45,7 @@ class ImageDataGenerator(object):
 
         """
         self.txt_file = txt_file
-        #self.num_classes = num_classes
+        self.num_classes = num_classes
 
         # retrieve the data from the text file
         self._read_txt_file(shuffle)
@@ -59,7 +60,6 @@ class ImageDataGenerator(object):
         # convert lists to TF tensor
         self.img_paths = convert_to_tensor(self.img_paths, dtype=dtypes.string)
         self.labels = convert_to_tensor(self.labels, dtype=dtypes.int32)
-        #self.labels = convert_to_tensor(self.labels, dtype=dtypes.float32)
 
         # create dataset
         data = Dataset.from_tensor_slices((self.img_paths, self.labels))
@@ -96,8 +96,8 @@ class ImageDataGenerator(object):
         # randomly sample the data to balancing various categories
         start_val = 60
         end_val = 160
-        val_interval = 10
-        num_per_bin = 200
+        val_interval = (end_val - start_val) / self.num_classes
+        num_per_bin = 200 * (10 / self.num_classes)
         bin_mark = range(start_val, end_val+1, val_interval)
         num_count = [0] * (len(bin_mark)-1)
         with open(self.txt_file, 'r') as f:
@@ -119,8 +119,8 @@ class ImageDataGenerator(object):
                             #print v, mi-1
                         break
         print 'Load %s samples'%(len(self.labels))
-        #print 'data dist',
-        #print num_count
+        print 'data dist',
+        print num_count
 
     def _shuffle_lists(self):
         """Conjoined shuffling of the list of paths and labels."""
@@ -136,8 +136,7 @@ class ImageDataGenerator(object):
     def _parse_function_train(self, filename, label):
         """Input parser for samples of the training set."""
         # convert label number into one-hot-encoding
-        #one_hot = tf.one_hot(label, self.num_classes)
-        one_hot = tf.one_hot(label, 10)
+        one_hot = tf.one_hot(label, self.num_classes)
 
         # load and preprocess the image
         img_string = tf.read_file(filename)
@@ -160,8 +159,7 @@ class ImageDataGenerator(object):
     def _parse_function_inference(self, filename, label):
         """Input parser for samples of the validation/test set."""
         # convert label number into one-hot-encoding
-        #one_hot = tf.one_hot(label, self.num_classes)
-        one_hot = tf.one_hot(label, 10)
+        one_hot = tf.one_hot(label, self.num_classes)
 
         # load and preprocess the image
         img_string = tf.read_file(filename)
