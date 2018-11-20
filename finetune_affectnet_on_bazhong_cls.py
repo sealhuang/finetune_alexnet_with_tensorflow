@@ -32,7 +32,7 @@ batch_size = 24
 # Network params
 dropout_rate = 0.5
 num_classes = 5
-train_layers = ['fc8', 'fc7', 'fc6']
+train_layers = ['fc7', 'fc6']
 
 # How often we want to write the tf.summary data to disk
 display_step = 20
@@ -86,7 +86,7 @@ keep_prob = tf.placeholder(tf.float32)
 model = AlexNet(x, keep_prob, num_classes, train_layers)
 
 # Link variable to model output
-score = model.fc8
+score = model.fc7
 
 # List of trainable variables of the layers we want to train
 var_list = [v for v in tf.trainable_variables()
