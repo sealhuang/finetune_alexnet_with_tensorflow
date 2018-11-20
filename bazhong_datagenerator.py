@@ -132,7 +132,7 @@ class ImageDataGenerator(object):
         """Input parser for samples of the training set."""
         # convert label number into one-hot-encoding
         #one_hot = tf.one_hot(label, self.num_classes)
-        one_hot = tf.one_hot(label, 5)
+        one_hot = tf.one_hot(label, 10)
 
         # load and preprocess the image
         img_string = tf.read_file(filename)
@@ -156,7 +156,7 @@ class ImageDataGenerator(object):
         """Input parser for samples of the validation/test set."""
         # convert label number into one-hot-encoding
         #one_hot = tf.one_hot(label, self.num_classes)
-        one_hot = tf.one_hot(label, 5)
+        one_hot = tf.one_hot(label, 10)
 
         # load and preprocess the image
         img_string = tf.read_file(filename)
