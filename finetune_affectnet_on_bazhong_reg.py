@@ -9,9 +9,8 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 import numpy as np
 import tensorflow as tf
 
-from alexnet import AlexNet
-#from salexnet4reg import AlexNet
-from bazhong_datagenerator import ImageDataGenerator
+from salexnet4reg import AlexNet
+from bazhong_reg_datagenerator import ImageDataGenerator
 from datetime import datetime
 from tensorflow.contrib.data import Iterator
 
@@ -27,11 +26,12 @@ val_file = os.path.join(current_dir, 'bazhong', 'val_list.csv')
 
 # Learning params
 learning_rate = 0.000005
-num_epochs = 40
+num_epochs = 15
 batch_size = 24
 
 # Network params
 dropout_rate = 0.5
+num_classes = 5
 train_layers = ['fc8', 'fc7', 'fc6']
 
 # How often we want to write the tf.summary data to disk
@@ -54,10 +54,12 @@ with tf.device('/cpu:0'):
     tr_data = ImageDataGenerator(train_file,
                                  mode='training',
                                  batch_size=batch_size,
+                                 num_classes = num_classes,
                                  shuffle=True)
     val_data = ImageDataGenerator(val_file,
                                   mode='inference',
                                   batch_size=batch_size,
+                                  num_classes = num_classes,
                                   shuffle=False)
     #test_data = ImageDataGenerator(test_file,
     #                               mode='test',
@@ -76,13 +78,11 @@ validation_init_op = iterator.make_initializer(val_data.data)
 
 # TF placeholder for graph input and output
 x = tf.placeholder(tf.float32, [batch_size, 227, 227, 3])
-y = tf.placeholder(tf.float32, [batch_size, 10])
-#y = tf.placeholder(tf.float32, [batch_size,])
+y = tf.placeholder(tf.float32, [batch_size,])
 keep_prob = tf.placeholder(tf.float32)
 
 # Initialize model
-model = AlexNet(x, keep_prob, 10, train_layers,
-                weights_path='affectnet_params.npz')
+model = AlexNet(x, keep_prob, train_layers)
 
 # Link variable to model output
 score = model.fc8
@@ -92,10 +92,8 @@ var_list = [v for v in tf.trainable_variables()
             if v.name.split('/')[0] in train_layers]
 
 # Op for calculating the loss
-with tf.name_scope("cross_ent"):
-    #loss = tf.reduce_mean(tf.square(score-y))
-    loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=score,
-                                                                  labels=y))
+with tf.name_scope("mse"):
+    loss = tf.reduce_mean(tf.square(score-y))
 
 # Train op
 with tf.name_scope("train"):
@@ -118,12 +116,6 @@ for var in var_list:
 
 # Add the loss to summary
 tf.summary.scalar('Square-Error', loss)
-
-# Evaluation op: Accuracy of the model
-with tf.name_scope('accuracy'):
-    correct_pred = tf.equal(tf.argmax(score, 1), tf.argmax(y, 1))
-    accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
-tf.summary.scalar('accuracy', accuracy)
 
 # Merge all summaries together
 merged_summary = tf.summary.merge_all()
@@ -189,25 +181,17 @@ with tf.Session() as sess:
         # Validate the model on the entire validation set
         print("{} Start validation".format(datetime.now()))
         sess.run(validation_init_op)
-        val_acc = 0.
-        #val_loss = 0.
+        val_loss = 0.
         val_count = 0
         for _ in range(val_batches_per_epoch):
             img_batch, label_batch = sess.run(next_batch)
-            #[l, c] = sess.run([loss, score], feed_dict={x: img_batch,
-            #                                       y: label_batch,
-            #                                       keep_prob: 1.})
-            #val_loss += l
-            #val_count += 1
-            acc = sess.run(accuracy, feed_dict={x: img_batch,
-                                                y: label_batch,
-                                                keep_prob: 1.})
-            val_acc += acc
+            [l, c] = sess.run([loss, score], feed_dict={x: img_batch,
+                                                   y: label_batch,
+                                                   keep_prob: 1.})
+            val_loss += l
             val_count += 1
-        #val_loss /= val_count
-        #print("{} Validation Loss = {:.4f}".format(datetime.now(), val_loss))
-        val_acc /= val_count
-        print("{} Validation Accuracy = {:.4f}".format(datetime.now(), val_acc))
+        val_loss /= val_count
+        print("{} Validation Loss = {:.4f}".format(datetime.now(), val_loss))
         
     ## get the validate data
     #print("{} Start validation".format(datetime.now()))
