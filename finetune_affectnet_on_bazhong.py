@@ -76,7 +76,8 @@ validation_init_op = iterator.make_initializer(val_data.data)
 
 # TF placeholder for graph input and output
 x = tf.placeholder(tf.float32, [batch_size, 227, 227, 3])
-y = tf.placeholder(tf.float32, [batch_size,])
+y = tf.placeholder(tf.float32, [batch_size, 5])
+#y = tf.placeholder(tf.float32, [batch_size,])
 keep_prob = tf.placeholder(tf.float32)
 
 # Initialize model
