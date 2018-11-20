@@ -116,6 +116,18 @@ class ImageDataGenerator(object):
         # convert label number into one-hot-encoding
         #one_hot = tf.one_hot(label, self.num_classes)
 
+        # convert value into category label
+        if label>=60 and label<80:
+            label = 1
+        elif label>=80 and label<100:
+            label = 2
+        elif label>=100 and label<120:
+            label = 3
+        elif label>=120 and label<140:
+            label = 4
+        else:
+            label = 5
+
         # load and preprocess the image
         img_string = tf.read_file(filename)
         img_decoded = tf.image.decode_jpeg(img_string, channels=3)
@@ -138,6 +150,18 @@ class ImageDataGenerator(object):
         """Input parser for samples of the validation/test set."""
         # convert label number into one-hot-encoding
         #one_hot = tf.one_hot(label, self.num_classes)
+
+        # convert value into category label
+        if label>=60 and label<80:
+            label = 1
+        elif label>=80 and label<100:
+            label = 2
+        elif label>=100 and label<120:
+            label = 3
+        elif label>=120 and label<140:
+            label = 4
+        else:
+            label = 5
 
         # load and preprocess the image
         img_string = tf.read_file(filename)

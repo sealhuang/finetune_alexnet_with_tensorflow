@@ -9,7 +9,8 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 import numpy as np
 import tensorflow as tf
 
-from salexnet4reg import AlexNet
+from alexnet import AlexNet
+#from salexnet4reg import AlexNet
 from bazhong_datagenerator import ImageDataGenerator
 from datetime import datetime
 from tensorflow.contrib.data import Iterator
@@ -79,7 +80,8 @@ y = tf.placeholder(tf.float32, [batch_size,])
 keep_prob = tf.placeholder(tf.float32)
 
 # Initialize model
-model = AlexNet(x, keep_prob, train_layers)
+model = AlexNet(x, keep_prob, 5, train_layers,
+                weights_path='affectnet_params.npz')
 
 # Link variable to model output
 score = model.fc8
@@ -90,7 +92,9 @@ var_list = [v for v in tf.trainable_variables()
 
 # Op for calculating the loss
 with tf.name_scope("cross_ent"):
-    loss = tf.reduce_mean(tf.square(score-y))
+    #loss = tf.reduce_mean(tf.square(score-y))
+    loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=score,
+                                                                  label=y))
 
 # Train op
 with tf.name_scope("train"):
@@ -113,6 +117,12 @@ for var in var_list:
 
 # Add the loss to summary
 tf.summary.scalar('Square-Error', loss)
+
+# Evaluation op: Accuracy of the model
+with tf.name_scope('accuracy'):
+    correct_pred = tf.equal(tf.argmax(score, 1), tf.argmax(y, 1))
+    accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
+tf.summary.scalar('accuracy', accuracy)
 
 # Merge all summaries together
 merged_summary = tf.summary.merge_all()
@@ -178,38 +188,45 @@ with tf.Session() as sess:
         # Validate the model on the entire validation set
         print("{} Start validation".format(datetime.now()))
         sess.run(validation_init_op)
-        val_loss = 0.
+        val_acc = 0.
+        #val_loss = 0.
         val_count = 0
         for _ in range(val_batches_per_epoch):
             img_batch, label_batch = sess.run(next_batch)
-            [l, c] = sess.run([loss, score], feed_dict={x: img_batch,
-                                                   y: label_batch,
-                                                   keep_prob: 1.})
-            val_loss += l
+            #[l, c] = sess.run([loss, score], feed_dict={x: img_batch,
+            #                                       y: label_batch,
+            #                                       keep_prob: 1.})
+            #val_loss += l
+            #val_count += 1
+            acc = sess.run(accuracy, feed_dict={x: img_batch,
+                                                y: label_batch,
+                                                keep_prob: 1.})
+            val_acc += acc
             val_count += 1
-            #print c
-        val_loss /= val_count
-        print("{} Validation Loss = {:.4f}".format(datetime.now(), val_loss))
+        #val_loss /= val_count
+        #print("{} Validation Loss = {:.4f}".format(datetime.now(), val_loss))
+        val_acc /= val_count
+        print("{} Validation Accuracy = {:.4f}".format(datetime.now(), val_acc))
         
-    # get the validate data
-    print("{} Start validation".format(datetime.now()))
-    val_f = open('val_res.txt', 'w')
-    sess.run(validation_init_op)
-    val_loss = 0.
-    val_count = 0
-    for _ in range(val_batches_per_epoch):
-        img_batch, label_batch = sess.run(next_batch)
-        [l, c] = sess.run([loss, score], feed_dict={x: img_batch,
-                                                   y: label_batch,
-                                                   keep_prob: 1.})
-        val_loss += l
-        val_count += 1
-        for item in c:
-            val_f.write('%s\n'%(item[0]))
-        #print c
-    val_loss /= val_count
-    print("{} Validation Loss = {:.4f}".format(datetime.now(), val_loss))
-    val_f.close()
+    ## get the validate data
+    #print("{} Start validation".format(datetime.now()))
+    #val_f = open('val_res.txt', 'w')
+    #sess.run(validation_init_op)
+    #val_loss = 0.
+    #val_count = 0
+    #for _ in range(val_batches_per_epoch):
+    #    img_batch, label_batch = sess.run(next_batch)
+    #    [l, c] = sess.run([loss, score], feed_dict={x: img_batch,
+    #                                               y: label_batch,
+    #                                               keep_prob: 1.})
+    #    val_loss += l
+    #    val_count += 1
+    #    for item in c:
+    #        val_f.write('%s\n'%(item[0]))
+    #    #print c
+    #val_loss /= val_count
+    #print("{} Validation Loss = {:.4f}".format(datetime.now(), val_loss))
+    #val_f.close()
     
         ## Test the model on the entire test set
         #print("{} Start test".format(datetime.now()))
