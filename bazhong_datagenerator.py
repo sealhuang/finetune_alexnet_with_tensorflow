@@ -127,7 +127,7 @@ class ImageDataGenerator(object):
             label = 4
         else:
             label = 5
-        label = tf.one_hot(label, 5)
+        label = tf.one_hot(label-1, 5)
 
         # load and preprocess the image
         img_string = tf.read_file(filename)
@@ -163,7 +163,7 @@ class ImageDataGenerator(object):
             label = 4
         else:
             label = 5
-        label = tf.one_hot(label, 5)
+        label = tf.one_hot(label-1, 5)
 
         # load and preprocess the image
         img_string = tf.read_file(filename)
