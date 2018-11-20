@@ -4,6 +4,7 @@
 import os
 import tensorflow as tf
 import numpy as np
+from random import shuffle as list_shuffle
 
 from tensorflow.contrib.data import Dataset
 from tensorflow.python.framework import dtypes
@@ -46,7 +47,7 @@ class ImageDataGenerator(object):
         #self.num_classes = num_classes
 
         # retrieve the data from the text file
-        self._read_txt_file()
+        self._read_txt_file(shuffle)
 
         # number of samples in the dataset
         self.data_size = len(self.labels)
@@ -87,31 +88,34 @@ class ImageDataGenerator(object):
 
         self.data = data
 
-    def _read_txt_file(self):
+    def _read_txt_file(self, shuffle=False):
         """Read the content of the text file and store it into lists."""
         self.img_paths = []
         self.labels = []
         current_dir = os.getcwd()
+        # randomly sample the data to balancing various categories
+        start_val = 60
+        end_val = 160
+        val_interval = 10
+        num_per_bin = 200
+        bin_mark = range(start_val, end_val+1, val_interval)
+        num_count = [0] * (len(bin_mark)-1)
         with open(self.txt_file, 'r') as f:
             lines = f.readlines()
             lines.pop(0)
+            # shuffle the lines
+            if shuffle:
+                list_shuffle(lines)
             for line in lines:
                 items = line.strip().split(',')
                 p = os.path.join(current_dir, 'bazhong','croppedPics',items[2])
-                self.img_paths.append(p)
-                # convert value into category label
                 v = float(items[3])
-                if v>=60 and v<80:
-                    label = 0
-                elif v>=80 and v<100:
-                    label = 1
-                elif v>=100 and v<120:
-                    label = 2
-                elif v>=120 and v<140:
-                    label = 3
-                else:
-                    label = 4
-                self.labels.append(int(label))
+                for mi in range(len(bin_mark)):
+                    if v<bin_mark[mi] and num_count[mi-1]<num_per_bin:
+                        self.img_paths.append(p)
+                        self.labels.append(mi-1)
+                        num_count[mi-1] += 1
+                        break
 
     def _shuffle_lists(self):
         """Conjoined shuffling of the list of paths and labels."""
