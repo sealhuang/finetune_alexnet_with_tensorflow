@@ -110,7 +110,7 @@ class ImageDataGenerator(object):
                     label = 3
                 else:
                     label = 4
-                self.labels.append(label)
+                self.labels.append(int(label))
 
     def _shuffle_lists(self):
         """Conjoined shuffling of the list of paths and labels."""
