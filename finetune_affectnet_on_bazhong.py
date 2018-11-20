@@ -100,17 +100,17 @@ with tf.name_scope("cross_ent"):
 # Train op
 with tf.name_scope("train"):
     # Get gradients of all trainable variables
-    #gradients = tf.gradients(loss, var_list)
-    #gradients = list(zip(gradients, var_list))
+    gradients = tf.gradients(loss, var_list)
+    gradients = list(zip(gradients, var_list))
     # Create optimizer and apply gradient descent to the trainable variables
-    #optimizer = tf.train.GradientDescentOptimizer(learning_rate)
-    #train_op = optimizer.apply_gradients(grads_and_vars=gradients)
-    optimizer = tf.train.AdamOptimizer(learning_rate)
-    train_op = optimizer.minimize(loss, var_list=var_list)
+    optimizer = tf.train.GradientDescentOptimizer(learning_rate)
+    train_op = optimizer.apply_gradients(grads_and_vars=gradients)
+    #optimizer = tf.train.AdamOptimizer(learning_rate)
+    #train_op = optimizer.minimize(loss, var_list=var_list)
 
-## Add gradients to summary
-#for gradient, var in gradients:
-#    tf.summary.histogram(var.name + '/gradient', gradient)
+# Add gradients to summary
+for gradient, var in gradients:
+    tf.summary.histogram(var.name + '/gradient', gradient)
 
 # Add the variables we train to the summary
 for var in var_list:

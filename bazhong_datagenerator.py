@@ -98,7 +98,19 @@ class ImageDataGenerator(object):
                 items = line.strip().split(',')
                 p = os.path.join(current_dir, 'bazhong','croppedPics',items[2])
                 self.img_paths.append(p)
-                self.labels.append(float(items[3]))
+                # convert value into category label
+                v = float(item[3])
+                if v>=60 and v<80:
+                    label = 0
+                elif v>=80 and v<100:
+                    label = 1
+                elif v>=100 and v<120:
+                    label = 2
+                elif v>=120 and v<140:
+                    label = 3
+                else:
+                    label = 4
+                self.labels.append(label)
 
     def _shuffle_lists(self):
         """Conjoined shuffling of the list of paths and labels."""
@@ -115,19 +127,7 @@ class ImageDataGenerator(object):
         """Input parser for samples of the training set."""
         # convert label number into one-hot-encoding
         #one_hot = tf.one_hot(label, self.num_classes)
-
-        # convert value into category label
-        if label>=60 and label<80:
-            label = 1
-        elif label>=80 and label<100:
-            label = 2
-        elif label>=100 and label<120:
-            label = 3
-        elif label>=120 and label<140:
-            label = 4
-        else:
-            label = 5
-        label = tf.one_hot(label-1, 5)
+        one_hot = tf.one_hot(label, 5)
 
         # load and preprocess the image
         img_string = tf.read_file(filename)
@@ -145,25 +145,13 @@ class ImageDataGenerator(object):
         # RGB -> BGR
         img_bgr = img_centered[:, :, ::-1]
 
-        return img_bgr, label
+        return img_bgr, one_hot
 
     def _parse_function_inference(self, filename, label):
         """Input parser for samples of the validation/test set."""
         # convert label number into one-hot-encoding
         #one_hot = tf.one_hot(label, self.num_classes)
-
-        # convert value into category label
-        if label>=60 and label<80:
-            label = 1
-        elif label>=80 and label<100:
-            label = 2
-        elif label>=100 and label<120:
-            label = 3
-        elif label>=120 and label<140:
-            label = 4
-        else:
-            label = 5
-        label = tf.one_hot(label-1, 5)
+        one_hot = tf.one_hot(label, 5)
 
         # load and preprocess the image
         img_string = tf.read_file(filename)
@@ -174,7 +162,7 @@ class ImageDataGenerator(object):
         # RGB -> BGR
         img_bgr = img_centered[:, :, ::-1]
 
-        return img_bgr, label
+        return img_bgr, one_hot
     
     def _parse_function_test(self, filename, label):
         """Input parser for samples of the test set."""
