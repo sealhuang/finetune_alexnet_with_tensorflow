@@ -57,7 +57,8 @@ class ImageDataGenerator(object):
 
         # convert lists to TF tensor
         self.img_paths = convert_to_tensor(self.img_paths, dtype=dtypes.string)
-        self.labels = convert_to_tensor(self.labels, dtype=dtypes.float32)
+        self.labels = convert_to_tensor(self.labels, dtype=dtypes.int32)
+        #self.labels = convert_to_tensor(self.labels, dtype=dtypes.float32)
 
         # create dataset
         data = Dataset.from_tensor_slices((self.img_paths, self.labels))
