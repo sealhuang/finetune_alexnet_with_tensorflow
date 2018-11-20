@@ -99,7 +99,7 @@ class ImageDataGenerator(object):
                 p = os.path.join(current_dir, 'bazhong','croppedPics',items[2])
                 self.img_paths.append(p)
                 # convert value into category label
-                v = float(item[3])
+                v = float(items[3])
                 if v>=60 and v<80:
                     label = 0
                 elif v>=80 and v<100:
