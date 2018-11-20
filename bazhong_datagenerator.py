@@ -111,11 +111,12 @@ class ImageDataGenerator(object):
                 p = os.path.join(current_dir, 'bazhong','croppedPics',items[2])
                 v = float(items[3])
                 for mi in range(len(bin_mark)):
-                    if v<bin_mark[mi] and num_count[mi-1]<num_per_bin:
-                        self.img_paths.append(p)
-                        self.labels.append(mi-1)
-                        num_count[mi-1] += 1
-                        print v, mi-1
+                    if v<bin_mark[mi]:
+                        if num_count[mi-1]<num_per_bin:
+                            self.img_paths.append(p)
+                            self.labels.append(mi-1)
+                            num_count[mi-1] += 1
+                            print v, mi-1
                         break
         print 'Load %s samples'%(len(self.labels))
         print 'data dist',
