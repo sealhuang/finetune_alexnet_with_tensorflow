@@ -121,7 +121,7 @@ tf.summary.scalar('cross-ent', loss)
 
 # Evaluation op: Accuracy of the model
 with tf.name_scope('accuracy'):
-    perd_label = tf.argmax(y, 1)
+    pred_label = tf.argmax(y, 1)
     correct_pred = tf.equal(tf.argmax(score, 1), tf.argmax(y, 1))
     accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 tf.summary.scalar('accuracy', accuracy)
