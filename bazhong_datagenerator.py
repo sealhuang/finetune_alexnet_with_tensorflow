@@ -115,7 +115,11 @@ class ImageDataGenerator(object):
                         self.img_paths.append(p)
                         self.labels.append(mi-1)
                         num_count[mi-1] += 1
+                        print v, mi-1
                         break
+        print 'Load %s samples'%(len(self.labels))
+        print 'data dist',
+        print num_count
 
     def _shuffle_lists(self):
         """Conjoined shuffling of the list of paths and labels."""
