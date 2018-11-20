@@ -81,7 +81,7 @@ class AlexNet(object):
 
         # 7th Layer: FC (w Relu) -> Dropout
         fc7 = fc(dropout6, 2048, 512, name='fc7')
-        dropout7 = dropout(fc7, self.KEEP_PROB)
+        dropout7 = dropout(fc7, self.KEEP_PROB/2)
 
         # 8th Layer: FC and return unscaled activations
         self.fc8 = fc(dropout7, 512, 1, relu=False, name='fc8')
