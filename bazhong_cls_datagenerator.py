@@ -95,11 +95,11 @@ class ImageDataGenerator(object):
         current_dir = os.getcwd()
         # randomly sample the data to balancing various categories
         start_val = 60
-        end_val = 140
-        #end_val = 160
+        #end_val = 140
+        end_val = 160
         val_interval = (end_val - start_val) / self.num_classes
-        num_per_bin = 50 * (8 / self.num_classes)
-        #num_per_bin = 50 * (10 / self.num_classes)
+        #num_per_bin = 50 * (8 / self.num_classes)
+        num_per_bin = 100 * (10 / self.num_classes)
         bin_mark = range(start_val, end_val+1, val_interval)
         num_count = [0] * (len(bin_mark)-1)
         with open(self.txt_file, 'r') as f:
@@ -111,8 +111,8 @@ class ImageDataGenerator(object):
             for line in lines:
                 items = line.strip().split(',')
                 p = os.path.join(current_dir, 'bazhong','croppedPics',items[2])
-                v = float(items[4])
-                #v = float(items[3])
+                #v = float(items[4])
+                v = float(items[3])
                 for mi in range(len(bin_mark)):
                     if v<bin_mark[mi]:
                         if num_count[mi-1]<num_per_bin:
