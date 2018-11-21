@@ -97,7 +97,7 @@ class ImageDataGenerator(object):
         start_val = 60
         end_val = 160
         val_interval = (end_val - start_val) / self.num_classes
-        num_per_bin = 200 * (10 / self.num_classes)
+        num_per_bin = 50 * (10 / self.num_classes)
         bin_mark = range(start_val, end_val+1, val_interval)
         num_count = [0] * (len(bin_mark)-1)
         with open(self.txt_file, 'r') as f:
