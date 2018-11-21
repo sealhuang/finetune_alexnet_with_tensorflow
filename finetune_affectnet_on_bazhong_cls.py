@@ -26,7 +26,7 @@ val_file = os.path.join(current_dir, 'bazhong', 'val_list.csv')
 
 # Learning params
 learning_rate = 0.000005
-num_epochs = 60
+num_epochs = 80
 batch_size = 24
 
 # Network params
