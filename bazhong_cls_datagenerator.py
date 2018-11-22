@@ -102,6 +102,7 @@ class ImageDataGenerator(object):
         num_per_bin = 100 * (10 / self.num_classes)
         bin_mark = range(start_val, end_val+1, val_interval)
         num_count = [0] * (len(bin_mark)-1)
+        bn = [0, 0]
         with open(self.txt_file, 'r') as f:
             lines = f.readlines()
             lines.pop(0)
@@ -113,17 +114,29 @@ class ImageDataGenerator(object):
                 p = os.path.join(current_dir, 'bazhong','croppedPics',items[2])
                 #v = float(items[4])
                 v = float(items[3])
-                for mi in range(len(bin_mark)):
-                    if v<bin_mark[mi]:
-                        if num_count[mi-1]<num_per_bin:
-                            self.img_paths.append(p)
-                            self.labels.append(mi-1)
-                            num_count[mi-1] += 1
-                            #print v, mi-1
-                        break
+                #for mi in range(len(bin_mark)):
+                #    if v<bin_mark[mi]:
+                #        if num_count[mi-1]<num_per_bin:
+                #            self.img_paths.append(p)
+                #            self.labels.append(mi-1)
+                #            num_count[mi-1] += 1
+                #            #print v, mi-1
+                #        break
+                if v<100 and bn[0]<1005:
+                    self.img_paths.append(p)
+                    self.labels.append(0)
+                    bn[0] += 1
+                elif v>=120 and bn[1]<1005:
+                    self.img_path.append(p)
+                    self.labels.append(1)
+                    bn[1] += 1
+                else:
+                    pass
+
         print 'Load %s samples'%(len(self.labels))
         print 'data dist',
-        print num_count
+        #print num_count
+        print bn
 
     def _shuffle_lists(self):
         """Conjoined shuffling of the list of paths and labels."""
