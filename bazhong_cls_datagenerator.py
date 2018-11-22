@@ -127,7 +127,7 @@ class ImageDataGenerator(object):
                     self.labels.append(0)
                     bn[0] += 1
                 elif v>=120 and bn[1]<1005:
-                    self.img_path.append(p)
+                    self.img_paths.append(p)
                     self.labels.append(1)
                     bn[1] += 1
                 else:
