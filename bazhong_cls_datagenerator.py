@@ -122,11 +122,11 @@ class ImageDataGenerator(object):
                 #            num_count[mi-1] += 1
                 #            #print v, mi-1
                 #        break
-                if v<100 and bn[0]<1005:
+                if v<90 and bn[0]<303:
                     self.img_paths.append(p)
                     self.labels.append(0)
                     bn[0] += 1
-                elif v>=120 and bn[1]<1005:
+                elif v>=130 and bn[1]<303:
                     self.img_paths.append(p)
                     self.labels.append(1)
                     bn[1] += 1
