@@ -112,8 +112,6 @@ class ImageDataGenerator(object):
             for line in lines:
                 items = line.strip().split(',')
                 p = os.path.join(current_dir, 'bazhong','croppedPics',items[2])
-                #v = float(items[4])
-                v = float(items[3])
                 #for mi in range(len(bin_mark)):
                 #    if v<bin_mark[mi]:
                 #        if num_count[mi-1]<num_per_bin:
@@ -122,11 +120,23 @@ class ImageDataGenerator(object):
                 #            num_count[mi-1] += 1
                 #            #print v, mi-1
                 #        break
-                if v<85 and bn[0]<1299:
+                #v = float(items[3])
+                #if v<85 and bn[0]<1299:
+                #    self.img_paths.append(p)
+                #    self.labels.append(0)
+                #    bn[0] += 1
+                #elif v>=115 and bn[1]<1299:
+                #    self.img_paths.append(p)
+                #    self.labels.append(1)
+                #    bn[1] += 1
+                #else:
+                #    pass
+                v = items[1]
+                if int(v[16])%2 and bn[0]<2000:
                     self.img_paths.append(p)
                     self.labels.append(0)
                     bn[0] += 1
-                elif v>=115 and bn[1]<1299:
+                elif (not int(v[16])%2) and bn[1]<2000:
                     self.img_paths.append(p)
                     self.labels.append(1)
                     bn[1] += 1
