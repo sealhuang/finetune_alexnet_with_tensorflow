@@ -25,7 +25,7 @@ val_file = os.path.join(current_dir, 'bazhong', 'val_list.csv')
 #test_file = os.path.join(current_dir, 'genius', 'test_list.csv')
 
 # Learning params
-learning_rate = 0.0001
+learning_rate = 0.00001
 num_epochs = 40
 batch_size = 96
 
@@ -104,10 +104,10 @@ with tf.name_scope("train"):
     gradients = list(zip(gradients, var_list))
     # Create optimizer and apply gradient descent to the trainable variables
     #optimizer = tf.train.GradientDescentOptimizer(learning_rate)
-    optimizer = tf.train.MomentumOptimizer(learning_rate, 0.95, use_nesterov=True)
-    train_op = optimizer.apply_gradients(grads_and_vars=gradients)
-    #optimizer = tf.train.AdamOptimizer(learning_rate)
-    #train_op = optimizer.minimize(loss, var_list=var_list)
+    #optimizer = tf.train.MomentumOptimizer(learning_rate, 0.95, use_nesterov=True)
+    #train_op = optimizer.apply_gradients(grads_and_vars=gradients)
+    optimizer = tf.train.AdamOptimizer(learning_rate)
+    train_op = optimizer.minimize(loss, var_list=var_list)
 
 # Add gradients to summary
 for gradient, var in gradients:
