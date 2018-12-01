@@ -25,7 +25,7 @@ val_file = os.path.join(current_dir, 'bazhong', 'val_list.csv')
 #test_file = os.path.join(current_dir, 'genius', 'test_list.csv')
 
 # Learning params
-learning_rate = 0.01
+learning_rate = 0.0001
 num_epochs = 40
 batch_size = 96
 
@@ -184,11 +184,12 @@ with tf.Session() as sess:
 
             # Generate summary with the current batch of data and write to file
             if step % display_step == 0:
-                s = sess.run(merged_summary, feed_dict={x: img_batch,
+                [s, acc1] = sess.run([merged_summary, accuracy], feed_dict={x: img_batch,
                                                         y: label_batch,
                                                         keep_prob: 1.})
 
                 writer.add_summary(s, epoch*train_batches_per_epoch + step)
+                print acc1
 
         # Validate the model on the entire validation set
         print("{} Start validation".format(datetime.now()))
