@@ -139,7 +139,8 @@ saver = tf.train.Saver()
 
 # Get the number of training/validation steps per epoch
 train_batches_per_epoch = int(np.floor(tr_data.data_size / batch_size))
-val_batches_per_epoch = int(np.floor(val_data.data_size / batch_size))
+#val_batches_per_epoch = int(np.floor(val_data.data_size / batch_size))
+val_batches_per_epoch = 1
 #test_batches_per_epoch = int(np.floor(test_data.data_size / batch_size))
 print 'Train data batches per epoch: %s'%(train_batches_per_epoch)
 print 'Val data batches per epoch: %s'%(val_batches_per_epoch)
