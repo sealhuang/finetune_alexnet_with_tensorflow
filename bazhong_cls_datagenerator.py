@@ -10,7 +10,8 @@ from tensorflow.contrib.data import Dataset
 from tensorflow.python.framework import dtypes
 from tensorflow.python.framework.ops import convert_to_tensor
 
-IMAGENET_MEAN = tf.constant([123.68, 116.779, 103.939], dtype=tf.float32)
+IMAGENET_MEAN = tf.constant([166, 155.295, 153], dtype=tf.float32)
+#IMAGENET_MEAN = tf.constant([123.68, 116.779, 103.939], dtype=tf.float32)
 
 
 class ImageDataGenerator(object):
@@ -120,28 +121,28 @@ class ImageDataGenerator(object):
                 #            num_count[mi-1] += 1
                 #            #print v, mi-1
                 #        break
-                #v = float(items[3])
-                #if v<85 and bn[0]<1299:
-                #    self.img_paths.append(p)
-                #    self.labels.append(0)
-                #    bn[0] += 1
-                #elif v>=115 and bn[1]<1299:
-                #    self.img_paths.append(p)
-                #    self.labels.append(1)
-                #    bn[1] += 1
-                #else:
-                #    pass
-                v = items[1]
-                if int(v[16])%2 and bn[0]<2000:
+                v = float(items[3])
+                if v<85 and bn[0]<1299:
                     self.img_paths.append(p)
                     self.labels.append(0)
                     bn[0] += 1
-                elif (not int(v[16])%2) and bn[1]<2000:
+                elif v>=115 and bn[1]<1299:
                     self.img_paths.append(p)
                     self.labels.append(1)
                     bn[1] += 1
                 else:
                     pass
+                #v = items[1]
+                #if int(v[16])%2 and bn[0]<2000:
+                #    self.img_paths.append(p)
+                #    self.labels.append(0)
+                #    bn[0] += 1
+                #elif (not int(v[16])%2) and bn[1]<2000:
+                #    self.img_paths.append(p)
+                #    self.labels.append(1)
+                #    bn[1] += 1
+                #else:
+                #    pass
 
         print 'Load %s samples'%(len(self.labels))
         print 'data dist',
