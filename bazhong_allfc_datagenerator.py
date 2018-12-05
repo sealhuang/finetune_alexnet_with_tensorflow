@@ -160,7 +160,7 @@ class ImageDataGenerator(object):
         # convert label number into one-hot-encoding
         one_hot = tf.one_hot(label, self.num_classes)
 
-        print filename.values.eval()
+        print filename.eval()
 
         # load and preprocess the landmarks
         with open(self.txt_file, 'r') as f:
