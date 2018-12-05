@@ -32,7 +32,7 @@ batch_size = 48
 # Network params
 dropout_rate = 0.5
 num_classes = 2
-train_layers = ['fc7', 'fc6', 'conv5', 'conv4']
+train_layers = ['fc7', 'fc6', 'bn5', 'conv5', 'conv4']
 
 # How often we want to write the tf.summary data to disk
 display_step = 27
