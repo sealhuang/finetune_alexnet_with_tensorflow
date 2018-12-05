@@ -89,7 +89,6 @@ class AlexNet(object):
         # 8th Layer: FC and return unscaled activations
         self.fc8 = fc(dropout7, 4096, self.NUM_CLASSES, relu=False, name='fc8')
 
-
     def load_initial_weights(self, session):
         """Load weights from file into network.
 
@@ -167,7 +166,6 @@ def conv(x, filter_height, filter_width, num_filters, stride_y, stride_x, name,
 
     return relu
 
-
 def fc(x, num_in, num_out, name, relu=True):
     """Create a fully connected layer."""
     with tf.variable_scope(name) as scope:
@@ -187,7 +185,6 @@ def fc(x, num_in, num_out, name, relu=True):
     else:
         return act
 
-
 def max_pool(x, filter_height, filter_width, stride_y, stride_x, name,
              padding='SAME'):
     """Create a max pooling layer."""
@@ -195,13 +192,11 @@ def max_pool(x, filter_height, filter_width, stride_y, stride_x, name,
                           strides=[1, stride_y, stride_x, 1],
                           padding=padding, name=name)
 
-
 def lrn(x, radius, alpha, beta, name, bias=1.0):
     """Create a local response normalization layer."""
     return tf.nn.local_response_normalization(x, depth_radius=radius,
                                               alpha=alpha, beta=beta,
                                               bias=bias, name=name)
-
 
 def dropout(x, keep_prob):
     """Create a dropout layer."""

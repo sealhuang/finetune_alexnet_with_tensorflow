@@ -28,7 +28,7 @@ import numpy as np
 class AlexNet(object):
     """Implementation of the AlexNet."""
 
-    def __init__(self, x, keep_prob, num_classes, skip_layer,
+    def __init__(self, x, keep_prob, num_classes, skip_layer, is_train,
                  weights_path='DEFAULT'):
         """Create the graph of the AlexNet model.
 
@@ -45,6 +45,7 @@ class AlexNet(object):
         self.X = x
         self.NUM_CLASSES = num_classes
         self.KEEP_PROB = keep_prob
+        self.IS_TRAIN = is_train
         self.SKIP_LAYER = skip_layer
 
         if weights_path == 'DEFAULT':
@@ -76,10 +77,13 @@ class AlexNet(object):
         # 5th Layer: Conv (w ReLu) -> Pool splitted into two groups
         conv5 = conv(conv4, 3, 3, 256, 1, 1, groups=2, name='conv5')
         pool5 = tf.reduce_mean(conv5, axis=[1, 2])
+        bn5 = tf.layers.batch_normalization(pool5, axis=1,
+                                            training=self.IS_TRAIN, name='bn5')
         #pool5 = max_pool(conv5, 3, 3, 2, 2, padding='VALID', name='pool5')
 
         # 6th Layer: Flatten -> FC (w ReLu) -> Dropout
-        flattened = tf.reshape(pool5, [-1, 256])
+        flattened = tf.reshape(bn5, [-1, 256])
+        #flattened = tf.reshape(pool5, [-1, 256])
         fc6 = fc(flattened, 256, 128, name='fc6')
         #dropout6 = dropout(fc6, self.KEEP_PROB)
 

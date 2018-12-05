@@ -79,11 +79,12 @@ validation_init_op = iterator.make_initializer(val_data.data)
 # TF placeholder for graph input and output
 x = tf.placeholder(tf.float32, [batch_size, 227, 227, 3])
 y = tf.placeholder(tf.float32, [batch_size, num_classes])
+is_train = tf.placeholder(tf.bool, name='is_train')
 #y = tf.placeholder(tf.float32, [batch_size,])
 keep_prob = tf.placeholder(tf.float32)
 
 # Initialize model
-model = AlexNet(x, keep_prob, num_classes, train_layers)
+model = AlexNet(x, keep_prob, num_classes, train_layers, is_train)
 
 # Link variable to model output
 score = model.fc7
@@ -98,6 +99,7 @@ with tf.name_scope("cross_ent"):
                                                                   labels=y))
 
 # Train op
+update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
 with tf.name_scope("train"):
     # Get gradients of all trainable variables
     gradients = tf.gradients(loss, var_list)
@@ -107,7 +109,8 @@ with tf.name_scope("train"):
     #optimizer = tf.train.MomentumOptimizer(learning_rate, 0.95, use_nesterov=True)
     #train_op = optimizer.apply_gradients(grads_and_vars=gradients)
     optimizer = tf.train.AdamOptimizer(learning_rate)
-    train_op = optimizer.minimize(loss, var_list=var_list)
+    with tf.control_dependencies(update_ops):
+        train_op = optimizer.minimize(loss, var_list=var_list)
 
 # Add gradients to summary
 for gradient, var in gradients:
@@ -180,13 +183,15 @@ with tf.Session() as sess:
             # And run the training op
             sess.run(train_op, feed_dict={x: img_batch,
                                           y: label_batch,
-                                          keep_prob: dropout_rate})
+                                          keep_prob: dropout_rate,
+                                          is_train: True})
 
             # Generate summary with the current batch of data and write to file
             if step % display_step == 0:
                 [s, acc1] = sess.run([merged_summary, accuracy], feed_dict={x: img_batch,
                                                         y: label_batch,
-                                                        keep_prob: 1.})
+                                                        keep_prob: 1.,
+                                                        is_train: False})
 
                 writer.add_summary(s, epoch*train_batches_per_epoch + step)
                 print acc1
@@ -202,7 +207,8 @@ with tf.Session() as sess:
             img_batch, label_batch = sess.run(next_batch)
             acc, pl, tl = sess.run([accuracy, pred_label, true_label], feed_dict={x: img_batch,
                                                                  y: label_batch,
-                                                                 keep_prob: 1.})
+                                                                 keep_prob: 1.,
+                                                                 is_train: False})
             val_acc += acc
             val_count += 1
             preds = np.concatenate((preds, pl))
