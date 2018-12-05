@@ -56,11 +56,11 @@ class ImageDataGenerator(object):
             self._shuffle_lists()
 
         # convert lists to TF tensor
-        self.imgs = convert_to_tensor(self.imgs, dtype=dtypes.string)
+        self.landmarks = convert_to_tensor(self.landmarks, dtype=dtypes.float32)
         self.labels = convert_to_tensor(self.labels, dtype=dtypes.int32)
 
         # create dataset
-        data = Dataset.from_tensor_slices((self.imgs, self.labels))
+        data = Dataset.from_tensor_slices((self.landmarks, self.labels))
 
         # distinguish between train/infer. when calling the parsing functions
         if mode == 'training':
@@ -88,7 +88,7 @@ class ImageDataGenerator(object):
 
     def _read_txt_file(self, shuffle=False):
         """Read the content of the text file and store it into lists."""
-        self.imgs = []
+        self.landmarks = []
         self.labels = []
         current_dir = os.getcwd()
         # randomly sample the data to balancing various categories
@@ -118,11 +118,25 @@ class ImageDataGenerator(object):
                 #        break
                 v = float(items[1])
                 if v<85 and bn[0]<1296:
-                    self.imgs.append(items[0])
+                    xs = [float(items[2*(i+1)]) for i in range(72)]
+                    ys = [float(items[2*(i+1)+1]) for i in range(72)]
+                    minx = min(xs)
+                    miny = min(ys)
+                    maxall = max(max(xs)-min(xs), max(ys)-min(ys))
+                    xs = [(item-minx)*1.0/maxall for item in xs]
+                    ys = [(item-miny)*1.0/maxall for item in xy]
+                    self.landmarks.append(xs+ys)
                     self.labels.append(0)
                     bn[0] += 1
                 elif v>=115 and bn[1]<1296:
-                    self.imgs.append(items[0])
+                    xs = [float(items[2*(i+1)]) for i in range(72)]
+                    ys = [float(items[2*(i+1)+1]) for i in range(72)]
+                    minx = min(xs)
+                    miny = min(ys)
+                    maxall = max(max(xs)-min(xs), max(ys)-min(ys))
+                    xs = [(item-minx)*1.0/maxall for item in xs]
+                    ys = [(item-miny)*1.0/maxall for item in xy]
+                    self.landmarks.append(xs+ys)
                     self.labels.append(1)
                     bn[1] += 1
                 else:
@@ -146,61 +160,28 @@ class ImageDataGenerator(object):
 
     def _shuffle_lists(self):
         """Conjoined shuffling of the list of paths and labels."""
-        img = self.imgs
+        landmark = self.landmarks
         labels = self.labels
         permutation = np.random.permutation(self.data_size)
-        self.imgs = []
+        self.landmarks = []
         self.labels = []
         for i in permutation:
-            self.imgs.append(img[i])
+            self.landmarks.append(landmark[i])
             self.labels.append(labels[i])
 
-    def _parse_function_train(self, filename, label):
+    def _parse_function_train(self, landmark, label):
         """Input parser for samples of the training set."""
         # convert label number into one-hot-encoding
         one_hot = tf.one_hot(label, self.num_classes)
 
-        # load and preprocess the landmarks
-        with open(self.txt_file, 'r') as f:
-            lines = f.readlines()
-            for line in lines:
-                items = line.strip().split(',')
-                iname = convert_to_tensor(items[0], dtype=tf.string)
-                if tf.equal(iname, filename):
-                    xs = [float(items[2*(i+1)]) for i in range(72)]
-                    ys = [float(items[2*(i+1)+1]) for i in range(72)]
-                    break
-        minx = min(xs)
-        miny = min(ys)
-        maxall = max(max(xs)-min(xs), max(ys)-min(ys))
-        xs = [(item-minx)*1.0/maxall for item in xs]
-        ys = [(item-miny)*1.0/maxall for item in ys]
-        landmarks = convert_to_tensor(xs+ys, dtype=tf.float32)
+        return landmark, one_hot
 
-        return landmarks, one_hot
-
-    def _parse_function_inference(self, filename, label):
+    def _parse_function_inference(self, landmark, label):
         """Input parser for samples of the validation/test set."""
         # convert label number into one-hot-encoding
         one_hot = tf.one_hot(label, self.num_classes)
-
-        # load and preprocess the landmarks
-        with open(self.txt_file, 'r') as f:
-            lines = f.readlines()
-            for line in lines:
-                items = line.strip().split(',')
-                if items[0]==filename:
-                    xs = [float(items[2*(i+1)]) for i in range(72)]
-                    ys = [float(items[2*(i+1)+1]) for i in range(72)]
-                    break
-        minx = min(xs)
-        miny = min(ys)
-        maxall = max(max(xs)-min(xs), max(ys)-min(ys))
-        xs = [(item-minx)*1.0/maxall for item in xs]
-        ys = [(item-miny)*1.0/maxall for item in ys]
-        landmarks = convert_to_tensor(xs+ys, dtype=tf.float32)
-
-        return landmarks, one_hot
+        
+        return landmark, one_hot
     
     def _parse_function_test(self, filename, label):
         """Input parser for samples of the test set."""
