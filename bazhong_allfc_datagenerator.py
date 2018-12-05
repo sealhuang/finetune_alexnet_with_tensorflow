@@ -166,7 +166,7 @@ class ImageDataGenerator(object):
             for line in lines:
                 items = line.strip().split(',')
                 iname = convert_to_tensor(items[0], dtype=tf.string)
-                if tf.math.equal(iname, filename):
+                if tf.equal(iname, filename):
                     xs = [float(items[2*(i+1)]) for i in range(72)]
                     ys = [float(items[2*(i+1)+1]) for i in range(72)]
                     break
