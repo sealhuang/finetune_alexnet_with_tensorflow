@@ -156,9 +156,6 @@ with tf.Session() as sess:
     # Add the model graph to TensorBoard
     writer.add_graph(sess.graph)
 
-    # Load the pretrained weights into the non-trainable layer
-    model.load_initial_weights(sess)
-
     print("{} Start training...".format(datetime.now()))
     print("{} Open Tensorboard at --logdir {}".format(datetime.now(),
                                                       filewriter_path))
