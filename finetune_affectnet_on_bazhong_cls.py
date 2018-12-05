@@ -210,28 +210,28 @@ with tf.Session() as sess:
         val_acc /= val_count
         print("{} Validation Accuracy = {:.4f}".format(datetime.now(), val_acc))
         
-        ## Validate the model on the entire validation set
-        #print("{} Start validation".format(datetime.now()))
-        #sess.run(validation_init_op)
-        #val_acc = 0.
-        #val_count = 0
-        #preds = []
-        #trues = []
-        #for _ in range(val_batches_per_epoch):
-        #    img_batch, label_batch = sess.run(next_batch)
-        #    acc, pl, tl = sess.run([accuracy, pred_label, true_label], feed_dict={x: img_batch,
-        #                                                         y: label_batch,
-        #                                                         keep_prob: 1.,
-        #                                                         is_train: False})
-        #    val_acc += acc
-        #    val_count += 1
-        #    preds = np.concatenate((preds, pl))
-        #    trues = np.concatenate((trues, tl))
-        #val_acc /= val_count
-        #print("{} Validation Accuracy = {:.4f}".format(datetime.now(), val_acc))
-        #print 'Confusion matrix'
-        #cm = sess.run(tf.confusion_matrix(preds, trues))
-        #print cm
+        # Test the model on the entire test set
+        print("{} Start test".format(datetime.now()))
+        sess.run(validation_init_op)
+        test_acc = 0.
+        test_count = 0
+        preds = []
+        trues = []
+        for _ in range(val_batches_per_epoch):
+            img_batch, label_batch = sess.run(next_batch)
+            acc, pl, tl = sess.run([accuracy, pred_label, true_label], feed_dict={x: img_batch,
+                                                                 y: label_batch,
+                                                                 keep_prob: 1.,
+                                                                 is_train: False})
+            test_acc += acc
+            test_count += 1
+            preds = np.concatenate((preds, pl))
+            trues = np.concatenate((trues, tl))
+        test_acc /= test_count
+        print("{} Test Accuracy = {:.4f}".format(datetime.now(), val_acc))
+        print 'Confusion matrix'
+        cm = sess.run(tf.confusion_matrix(preds, trues))
+        print cm
         
     ## get the validate data
     #print("{} Start validation".format(datetime.now()))

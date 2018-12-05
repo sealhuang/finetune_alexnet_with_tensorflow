@@ -85,10 +85,11 @@ class AlexNet(object):
         flattened = tf.reshape(bn5, [-1, 256])
         #flattened = tf.reshape(pool5, [-1, 256])
         fc6 = fc(flattened, 256, 128, name='fc6')
-        #dropout6 = dropout(fc6, self.KEEP_PROB)
+        dropout6 = dropout(fc6, self.KEEP_PROB)
 
         # 7th Layer: FC (w ReLu) -> Dropout
-        self.fc7 = fc(fc6, 128, self.NUM_CLASSES, relu=False, name='fc7')
+        self.fc7 = fc(dropout6, 128, self.NUM_CLASSES, relu=False, name='fc7')
+        #self.fc7 = fc(fc6, 128, self.NUM_CLASSES, relu=False, name='fc7')
 
         # 8th Layer: FC and return unscaled activations
 #        self.fc8 = fc(dropout7, 4096, self.NUM_CLASSES, relu=False, name='fc8')
