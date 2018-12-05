@@ -228,7 +228,7 @@ with tf.Session() as sess:
             preds = np.concatenate((preds, pl))
             trues = np.concatenate((trues, tl))
         test_acc /= test_count
-        print("{} Test Accuracy = {:.4f}".format(datetime.now(), val_acc))
+        print("{} Test Accuracy = {:.4f}".format(datetime.now(), test_acc))
         print 'Confusion matrix'
         cm = sess.run(tf.confusion_matrix(preds, trues))
         print cm
