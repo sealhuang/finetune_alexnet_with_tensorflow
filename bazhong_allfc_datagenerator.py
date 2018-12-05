@@ -124,7 +124,7 @@ class ImageDataGenerator(object):
                     miny = min(ys)
                     maxall = max(max(xs)-min(xs), max(ys)-min(ys))
                     xs = [(item-minx)*1.0/maxall for item in xs]
-                    ys = [(item-miny)*1.0/maxall for item in xy]
+                    ys = [(item-miny)*1.0/maxall for item in ys]
                     self.landmarks.append(xs+ys)
                     self.labels.append(0)
                     bn[0] += 1
@@ -135,7 +135,7 @@ class ImageDataGenerator(object):
                     miny = min(ys)
                     maxall = max(max(xs)-min(xs), max(ys)-min(ys))
                     xs = [(item-minx)*1.0/maxall for item in xs]
-                    ys = [(item-miny)*1.0/maxall for item in xy]
+                    ys = [(item-miny)*1.0/maxall for item in ys]
                     self.landmarks.append(xs+ys)
                     self.labels.append(1)
                     bn[1] += 1
