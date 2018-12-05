@@ -31,7 +31,7 @@ class FCNet(object):
         fc5 = fc(fc4, 256, 128, relu=True, name='fc5')
         bn5 = tf.layers.batch_normalization(fc5, axis=1,
                                             training=self.IS_TRAIN, name='bn5')
-        self.fc6 = fc(bn4, 128, self.NUM_CLASSES, relu=False, name='fc6')
+        self.fc6 = fc(bn5, 128, self.NUM_CLASSES, relu=False, name='fc6')
 
         ## 1st Layer: Conv (w ReLu) -> Lrn -> Pool
         #conv1 = conv(self.X, 11, 11, 96, 4, 4, padding='VALID', name='conv1')
