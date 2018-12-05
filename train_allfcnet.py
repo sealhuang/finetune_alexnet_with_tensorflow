@@ -88,7 +88,7 @@ score = model.fc5
 
 # List of trainable variables of the layers we want to train
 var_list = [v for v in tf.trainable_variables()
-            if v.name.split('/')[0] in train_layers]
+            if v.name.split('/')[0] in ['fc1', 'fc2', 'fc3', 'fc4', 'fc5']]
 
 # Op for calculating the loss
 with tf.name_scope("cross_ent"):
