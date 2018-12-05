@@ -5,7 +5,7 @@
 
 import os
 os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
-os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 import numpy as np
 import tensorflow as tf
 
@@ -27,7 +27,7 @@ val_file = os.path.join(current_dir, 'bazhong', 'val_list.csv')
 # Learning params
 learning_rate = 0.00001
 num_epochs = 40
-batch_size = 96
+batch_size = 48
 
 # Network params
 dropout_rate = 0.5
@@ -35,7 +35,7 @@ num_classes = 2
 train_layers = ['fc7', 'fc6', 'conv5', 'conv4', 'conv3', 'conv2', 'conv1']
 
 # How often we want to write the tf.summary data to disk
-display_step = 20
+display_step = 27
 
 # Path for tf.summary.FileWriter and to store model checkpoints
 filewriter_path = os.path.join(current_dir, 'log', 'bazhong_cls_tensorboard')
@@ -142,8 +142,7 @@ saver = tf.train.Saver()
 
 # Get the number of training/validation steps per epoch
 train_batches_per_epoch = int(np.floor(tr_data.data_size / batch_size))
-#val_batches_per_epoch = int(np.floor(val_data.data_size / batch_size))
-val_batches_per_epoch = 1
+val_batches_per_epoch = int(np.floor(val_data.data_size / batch_size))
 #test_batches_per_epoch = int(np.floor(test_data.data_size / batch_size))
 print 'Train data batches per epoch: %s'%(train_batches_per_epoch)
 print 'Val data batches per epoch: %s'%(val_batches_per_epoch)
@@ -188,36 +187,51 @@ with tf.Session() as sess:
 
             # Generate summary with the current batch of data and write to file
             if step % display_step == 0:
-                [s, acc1] = sess.run([merged_summary, accuracy], feed_dict={x: img_batch,
+                s = sess.run(merged_summary, feed_dict={x: img_batch,
                                                         y: label_batch,
                                                         keep_prob: 1.,
                                                         is_train: False})
 
                 writer.add_summary(s, epoch*train_batches_per_epoch + step)
-                print acc1
 
-        # Validate the model on the entire validation set
+        # Test the model on the entire training set to check over-fitting
         print("{} Start validation".format(datetime.now()))
-        sess.run(validation_init_op)
+        sess.run(training_init_op)
         val_acc = 0.
         val_count = 0
-        preds = []
-        trues = []
-        for _ in range(val_batches_per_epoch):
+        for _ in range(train_batches_per_epoch):
             img_batch, label_batch = sess.run(next_batch)
-            acc, pl, tl = sess.run([accuracy, pred_label, true_label], feed_dict={x: img_batch,
-                                                                 y: label_batch,
-                                                                 keep_prob: 1.,
-                                                                 is_train: False})
+            acc = sess.run(accuracy, feed_dict={x: img_batch,
+                                                y: label_batch,
+                                                keep_prob: 1.,
+                                                is_train: False})
             val_acc += acc
             val_count += 1
-            preds = np.concatenate((preds, pl))
-            trues = np.concatenate((trues, tl))
         val_acc /= val_count
         print("{} Validation Accuracy = {:.4f}".format(datetime.now(), val_acc))
-        print 'Confusion matrix'
-        cm = sess.run(tf.confusion_matrix(preds, trues))
-        print cm
+        
+        ## Validate the model on the entire validation set
+        #print("{} Start validation".format(datetime.now()))
+        #sess.run(validation_init_op)
+        #val_acc = 0.
+        #val_count = 0
+        #preds = []
+        #trues = []
+        #for _ in range(val_batches_per_epoch):
+        #    img_batch, label_batch = sess.run(next_batch)
+        #    acc, pl, tl = sess.run([accuracy, pred_label, true_label], feed_dict={x: img_batch,
+        #                                                         y: label_batch,
+        #                                                         keep_prob: 1.,
+        #                                                         is_train: False})
+        #    val_acc += acc
+        #    val_count += 1
+        #    preds = np.concatenate((preds, pl))
+        #    trues = np.concatenate((trues, tl))
+        #val_acc /= val_count
+        #print("{} Validation Accuracy = {:.4f}".format(datetime.now(), val_acc))
+        #print 'Confusion matrix'
+        #cm = sess.run(tf.confusion_matrix(preds, trues))
+        #print cm
         
     ## get the validate data
     #print("{} Start validation".format(datetime.now()))

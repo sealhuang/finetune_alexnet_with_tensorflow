@@ -10,8 +10,8 @@ from tensorflow.contrib.data import Dataset
 from tensorflow.python.framework import dtypes
 from tensorflow.python.framework.ops import convert_to_tensor
 
-IMAGENET_MEAN = tf.constant([166, 155.295, 153], dtype=tf.float32)
-#IMAGENET_MEAN = tf.constant([123.68, 116.779, 103.939], dtype=tf.float32)
+#IMAGENET_MEAN = tf.constant([166, 155.295, 153], dtype=tf.float32)
+IMAGENET_MEAN = tf.constant([123.68, 116.779, 103.939], dtype=tf.float32)
 
 
 class ImageDataGenerator(object):
@@ -122,11 +122,11 @@ class ImageDataGenerator(object):
                 #            #print v, mi-1
                 #        break
                 v = float(items[3])
-                if v<85 and bn[0]<1299:
+                if v<85 and bn[0]<1296:
                     self.img_paths.append(p)
                     self.labels.append(0)
                     bn[0] += 1
-                elif v>=115 and bn[1]<1299:
+                elif v>=115 and bn[1]<1296:
                     self.img_paths.append(p)
                     self.labels.append(1)
                     bn[1] += 1
@@ -174,7 +174,7 @@ class ImageDataGenerator(object):
         Dataaugmentation comes here.
         """
         img_distorted = tf.random_crop(img_resized, [227, 227, 3])
-        #img_distorted = tf.image.random_flip_left_right(img_distorted)
+        img_distorted = tf.image.random_flip_left_right(img_distorted)
         img_centered = tf.subtract(img_distorted, IMAGENET_MEAN)
         #img_centered = tf.subtract(img_resized, IMAGENET_MEAN)
 
