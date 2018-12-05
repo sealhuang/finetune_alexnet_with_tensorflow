@@ -160,14 +160,13 @@ class ImageDataGenerator(object):
         # convert label number into one-hot-encoding
         one_hot = tf.one_hot(label, self.num_classes)
 
-        print filename.eval()
-
         # load and preprocess the landmarks
         with open(self.txt_file, 'r') as f:
             lines = f.readlines()
             for line in lines:
                 items = line.strip().split(',')
-                if items[0]==filename:
+                iname = convert_to_tensor(items[0], dtype=tf.string)
+                if tf.math.equal(iname, filename):
                     xs = [float(items[2*(i+1)]) for i in range(72)]
                     ys = [float(items[2*(i+1)+1]) for i in range(72)]
                     break
