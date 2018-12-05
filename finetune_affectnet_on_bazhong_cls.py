@@ -32,7 +32,7 @@ batch_size = 48
 # Network params
 dropout_rate = 0.5
 num_classes = 2
-train_layers = ['fc7', 'fc6', 'conv5', 'conv4', 'conv3', 'conv2', 'conv1']
+train_layers = ['fc7', 'fc6', 'conv5', 'conv4', 'conv3']
 
 # How often we want to write the tf.summary data to disk
 display_step = 27
@@ -106,9 +106,9 @@ with tf.name_scope("train"):
     gradients = list(zip(gradients, var_list))
     # Create optimizer and apply gradient descent to the trainable variables
     #optimizer = tf.train.GradientDescentOptimizer(learning_rate)
-    #optimizer = tf.train.MomentumOptimizer(learning_rate, 0.95, use_nesterov=True)
+    optimizer = tf.train.MomentumOptimizer(learning_rate, 0.95, use_nesterov=True)
     #train_op = optimizer.apply_gradients(grads_and_vars=gradients)
-    optimizer = tf.train.AdamOptimizer(learning_rate)
+    #optimizer = tf.train.AdamOptimizer(learning_rate)
     with tf.control_dependencies(update_ops):
         train_op = optimizer.minimize(loss, var_list=var_list)
 
