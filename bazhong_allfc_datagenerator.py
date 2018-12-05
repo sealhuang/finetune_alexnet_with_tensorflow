@@ -165,6 +165,8 @@ class ImageDataGenerator(object):
             lines = f.readlines()
             for line in lines:
                 items = line.strip().split(',')
+                print filename
+                print items[0]
                 if items[0]==filename:
                     xs = [float(items[2*(i+1)]) for i in range(72)]
                     ys = [float(items[2*(i+1)+1]) for i in range(72)]
@@ -174,7 +176,7 @@ class ImageDataGenerator(object):
         maxall = max(max(xs)-min(xs), max(ys)-min(ys))
         xs = [(item-minx)*1.0/maxall for item in xs]
         ys = [(item-miny)*1.0/maxall for item in ys]
-        landmarks = tf.convert_to_tensor(xs+ys, dtype=tf.float32)
+        landmarks = convert_to_tensor(xs+ys, dtype=tf.float32)
 
         return landmarks, one_hot
 
@@ -197,7 +199,7 @@ class ImageDataGenerator(object):
         maxall = max(max(xs)-min(xs), max(ys)-min(ys))
         xs = [(item-minx)*1.0/maxall for item in xs]
         ys = [(item-miny)*1.0/maxall for item in ys]
-        landmarks = tf.convert_to_tensor(xs+ys, dtype=tf.float32)
+        landmarks = convert_to_tensor(xs+ys, dtype=tf.float32)
 
         return landmarks, one_hot
     
