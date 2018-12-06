@@ -26,14 +26,13 @@ class FCNet(object):
         """Create the network graph."""
         fc1 = fc(self.X, 144, 512, relu=True, name='fc1')
         fc2 = fc(fc1, 512, 512, relu=True, name='fc2')
-        dropout2 = dropout(fc2, self.KEEP_PROB)
-        fc3 = fc(dropout2, 512, 256, relu=True, name='fc3')
-        #fc3 = fc(fc2, 512, 256, relu=True, name='fc3')
+        fc3 = fc(fc2, 512, 256, relu=True, name='fc3')
         fc4 = fc(fc3, 256, 128, relu=False, name='fc4')
         bn4 = tf.layers.batch_normalization(fc4, axis=1,
                                             training=self.IS_TRAIN, name='bn4')
         relu4 = tf.nn.relu(bn4)
-        self.fc5 = fc(relu4, 128, self.NUM_CLASSES, relu=False, name='fc5')
+        dropout4 = dropout(relu4, self.KEEP_PROB)
+        self.fc5 = fc(dropout4, 128, self.NUM_CLASSES, relu=False, name='fc5')
 
         ## 1st Layer: Conv (w ReLu) -> Lrn -> Pool
         #conv1 = conv(self.X, 11, 11, 96, 4, 4, padding='VALID', name='conv1')
