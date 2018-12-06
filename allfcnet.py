@@ -24,9 +24,9 @@ class FCNet(object):
 
     def create(self):
         """Create the network graph."""
-        fc1 = fc(self.X, 144, 512, relu=True, name='fc1')
-        dropout1 = dropout(fc1, self.KEEP_PROB)
-        fc2 = fc(dropout1, 512, 512, relu=True, name='fc2')
+        dropout1 = dropout(self.X, self.KEEP_PROB)
+        fc1 = fc(dropout1, 144, 512, relu=True, name='fc1')
+        fc2 = fc(fc1, 512, 512, relu=True, name='fc2')
         fc3 = fc(fc2, 512, 256, relu=True, name='fc3')
         fc4 = fc(fc3, 256, 128, relu=False, name='fc4')
         bn4 = tf.layers.batch_normalization(fc4, axis=1,
