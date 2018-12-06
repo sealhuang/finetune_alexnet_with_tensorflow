@@ -25,13 +25,13 @@ class FCNet(object):
     def create(self):
         """Create the network graph."""
         fc1 = fc(self.X, 144, 512, relu=False, name='fc1')
-        bn1 = tf.layers.batch_normalization(fc1, axis=1,
-                                            training=self.IS_TRAIN, name='bn1')
-        relu1 = tf.nn.relu(bn1)
+        #bn1 = tf.layers.batch_normalization(fc1, axis=1,
+        #                                    training=self.IS_TRAIN, name='bn1')
+        relu1 = tf.nn.relu(fc1)
         fc2 = fc(relu1, 512, 512, relu=False, name='fc2')
-        bn2 = tf.layers.batch_normalization(fc2, axis=1,
-                                            training=self.IS_TRAIN, name='bn2')
-        relu2 = tf.nn.relu(bn2)
+        #bn2 = tf.layers.batch_normalization(fc2, axis=1,
+        #                                    training=self.IS_TRAIN, name='bn2')
+        relu2 = tf.nn.relu(fc2)
         fc3 = fc(relu2, 512, 256, relu=False, name='fc3')
         bn3 = tf.layers.batch_normalization(fc3, axis=1,
                                             training=self.IS_TRAIN, name='bn3')
