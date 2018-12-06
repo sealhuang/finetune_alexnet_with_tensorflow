@@ -133,7 +133,7 @@ class ImageDataGenerator(object):
                 #    bn[1] += 1
                 #else:
                 #    pass
-                v = items[1]
+                v = items[0]
                 if int(v[16])%2 and bn[0]<1296:
                     lms = [float(items[2+i]) for i in range(144)]
                     self.landmarks.append(lms)
