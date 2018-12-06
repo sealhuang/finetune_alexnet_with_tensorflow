@@ -10,6 +10,10 @@ from tensorflow.contrib.data import Dataset
 from tensorflow.python.framework import dtypes
 from tensorflow.python.framework.ops import convert_to_tensor
 
+landmark_stats = './bazhong/norm_landmark_stats.npz'
+lmstats = np.load(landmark_stats)
+LMMEAN = tf.constant(lmstats['meanall'], dtype=tf.float32)
+LMSTD = tf.constant(lmstats['stdall'], dtype=tf.float32)
 
 class ImageDataGenerator(object):
     """Wrapper class around the new Tensorflows dataset pipeline.
@@ -118,25 +122,13 @@ class ImageDataGenerator(object):
                 #        break
                 v = float(items[1])
                 if v<85 and bn[0]<1296:
-                    xs = [float(items[2*(i+1)]) for i in range(72)]
-                    ys = [float(items[2*(i+1)+1]) for i in range(72)]
-                    minx = min(xs)
-                    miny = min(ys)
-                    maxall = max(max(xs)-min(xs), max(ys)-min(ys))
-                    xs = [(item-minx)*1.0/maxall for item in xs]
-                    ys = [(item-miny)*1.0/maxall for item in ys]
-                    self.landmarks.append(xs+ys)
+                    lms = [float(items[2+i]) for i in range(144)]
+                    self.landmarks.append(lms)
                     self.labels.append(0)
                     bn[0] += 1
                 elif v>=115 and bn[1]<1296:
-                    xs = [float(items[2*(i+1)]) for i in range(72)]
-                    ys = [float(items[2*(i+1)+1]) for i in range(72)]
-                    minx = min(xs)
-                    miny = min(ys)
-                    maxall = max(max(xs)-min(xs), max(ys)-min(ys))
-                    xs = [(item-minx)*1.0/maxall for item in xs]
-                    ys = [(item-miny)*1.0/maxall for item in ys]
-                    self.landmarks.append(xs+ys)
+                    lms = [float(items[2+i]) for i in range(144)]
+                    self.landmarks.append(lms)
                     self.labels.append(1)
                     bn[1] += 1
                 else:
@@ -174,14 +166,20 @@ class ImageDataGenerator(object):
         # convert label number into one-hot-encoding
         one_hot = tf.one_hot(label, self.num_classes)
 
-        return landmark, one_hot
+        norm_lm = tf.subtract(landmark, LMMEAN)
+        norm_lm = tf.div(norm_lm, LMSTD)
+
+        return norm_lm, one_hot
 
     def _parse_function_inference(self, landmark, label):
         """Input parser for samples of the validation/test set."""
         # convert label number into one-hot-encoding
         one_hot = tf.one_hot(label, self.num_classes)
         
-        return landmark, one_hot
+        norm_lm = tf.subtract(landmark, LMMEAN)
+        norm_lm = tf.div(norm_lm, LMSTD)
+
+        return norm_lm, one_hot
     
     def _parse_function_test(self, filename, label):
         """Input parser for samples of the test set."""
