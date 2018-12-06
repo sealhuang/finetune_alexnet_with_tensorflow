@@ -29,10 +29,9 @@ class FCNet(object):
         fc3 = fc(fc2, 512, 256, relu=True, name='fc3')
         #dropout4 = dropout(fc4, self.KEEP_PROB)
         fc4 = fc(fc3, 256, 128, relu=True, name='fc4')
-        #bn4 = tf.layers.batch_normalization(fc4, axis=1,
-        #                                    training=self.IS_TRAIN, name='bn4')
-        self.fc5 = fc(fc4, 128, self.NUM_CLASSES, relu=False, name='fc5')
-        #self.fc5 = fc(bn4, 128, self.NUM_CLASSES, relu=False, name='fc5')
+        bn4 = tf.layers.batch_normalization(fc4, axis=1,
+                                            training=self.IS_TRAIN, name='bn4')
+        self.fc5 = fc(bn4, 128, self.NUM_CLASSES, relu=False, name='fc5')
 
         ## 1st Layer: Conv (w ReLu) -> Lrn -> Pool
         #conv1 = conv(self.X, 11, 11, 96, 4, 4, padding='VALID', name='conv1')
