@@ -24,15 +24,14 @@ class FCNet(object):
 
     def create(self):
         """Create the network graph."""
-        fc1 = fc(self.X, 144, 1024, relu=True, name='fc1')
-        fc2 = fc(fc1, 1024, 1024, relu=True, name='fc2')
-        fc3 = fc(fc2, 1024, 512, relu=True, name='fc3')
-        fc4 = fc(fc3, 512, 256, relu=True, name='fc4')
-        dropout4 = dropout(fc4, self.KEEP_PROB)
-        fc5 = fc(dropout4, 256, 128, relu=True, name='fc5')
-        bn5 = tf.layers.batch_normalization(fc5, axis=1,
-                                            training=self.IS_TRAIN, name='bn5')
-        self.fc6 = fc(bn5, 128, self.NUM_CLASSES, relu=False, name='fc6')
+        fc1 = fc(self.X, 144, 512, relu=True, name='fc1')
+        fc2 = fc(fc1, 512, 512, relu=True, name='fc2')
+        fc3 = fc(fc2, 512, 256, relu=True, name='fc3')
+        #dropout4 = dropout(fc4, self.KEEP_PROB)
+        fc4 = fc(fc4, 256, 128, relu=True, name='fc4')
+        bn4 = tf.layers.batch_normalization(fc4, axis=1,
+                                            training=self.IS_TRAIN, name='bn4')
+        self.fc5 = fc(bn4, 128, self.NUM_CLASSES, relu=False, name='fc5')
 
         ## 1st Layer: Conv (w ReLu) -> Lrn -> Pool
         #conv1 = conv(self.X, 11, 11, 96, 4, 4, padding='VALID', name='conv1')
