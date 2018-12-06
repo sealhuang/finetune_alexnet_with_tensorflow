@@ -18,8 +18,8 @@ Configuration Part.
 current_dir = os.getcwd()
 
 # Path to the textfiles for the trainings and validation set
-train_file = os.path.join(current_dir, 'bazhong', 'landmark_train_list.csv')
-val_file = os.path.join(current_dir, 'bazhong', 'landmark_val_list.csv')
+train_file = os.path.join(current_dir, 'bazhong','norm_landmark_train_list.csv')
+val_file = os.path.join(current_dir, 'bazhong', 'norm_landmark_val_list.csv')
 #test_file = os.path.join(current_dir, 'genius', 'test_list.csv')
 
 # Learning params
