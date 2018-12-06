@@ -120,32 +120,32 @@ class ImageDataGenerator(object):
                 #            num_count[mi-1] += 1
                 #            #print v, mi-1
                 #        break
-                #v = float(items[1])
-                #if v<85 and bn[0]<1296:
-                #    lms = [float(items[2+i]) for i in range(144)]
-                #    self.landmarks.append(lms)
-                #    self.labels.append(0)
-                #    bn[0] += 1
-                #elif v>=115 and bn[1]<1296:
-                #    lms = [float(items[2+i]) for i in range(144)]
-                #    self.landmarks.append(lms)
-                #    self.labels.append(1)
-                #    bn[1] += 1
-                #else:
-                #    pass
-                v = items[0]
-                if int(v[16])%2 and bn[0]<1296:
+                v = float(items[1])
+                if v<85 and bn[0]<1296:
                     lms = [float(items[2+i]) for i in range(144)]
                     self.landmarks.append(lms)
                     self.labels.append(0)
                     bn[0] += 1
-                elif (not int(v[16])%2) and bn[1]<1296:
+                elif v>=115 and bn[1]<1296:
                     lms = [float(items[2+i]) for i in range(144)]
                     self.landmarks.append(lms)
                     self.labels.append(1)
                     bn[1] += 1
                 else:
                     pass
+                #v = items[0]
+                #if int(v[16])%2 and bn[0]<1296:
+                #    lms = [float(items[2+i]) for i in range(144)]
+                #    self.landmarks.append(lms)
+                #    self.labels.append(0)
+                #    bn[0] += 1
+                #elif (not int(v[16])%2) and bn[1]<1296:
+                #    lms = [float(items[2+i]) for i in range(144)]
+                #    self.landmarks.append(lms)
+                #    self.labels.append(1)
+                #    bn[1] += 1
+                #else:
+                #    pass
 
         print 'Load %s samples'%(len(self.labels))
         print 'data dist',
