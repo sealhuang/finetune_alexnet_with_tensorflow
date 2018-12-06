@@ -23,7 +23,7 @@ val_file = os.path.join(current_dir, 'bazhong', 'norm_landmark_val_list.csv')
 #test_file = os.path.join(current_dir, 'genius', 'test_list.csv')
 
 # Learning params
-learning_rate = 0.00005
+learning_rate = 0.0001
 num_epochs = 100
 batch_size = 8
 
