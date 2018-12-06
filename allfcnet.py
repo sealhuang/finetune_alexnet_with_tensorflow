@@ -28,7 +28,8 @@ class FCNet(object):
         fc2 = fc(fc1, 1024, 1024, relu=True, name='fc2')
         fc3 = fc(fc2, 1024, 512, relu=True, name='fc3')
         fc4 = fc(fc3, 512, 256, relu=True, name='fc4')
-        fc5 = fc(fc4, 256, 128, relu=True, name='fc5')
+        dropout4 = dropout(fc4, self.KEEP_PROB)
+        fc5 = fc(dropout4, 256, 128, relu=True, name='fc5')
         bn5 = tf.layers.batch_normalization(fc5, axis=1,
                                             training=self.IS_TRAIN, name='bn5')
         self.fc6 = fc(bn5, 128, self.NUM_CLASSES, relu=False, name='fc6')
