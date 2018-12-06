@@ -28,7 +28,7 @@ num_epochs = 100
 batch_size = 32
 
 # Network params
-dropout_rate = 0.5
+dropout_rate = 0.75
 num_classes = 2
 
 # How often we want to write the tf.summary data to disk
