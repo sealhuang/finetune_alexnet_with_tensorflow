@@ -84,7 +84,7 @@ keep_prob = tf.placeholder(tf.float32)
 model = FCNet(x, keep_prob, num_classes, is_train)
 
 # Link variable to model output
-score = model.fc4
+score = model.fc5
 
 # List of trainable variables of the layers we want to train
 var_list = [v for v in tf.trainable_variables()
