@@ -45,7 +45,7 @@ def source_data(data_info_file, img_dir):
     
 def model_train(train_imgs, train_labels, val_imgs, val_labels):
     # Learning params
-    learning_rate = 0.0001
+    learning_rate = 0.00005
     num_epochs = 60
     batch_size = 30
 
