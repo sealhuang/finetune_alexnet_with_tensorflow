@@ -91,8 +91,6 @@ class AlexNet(object):
         self.fc7 = fc(dropout6, 128, self.NUM_CLASSES, relu=False, name='fc7')
         #self.fc7 = fc(fc6, 128, self.NUM_CLASSES, relu=False, name='fc7')
 
-
-
     def load_initial_weights(self, session):
         """Load weights from file into network.
 
