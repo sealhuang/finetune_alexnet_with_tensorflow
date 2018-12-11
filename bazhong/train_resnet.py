@@ -45,7 +45,7 @@ def source_data(data_info_file, img_dir):
     
 def model_train(train_imgs, train_labels, val_imgs, val_labels):
     # Learning params
-    learning_rate = 0.0001
+    learning_rate = 0.01
     num_epochs = 100
     batch_size = 30
 
@@ -121,7 +121,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
         #optimizer = tf.train.GradientDescentOptimizer(learning_rate)
         #train_op = optimizer.apply_gradients(grads_and_vars=gradients)
         #optimizer = tf.train.AdamOptimizer(learning_rate)
-        optimizer = tf.train.MomentumOptimizer(learning_rate, 0.95, use_nesterov=True)
+        optimizer = tf.train.MomentumOptimizer(learning_rate, 0.9, use_nesterov=True)
         with tf.control_dependencies(update_ops):
             train_op = optimizer.minimize(loss, var_list=var_list)
 
