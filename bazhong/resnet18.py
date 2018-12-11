@@ -34,6 +34,8 @@ class ResNet(object):
         self._flops = 0
         self._weights = 0
 
+        self.create()
+
     def create(self):
         """Create the network graph."""
         print('Building model')
