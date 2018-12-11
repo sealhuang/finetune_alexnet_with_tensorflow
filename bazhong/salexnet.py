@@ -25,7 +25,7 @@ import tensorflow as tf
 import numpy as np
 
 
-class AlexNet(object):
+class SalexNet(object):
     """Implementation of the AlexNet."""
 
     def __init__(self, x, keep_prob, num_classes, skip_layer, is_train,

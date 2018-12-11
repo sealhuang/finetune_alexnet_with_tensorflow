@@ -76,6 +76,7 @@ class ResNet(object):
             x = tf.layers.batch_normalization(x, axis=1,
                                               training=self.is_train,
                                               name='bnout')
+            x = self._fc(x, 128, name='fc1')
             x = self._fc(x, self.NUM_CLASSES)
         
         # model output

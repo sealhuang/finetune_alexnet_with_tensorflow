@@ -12,7 +12,7 @@ from tensorflow.data import Iterator
 from datetime import datetime
 from random import shuffle as list_shuffle
 
-from salexnet import AlexNet
+from salexnet import SalexNet
 from imgdatagenerator import ImageDataGenerator
 
 
