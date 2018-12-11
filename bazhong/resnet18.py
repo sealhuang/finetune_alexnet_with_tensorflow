@@ -7,7 +7,8 @@ import numpy as np
 
 class ResNet(object):
     """Implementation of 18-layer ResNet."""
-    def __init__(self, images, num_classes, skip_layer, weights_path='DEFAULT'):
+    def __init__(self, images, num_classes, skip_layer, is_train,
+                 weights_path='DEFAULT'):
         """Create the graph of ResNet-18 model.
 
         Args:
@@ -29,7 +30,7 @@ class ResNet(object):
         else:
             self.WEIGHTS_PATH = weights_path
 
-        self.is_train = tf.placeholder(tf.bool, name="is_train")
+        self.is_train = is_train
         self._counted_scope = []
         self._flops = 0
         self._weights = 0

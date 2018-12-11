@@ -97,7 +97,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
     keep_prob = tf.placeholder(tf.float32)
 
     # Initialize model
-    model = ResNet(x, num_classes, [])
+    model = ResNet(x, num_classes, [], is_train)
 
     # Link variable to model output
     score = model.output
