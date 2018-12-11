@@ -100,7 +100,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
     model = ResNet(x, num_classes, [])
 
     # Link variable to model output
-    score = model.out
+    score = model.output
 
     # List of trainable variables of the layers we want to train
     var_list = [v for v in tf.trainable_variables()]
