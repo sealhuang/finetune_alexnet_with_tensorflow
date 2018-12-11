@@ -5,14 +5,14 @@
 
 import os
 os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
-os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 import numpy as np
 import tensorflow as tf
+from tensorflow.data import Iterator
+from datetime import datetime
 
 from salexnet4cls_simple import AlexNet
-from bazhong_cls_datagenerator import ImageDataGenerator
-from datetime import datetime
-from tensorflow.contrib.data import Iterator
+from datagenerator_mod import ImageDataGenerator
 
 """
 Configuration Part.
@@ -22,7 +22,49 @@ current_dir = os.getcwd()
 # Path to the textfiles for the trainings and validation set
 train_file = os.path.join(current_dir, 'bazhong', 'train_list.csv')
 val_file = os.path.join(current_dir, 'bazhong', 'val_list.csv')
-#test_file = os.path.join(current_dir, 'genius', 'test_list.csv')
+# load data list
+all_info = open(train_file).readlines()
+all_info.pop(0)
+all_info = [line.strip().split(',') for line in all_info]
+imgs = [os.path.join(current_dir, 'bazhong', 'croppedPics', line[2])
+        for line in all_info]
+vals = [float(line[3]) for line in all_info]
+train_imgs = []
+train_labels = []
+cls_count = [0, 0]
+for i in range(len(imgs)):
+    if vals[i]<85 and cls_count[0]<1296:
+        train_imgs.append(imgs[i])
+        train_labels.append(0)
+        cls_count[0] += 1
+    elif vals[i]>=115 and cls_count[1]<1296:
+        train_imgs.append(imgs[i])
+        train_labels.append(1)
+        cls_count[1] += 1
+    else:
+        pass
+all_info = open(val_file).readlines()
+all_info.pop(0)
+all_info = [line.strip().split(',') for line in all_info]
+imgs = [os.path.join(current_dir, 'bazhong', 'croppedPics', line[2])
+        for line in all_info]
+vals = [float(line[3]) for line in all_info]
+val_imgs = []
+val_labels = []
+cls_count = [0, 0]
+for i in range(len(imgs)):
+    if vals[i]<85 and cls_count[0]<1296:
+        val_imgs.append(imgs[i])
+        val_labels.append(0)
+        cls_count[0] += 1
+    elif vals[i]>=115 and cls_count[1]<1296:
+        val_imgs.append(imgs[i])
+        val_labels.append(1)
+        cls_count[1] += 1
+    else:
+        pass
+
+
 
 # Learning params
 learning_rate = 0.00005
@@ -38,8 +80,8 @@ train_layers = ['fc7', 'fc6', 'bn5', 'conv5', 'conv4']
 display_step = 27
 
 # Path for tf.summary.FileWriter and to store model checkpoints
-filewriter_path = os.path.join(current_dir, 'log', 'bazhong_cls_tensorboard')
-checkpoint_path = os.path.join(current_dir, 'log', 'bazhong_cls_checkpoints')
+filewriter_path = os.path.join(current_dir, 'log','bazhong_cls_tensorboard')
+checkpoint_path = os.path.join(current_dir, 'log','bazhong_cls_checkpoints')
 
 """
 Main Part of the finetuning Script.
@@ -51,20 +93,18 @@ if not os.path.isdir(checkpoint_path):
 
 # Place data loading and preprocessing on the cpu
 with tf.device('/cpu:0'):
-    tr_data = ImageDataGenerator(train_file,
+    tr_data = ImageDataGenerator(train_imgs,
+                                 train_labels,
                                  mode='training',
                                  batch_size=batch_size,
                                  num_classes=num_classes,
                                  shuffle=True)
-    val_data = ImageDataGenerator(val_file,
+    val_data = ImageDataGenerator(val_imgs,
+                                  val_labels,
                                   mode='inference',
                                   batch_size=batch_size,
                                   num_classes=num_classes,
                                   shuffle=False)
-    #test_data = ImageDataGenerator(test_file,
-    #                               mode='test',
-    #                               batch_size=batch_size,
-    #                               shuffle=False)
 
     # create an reinitializable iterator given the dataset structure
     iterator = Iterator.from_structure(tr_data.data.output_types,
