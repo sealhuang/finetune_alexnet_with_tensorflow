@@ -91,7 +91,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
     #test_init_op = iterator.make_initializer(test_data.data)
 
     # TF placeholder for graph input and output
-    x = tf.placeholder(tf.float32, [batch_size, 227, 227, 3])
+    x = tf.placeholder(tf.float32, [batch_size, 224, 224, 3])
     y = tf.placeholder(tf.float32, [batch_size, num_classes])
     is_train = tf.placeholder(tf.bool, name='is_train')
     keep_prob = tf.placeholder(tf.float32)
