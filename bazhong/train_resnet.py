@@ -13,7 +13,7 @@ from datetime import datetime
 from random import shuffle as list_shuffle
 
 from resnet18 import ResNet
-from imgdatagenerator import ImageDataGenerator
+from imgdatagenerator_resnet import ImageDataGenerator
 
 
 def source_data(data_info_file, img_dir):
@@ -45,8 +45,8 @@ def source_data(data_info_file, img_dir):
     
 def model_train(train_imgs, train_labels, val_imgs, val_labels):
     # Learning params
-    learning_rate = 0.00005
-    num_epochs = 60
+    learning_rate = 0.0001
+    num_epochs = 100
     batch_size = 30
 
     # Network params
