@@ -28,7 +28,7 @@ import numpy as np
 class AlexNet(object):
     """Implementation of the AlexNet."""
 
-    def __init__(self, x, keep_prob, num_classes, skip_layer,
+    def __init__(self, x, keep_prob, num_classes, skip_layer, is_train,
                  weights_path='DEFAULT'):
         """Create the graph of the AlexNet model.
 
@@ -45,6 +45,7 @@ class AlexNet(object):
         self.X = x
         self.NUM_CLASSES = num_classes
         self.KEEP_PROB = keep_prob
+        self.IS_TRAIN = is_train
         self.SKIP_LAYER = skip_layer
 
         if weights_path == 'DEFAULT':
@@ -75,19 +76,22 @@ class AlexNet(object):
 
         # 5th Layer: Conv (w ReLu) -> Pool splitted into two groups
         conv5 = conv(conv4, 3, 3, 256, 1, 1, groups=2, name='conv5')
-        pool5 = max_pool(conv5, 3, 3, 2, 2, padding='VALID', name='pool5')
+        pool5 = tf.reduce_mean(conv5, axis=[1, 2])
+        bn5 = tf.layers.batch_normalization(pool5, axis=1,
+                                            training=self.IS_TRAIN, name='bn5')
+        #pool5 = max_pool(conv5, 3, 3, 2, 2, padding='VALID', name='pool5')
 
         # 6th Layer: Flatten -> FC (w ReLu) -> Dropout
-        flattened = tf.reshape(pool5, [-1, 6*6*256])
-        fc6 = fc(flattened, 6*6*256, 4096, name='fc6')
+        flattened = tf.reshape(bn5, [-1, 256])
+        #flattened = tf.reshape(pool5, [-1, 256])
+        fc6 = fc(flattened, 256, 128, name='fc6')
         dropout6 = dropout(fc6, self.KEEP_PROB)
 
         # 7th Layer: FC (w ReLu) -> Dropout
-        fc7 = fc(dropout6, 4096, 4096, name='fc7')
-        dropout7 = dropout(fc7, self.KEEP_PROB)
+        self.fc7 = fc(dropout6, 128, self.NUM_CLASSES, relu=False, name='fc7')
+        #self.fc7 = fc(fc6, 128, self.NUM_CLASSES, relu=False, name='fc7')
 
-        # 8th Layer: FC and return unscaled activations
-        self.fc8 = fc(dropout7, 4096, self.NUM_CLASSES, relu=False, name='fc8')
+
 
     def load_initial_weights(self, session):
         """Load weights from file into network.
@@ -166,6 +170,7 @@ def conv(x, filter_height, filter_width, num_filters, stride_y, stride_x, name,
 
     return relu
 
+
 def fc(x, num_in, num_out, name, relu=True):
     """Create a fully connected layer."""
     with tf.variable_scope(name) as scope:
@@ -185,6 +190,7 @@ def fc(x, num_in, num_out, name, relu=True):
     else:
         return act
 
+
 def max_pool(x, filter_height, filter_width, stride_y, stride_x, name,
              padding='SAME'):
     """Create a max pooling layer."""
@@ -192,11 +198,13 @@ def max_pool(x, filter_height, filter_width, stride_y, stride_x, name,
                           strides=[1, stride_y, stride_x, 1],
                           padding=padding, name=name)
 
+
 def lrn(x, radius, alpha, beta, name, bias=1.0):
     """Create a local response normalization layer."""
     return tf.nn.local_response_normalization(x, depth_radius=radius,
                                               alpha=alpha, beta=beta,
                                               bias=bias, name=name)
+
 
 def dropout(x, keep_prob):
     """Create a dropout layer."""
