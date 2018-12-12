@@ -118,13 +118,13 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
         gradients = tf.gradients(loss, var_list)
         gradients = list(zip(gradients, var_list))
         # Create optimizer and apply gradient descent to the trainable variables
-        optimizer = tf.train.GradientDescentOptimizer(learning_rate)
-        with tf.control_dependencies(update_ops):
-            train_op = optimizer.apply_gradients(grads_and_vars=gradients)
-        #optimizer = tf.train.AdamOptimizer(learning_rate)
-        #optimizer = tf.train.MomentumOptimizer(learning_rate, 0.9)
+        #optimizer = tf.train.GradientDescentOptimizer(learning_rate)
         #with tf.control_dependencies(update_ops):
-            #train_op = optimizer.minimize(loss, var_list=var_list)
+        #    train_op = optimizer.apply_gradients(grads_and_vars=gradients)
+        #optimizer = tf.train.AdamOptimizer(learning_rate)
+        optimizer = tf.train.MomentumOptimizer(learning_rate, 0.9)
+        with tf.control_dependencies(update_ops):
+            train_op = optimizer.minimize(loss, var_list=var_list)
 
     # Add gradients to summary
     for gradient, var in gradients:
