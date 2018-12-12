@@ -8,7 +8,8 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.data import Dataset
 
-IMAGENET_MEAN = tf.constant([123.68, 116.779, 103.939], dtype=tf.float32)
+IMAGENET_MEAN = tf.constant([255*0.485, 255*0.456, 255*0.406], dtype=tf.float32)
+IMAGENET_STD = tf.constant([255*0.229, 255*0.224, 255*0.225], dtype=tf.float32)
 
 class ImageDataGenerator(object):
     """Wrapper class around the Tensorflows dataset pipeline.
@@ -107,6 +108,7 @@ class ImageDataGenerator(object):
         img_distorted = tf.random_crop(img_resized, [224, 224, 3])
         img_distorted = tf.image.random_flip_left_right(img_distorted)
         img_centered = tf.subtract(img_distorted, IMAGENET_MEAN)
+        img_centered = tf.div(img_centered, IMAGENET_STD)
 
         # RGB -> BGR
         img_bgr = img_centered[:, :, ::-1]

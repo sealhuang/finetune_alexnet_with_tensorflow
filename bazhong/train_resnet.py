@@ -45,8 +45,8 @@ def source_data(data_info_file, img_dir):
     
 def model_train(train_imgs, train_labels, val_imgs, val_labels):
     # Learning params
-    learning_rate = 0.01
-    num_epochs = 100
+    learning_rate = 0.001
+    num_epochs = 40
     batch_size = 30
 
     # Network params
@@ -94,7 +94,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
     x = tf.placeholder(tf.float32, [batch_size, 224, 224, 3])
     y = tf.placeholder(tf.float32, [batch_size, num_classes])
     is_train = tf.placeholder(tf.bool, name='is_train')
-    keep_prob = tf.placeholder(tf.float32)
+    #keep_prob = tf.placeholder(tf.float32)
 
     # Initialize model
     model = ResNet(x, num_classes, [], is_train)
@@ -118,12 +118,13 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
         gradients = tf.gradients(loss, var_list)
         gradients = list(zip(gradients, var_list))
         # Create optimizer and apply gradient descent to the trainable variables
-        #optimizer = tf.train.GradientDescentOptimizer(learning_rate)
-        #train_op = optimizer.apply_gradients(grads_and_vars=gradients)
-        #optimizer = tf.train.AdamOptimizer(learning_rate)
-        optimizer = tf.train.MomentumOptimizer(learning_rate, 0.9, use_nesterov=True)
+        optimizer = tf.train.GradientDescentOptimizer(learning_rate)
         with tf.control_dependencies(update_ops):
-            train_op = optimizer.minimize(loss, var_list=var_list)
+            train_op = optimizer.apply_gradients(grads_and_vars=gradients)
+        #optimizer = tf.train.AdamOptimizer(learning_rate)
+        #optimizer = tf.train.MomentumOptimizer(learning_rate, 0.9)
+        #with tf.control_dependencies(update_ops):
+            #train_op = optimizer.minimize(loss, var_list=var_list)
 
     # Add gradients to summary
     for gradient, var in gradients:
@@ -187,13 +188,11 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
                 # And run the training op
                 sess.run(train_op, feed_dict={x: img_batch,
                                               y: label_batch,
-                                              keep_prob: dropout_rate,
                                               is_train: True})
                 # Generate summary with the current batch of data and write to file
                 if step % display_step == 0:
                     s = sess.run(merged_summary, feed_dict={x: img_batch,
                                                             y: label_batch,
-                                                            keep_prob: 1.,
                                                             is_train: False})
                     writer.add_summary(s, epoch*train_batches_per_epoch + step)
 
@@ -206,7 +205,6 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
                 img_batch, label_batch = sess.run(next_batch)
                 acc = sess.run(accuracy, feed_dict={x: img_batch,
                                                     y: label_batch,
-                                                    keep_prob: 1.,
                                                     is_train: False})
                 val_acc += acc
                 val_count += 1
@@ -224,7 +222,6 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
                 img_batch, label_batch = sess.run(next_batch)
                 acc, pl, tl = sess.run([accuracy, pred_label, true_label], feed_dict={x: img_batch,
                                                                      y: label_batch,
-                                                                     keep_prob: 1.,
                                                                      is_train: False})
                 test_acc += acc
                 test_count += 1
