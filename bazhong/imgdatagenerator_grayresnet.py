@@ -109,11 +109,10 @@ class ImageDataGenerator(object):
         img_distorted = tf.image.random_flip_left_right(img_distorted)
         img_centered = tf.subtract(img_distorted, IMAGENET_MEAN)
         img_centered = tf.div(img_centered, IMAGENET_STD)
+        
+        img_gray = tf.image.rgb_to_grayscale(img_centered)
 
-        # RGB -> BGR
-        img_bgr = img_centered[:, :, ::-1]
-
-        return img_bgr, one_hot
+        return img_gray, one_hot
 
     def _parse_function_inference(self, filename, label):
         """Input parser for samples of the validation/test set."""
@@ -127,10 +126,9 @@ class ImageDataGenerator(object):
         img_centered = tf.subtract(img_resized, IMAGENET_MEAN)
         img_centered = tf.div(img_centered, IMAGENET_STD)
 
-        # RGB -> BGR
-        img_bgr = img_centered[:, :, ::-1]
+        img_gray = tf.image.rgb_to_grayscale(img_centered)
 
-        return img_bgr, one_hot
+        return img_gray, one_hot
     
     def _parse_function_test(self, filename, label):
         """Input parser for samples of the test set."""

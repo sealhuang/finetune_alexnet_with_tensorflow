@@ -80,7 +80,7 @@ class ResNet(object):
             x = self._fc(x, self.NUM_CLASSES)
         
         # model output
-        self.output = x
+        self.logits = x
 
     def load_initial_weights(self, session):
         """Load pretrained weights from file into network."""

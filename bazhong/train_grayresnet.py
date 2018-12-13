@@ -5,7 +5,7 @@
 
 import os
 os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
-os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 import numpy as np
 import tensorflow as tf
 from tensorflow.data import Iterator
@@ -13,7 +13,7 @@ from datetime import datetime
 from random import shuffle as list_shuffle
 
 from resnet18 import ResNet
-from imgdatagenerator_resnet import ImageDataGenerator
+from imgdatagenerator_grayresnet import ImageDataGenerator
 
 
 def source_data(data_info_file, img_dir):
@@ -58,8 +58,8 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
 
     # Path for tf.summary.FileWriter and to store model checkpoints
     current_dir = os.getcwd()
-    filewriter_path = os.path.join(current_dir, 'log','cls_tensorboard')
-    checkpoint_path = os.path.join(current_dir, 'log','cls_checkpoints')
+    filewriter_path = os.path.join(current_dir, 'log','gray_cls_tensorboard')
+    checkpoint_path = os.path.join(current_dir, 'log','gray_cls_checkpoints')
 
     #-- Main Part of the finetuning Script.
 
@@ -91,7 +91,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
     #test_init_op = iterator.make_initializer(test_data.data)
 
     # TF placeholder for graph input and output
-    x = tf.placeholder(tf.float32, [batch_size, 224, 224, 3])
+    x = tf.placeholder(tf.float32, [batch_size, 224, 224, 1])
     y = tf.placeholder(tf.float32, [batch_size, num_classes])
     is_train = tf.placeholder(tf.bool, name='is_train')
     #keep_prob = tf.placeholder(tf.float32)
