@@ -36,8 +36,12 @@ def source_data(beh_file, dist_file):
     high_part = sorted_idx[(-1*all_sample_num):]
     low_dist = dist[low_part, :, :]
     high_dist = dist[high_part, :, :]
-    low_dist = low_dist[list_shuffle(range(low_dist.shape[0])), :, :]
-    high_dist = high_dist[list_shuffle(range(high_dist.shape[0])), :, :]
+    rand_low_dist_idx = range(low_dist.shape[0])
+    list_shuffle(rand_low_dist_idx)
+    low_dist = low_dist[rand_low_dist_idx, :, :]
+    rand_high_dist_idx = range(high_dist.shape[0])
+    list_shuffle(rand_high_dist_idx)
+    high_dist = high_dist[rand_high_dist_idx, :, :]
 
     train_dist = np.concatenate((low_dist[:train_sample_num, :, :],
                                  high_dist[:train_sample_num, :, :]),
@@ -48,6 +52,9 @@ def source_data(beh_file, dist_file):
     train_labels = [0]*train_sample_num + [1]*train_sample_num
     val_labels = [0]*(all_sample_num-train_sample_num) + \
                  [1]*(all_sample_num-train_sample_num)
+
+    print 'Training set: %s'%(train_dist.shape[0])
+    print 'Validation set: %s'%(val_dist.shape[0])
 
     return train_dist, train_labels, val_dist, val_labels
     
