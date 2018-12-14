@@ -13,37 +13,45 @@ from datetime import datetime
 from random import shuffle as list_shuffle
 
 from resnet18 import ResNet
-from imgdatagenerator_grayresnet import ImageDataGenerator
+from imgdatagenerator_lmresnet import ImageDataGenerator
 
 
-def source_data(data_info_file, img_dir):
+def source_data(beh_file, dist_file):
     """Read sample information, get split train- and test-dataset."""
     # config sample number per class
     all_sample_num = 1500
     train_sample_num = 1350
 
-    # read sample info
-    all_info = open(data_info_file).readlines()
-    all_info.pop(0)
-    all_info = [line.strip().split(',') for line in all_info]
-    imgs = [os.path.join(img_dir, line[2]) for line in all_info]
-    vals = [float(line[3]) for line in all_info]
+    # read behavior info
+    beh_info = open(beh_file).readlines()
+    beh_info = [line.strip().split(',') for line in beh_info]
+    vals = [float(line[1]) for line in beh_info]
+    # read landmark dist info
+    dist = np.load(dist_file)
+    dist_mean = dist.mean(axis=0)
+    dist = dist - dist_mean
+    
     sorted_idx = np.argsort(vals)
     low_part = sorted_idx[0:all_sample_num]
     high_part = sorted_idx[(-1*all_sample_num):]
-    low_imgs = [imgs[i] for i in low_part]
-    high_imgs = [imgs[i] for i in high_part]
-    list_shuffle(low_imgs)
-    list_shuffle(high_imgs)
-    train_imgs = low_imgs[:train_sample_num] + high_imgs[:train_sample_num]
-    val_imgs = low_imgs[train_sample_num:] + high_imgs[train_sample_num:]
+    low_dist = dist[low_part, :, :]
+    high_dist = dist[high_part, :, :]
+    low_dist = low_dist[list_shuffle(range(len(low_dist.shape[0]))), :, :]
+    high_dist = high_dist[list_shuffle(range(len(high_dist.shape[0]))), :, :]
+
+    train_dist = np.concatenate((low_dist[:train_sample_num, :, :],
+                                 high_dist[:train_sample_num, :, :]),
+                                axis=0)
+    val_dist = np.concatenate((low_dist[train_sample_num:, :, :],
+                               high_dist[train_sample_num:, :, :]),
+                              axis=0)
     train_labels = [0]*train_sample_num + [1]*train_sample_num
     val_labels = [0]*(all_sample_num-train_sample_num) + \
                  [1]*(all_sample_num-train_sample_num)
 
-    return train_imgs, train_labels, val_imgs, val_labels
+    return train_dist, train_labels, val_dist, val_labels
     
-def model_train(train_imgs, train_labels, val_imgs, val_labels):
+def model_train(train_dist, train_labels, val_dist, val_labels):
     # Learning params
     learning_rate = 0.01
     num_epochs = 500
@@ -58,8 +66,8 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
 
     # Path for tf.summary.FileWriter and to store model checkpoints
     current_dir = os.getcwd()
-    filewriter_path = os.path.join(current_dir, 'log','gray_cls_tensorboard')
-    checkpoint_path = os.path.join(current_dir, 'log','gray_cls_checkpoints')
+    filewriter_path = os.path.join(current_dir, 'log','lm_cls_tensorboard')
+    checkpoint_path = os.path.join(current_dir, 'log','lm_cls_checkpoints')
 
     #-- Main Part of the finetuning Script.
 
@@ -69,12 +77,12 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
 
     # Place data loading and preprocessing on the cpu
     with tf.device('/cpu:0'):
-        tr_data = ImageDataGenerator(train_imgs, train_labels,
+        tr_data = ImageDataGenerator(train_dist, train_labels,
                                      mode='training',
                                      batch_size=batch_size,
                                      num_classes=num_classes,
                                      shuffle=True)
-        val_data = ImageDataGenerator(val_imgs, val_labels,
+        val_data = ImageDataGenerator(val_dist, val_labels,
                                       mode='inference',
                                       batch_size=batch_size,
                                       num_classes=num_classes,
@@ -91,7 +99,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
     #test_init_op = iterator.make_initializer(test_data.data)
 
     # TF placeholder for graph input and output
-    x = tf.placeholder(tf.float32, [batch_size, 224, 224, 1])
+    x = tf.placeholder(tf.float32, [batch_size, 72, 72, 1])
     y = tf.placeholder(tf.float32, [batch_size, num_classes])
     is_train = tf.placeholder(tf.bool, name='is_train')
     #keep_prob = tf.placeholder(tf.float32)
@@ -238,9 +246,8 @@ if __name__ == '__main__':
     current_dir = os.getcwd()
 
     # Path to the textfiles for the dataset
-    data_file = os.path.join(current_dir, 'data', 'data_list.csv')
-    img_dir = os.path.join(current_dir, 'data', 'croppedPics')
-    train_imgs, train_labels, val_imgs, val_labels = source_data(data_file,
-                                                                 img_dir)
-    model_train(train_imgs, train_labels, val_imgs, val_labels)
+    beh_file = os.path.join(current_dir, 'data', 'norm_landmark_data_list.csv')
+    dist_file = os.path.join(current_dir, 'data', 'landmark_dist_mtx.npy')
+    train_dist,train_labels,val_dist,val_labels=source_data(beh_file,dist_file)
+    model_train(train_dist, train_labels, val_dist, val_labels)
 
