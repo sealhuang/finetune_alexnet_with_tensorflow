@@ -5,7 +5,7 @@
 
 import os
 os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
-os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 import numpy as np
 import tensorflow as tf
 from tensorflow.data import Iterator
@@ -36,8 +36,8 @@ def source_data(beh_file, dist_file):
     high_part = sorted_idx[(-1*all_sample_num):]
     low_dist = dist[low_part, :, :]
     high_dist = dist[high_part, :, :]
-    low_dist = low_dist[list_shuffle(range(len(low_dist.shape[0]))), :, :]
-    high_dist = high_dist[list_shuffle(range(len(high_dist.shape[0]))), :, :]
+    low_dist = low_dist[list_shuffle(range(low_dist.shape[0])), :, :]
+    high_dist = high_dist[list_shuffle(range(high_dist.shape[0])), :, :]
 
     train_dist = np.concatenate((low_dist[:train_sample_num, :, :],
                                  high_dist[:train_sample_num, :, :]),
