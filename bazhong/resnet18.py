@@ -73,10 +73,6 @@ class ResNet(object):
         with tf.variable_scope('logits') as scope:
             print('\tBuilding unit: %s' % scope.name)
             x = tf.reduce_mean(x, [1, 2])
-            #x = tf.layers.batch_normalization(x, axis=1,
-            #                                  training=self.is_train,
-            #                                  name='bnout')
-            x = self._fc(x, 128, name='fc1')
             x = self._fc(x, self.NUM_CLASSES)
         
         # model output
