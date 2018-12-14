@@ -101,7 +101,7 @@ class ImageDataGenerator(object):
 
         return new_lm_dist, one_hot
 
-    def _parse_function_inference(self, filename, label):
+    def _parse_function_inference(self, lm_dist, label):
         """Input parser for samples of the validation/test set."""
         # convert label number into one-hot-encoding
         one_hot = tf.one_hot(label, self.num_classes)
