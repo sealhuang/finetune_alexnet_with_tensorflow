@@ -240,11 +240,10 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
 if __name__ == '__main__':
     current_dir = os.getcwd()
 
-    for _ in range(50):
-        # Path to the textfiles for the dataset
-        data_file = os.path.join(current_dir, 'data', 'data_list.csv')
-        img_dir = os.path.join(current_dir, 'data', 'croppedPics')
-        train_imgs, train_labels, val_imgs, val_labels = source_data(data_file,
+    # Path to the textfiles for the dataset
+    data_file = os.path.join(current_dir, 'data', 'data_list.csv')
+    img_dir = os.path.join(current_dir, 'data', 'croppedPics')
+    train_imgs, train_labels, val_imgs, val_labels = source_data(data_file,
                                                                      img_dir)
-        model_train(train_imgs, train_labels, val_imgs, val_labels)
+    model_train(train_imgs, train_labels, val_imgs, val_labels)
 
