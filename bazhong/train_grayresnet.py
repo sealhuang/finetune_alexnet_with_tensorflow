@@ -46,8 +46,8 @@ def source_data(data_info_file, img_dir):
 def model_train(train_imgs, train_labels, val_imgs, val_labels):
     # Learning params
     learning_rate = 0.01
-    num_epochs = 500
-    batch_size = 30
+    num_epochs = 100
+    batch_size = 60
 
     # Network params
     dropout_rate = 0.5
@@ -233,14 +233,18 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
             cm = sess.run(tf.confusion_matrix(preds, trues))
             print cm
         
+        with open('test_acc.csv', 'a') as f:
+            f.write(str(test_acc)+'\n')
+        
 
 if __name__ == '__main__':
     current_dir = os.getcwd()
 
-    # Path to the textfiles for the dataset
-    data_file = os.path.join(current_dir, 'data', 'data_list.csv')
-    img_dir = os.path.join(current_dir, 'data', 'croppedPics')
-    train_imgs, train_labels, val_imgs, val_labels = source_data(data_file,
-                                                                 img_dir)
-    model_train(train_imgs, train_labels, val_imgs, val_labels)
+    for _ in range(1):
+        # Path to the textfiles for the dataset
+        data_file = os.path.join(current_dir, 'data', 'data_list.csv')
+        img_dir = os.path.join(current_dir, 'data', 'croppedPics')
+        train_imgs, train_labels, val_imgs, val_labels = source_data(data_file,
+                                                                     img_dir)
+        model_train(train_imgs, train_labels, val_imgs, val_labels)
 
