@@ -229,9 +229,9 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
                 trues = np.concatenate((trues, tl))
             test_acc /= test_count
             print("{} Test Accuracy = {:.4f}".format(datetime.now(), test_acc))
-            print 'Confusion matrix'
-            cm = sess.run(tf.confusion_matrix(preds, trues))
-            print cm
+            #print 'Confusion matrix'
+            #cm = sess.run(tf.confusion_matrix(preds, trues))
+            #print cm
         
         with open('test_acc.csv', 'a') as f:
             f.write(str(test_acc)+'\n')
@@ -240,7 +240,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
 if __name__ == '__main__':
     current_dir = os.getcwd()
 
-    for _ in range(1):
+    for _ in range(50):
         # Path to the textfiles for the dataset
         data_file = os.path.join(current_dir, 'data', 'data_list.csv')
         img_dir = os.path.join(current_dir, 'data', 'croppedPics')
