@@ -16,7 +16,7 @@ from resnet18 import ResNet
 from imgdatagenerator_grayresnet import ImageDataGenerator
 
 
-def source_data(data_info_file, img_dir):
+def source_data(data_info_file, img_dir, rand_val=False):
     """Read sample information, get split train- and test-dataset."""
     # config sample number per class
     all_sample_num = 1500
@@ -40,6 +40,8 @@ def source_data(data_info_file, img_dir):
     train_labels = [0]*train_sample_num + [1]*train_sample_num
     val_labels = [0]*(all_sample_num-train_sample_num) + \
                  [1]*(all_sample_num-train_sample_num)
+    if rand_val:
+        list_shuffle(val_labels)
 
     return train_imgs, train_labels, val_imgs, val_labels
     
@@ -244,6 +246,7 @@ if __name__ == '__main__':
     data_file = os.path.join(current_dir, 'data', 'data_list.csv')
     img_dir = os.path.join(current_dir, 'data', 'croppedPics')
     train_imgs, train_labels, val_imgs, val_labels = source_data(data_file,
-                                                                     img_dir)
+                                                                 img_dir,
+                                                                 rand_val=True)
     model_train(train_imgs, train_labels, val_imgs, val_labels)
 
