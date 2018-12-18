@@ -16,16 +16,25 @@ from resnet18 import ResNet
 from imgdatagenerator_grayresnet import ImageDataGenerator
 
 
-def source_data(data_info_file, img_dir, rand_val=False):
+def source_data(data_info_file, img_dir, rand_val=False, gender=None):
     """Read sample information, get split train- and test-dataset."""
     # config sample number per class
-    all_sample_num = 1500
-    train_sample_num = 1350
+    #all_sample_num = 1500
+    #train_sample_num = 1350
+    all_sample_num = 1000
+    train_sample_num = 900
 
     # read sample info
     all_info = open(data_info_file).readlines()
     all_info.pop(0)
     all_info = [line.strip().split(',') for line in all_info]
+    # select specific gender samples
+    if gender=='m':
+        all_info = [line for line in all_info if int(line[1][16])%2==1]
+    elif gender=='f':
+        all_info = [line for line in all_info if int(line[1][16])%2==0]
+    else:
+        pass
     imgs = [os.path.join(img_dir, line[2]) for line in all_info]
     vals = [float(line[3]) for line in all_info]
     sorted_idx = np.argsort(vals)
@@ -47,9 +56,11 @@ def source_data(data_info_file, img_dir, rand_val=False):
     
 def model_train(train_imgs, train_labels, val_imgs, val_labels):
     # Learning params
-    learning_rate = 0.01
-    num_epochs = 100
-    batch_size = 60
+    init_lr = 0.001
+    change_lr_per_epoch = 20
+    num_epochs = 30
+    batch_size = 50
+    #batch_size = 60
 
     # Network params
     dropout_rate = 0.5
@@ -97,6 +108,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
     y = tf.placeholder(tf.float32, [batch_size, num_classes])
     is_train = tf.placeholder(tf.bool, name='is_train')
     #keep_prob = tf.placeholder(tf.float32)
+    lr = tf.placeholder(tf.float32)
 
     # Initialize model
     model = ResNet(x, num_classes, [], is_train)
@@ -124,7 +136,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
         #with tf.control_dependencies(update_ops):
         #    train_op = optimizer.apply_gradients(grads_and_vars=gradients)
         #optimizer = tf.train.AdamOptimizer(learning_rate)
-        optimizer = tf.train.MomentumOptimizer(learning_rate, 0.9)
+        optimizer = tf.train.MomentumOptimizer(lr, 0.9)
         with tf.control_dependencies(update_ops):
             train_op = optimizer.minimize(loss, var_list=var_list)
 
@@ -182,6 +194,10 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
 
             print("{} Epoch number: {}".format(datetime.now(), epoch+1))
 
+            # calculate learning rate
+            current_lr = 0.2**(epoch/change_lr_per_epoch) * init_lr
+            #print 'Current Learning Rate: %s'%(current_lr)
+
             # Initialize iterator with the training dataset
             sess.run(training_init_op)
             for step in range(train_batches_per_epoch):
@@ -190,12 +206,14 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
                 # And run the training op
                 sess.run(train_op, feed_dict={x: img_batch,
                                               y: label_batch,
-                                              is_train: True})
+                                              is_train: True,
+                                              lr: current_lr})
                 # Generate summary with the current batch of data and write to file
                 if step % display_step == 0:
                     s = sess.run(merged_summary, feed_dict={x: img_batch,
                                                             y: label_batch,
-                                                            is_train: False})
+                                                            is_train: False,
+                                                            lr: current_lr})
                     writer.add_summary(s, epoch*train_batches_per_epoch + step)
 
             # Test the model on the entire training set to check over-fitting
@@ -207,7 +225,8 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
                 img_batch, label_batch = sess.run(next_batch)
                 acc = sess.run(accuracy, feed_dict={x: img_batch,
                                                     y: label_batch,
-                                                    is_train: False})
+                                                    is_train: False,
+                                                    lr: current_lr})
                 val_acc += acc
                 val_count += 1
             val_acc /= val_count
@@ -224,16 +243,17 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
                 img_batch, label_batch = sess.run(next_batch)
                 acc, pl, tl = sess.run([accuracy, pred_label, true_label], feed_dict={x: img_batch,
                                                                      y: label_batch,
-                                                                     is_train: False})
+                                                                     is_train: False,
+                                                                     lr: current_lr})
                 test_acc += acc
                 test_count += 1
                 preds = np.concatenate((preds, pl))
                 trues = np.concatenate((trues, tl))
             test_acc /= test_count
             print("{} Test Accuracy = {:.4f}".format(datetime.now(), test_acc))
-            #print 'Confusion matrix'
-            #cm = sess.run(tf.confusion_matrix(preds, trues))
-            #print cm
+            print 'Confusion matrix'
+            cm = sess.run(tf.confusion_matrix(preds, trues))
+            print cm
         
         with open('test_acc.csv', 'a') as f:
             f.write(str(test_acc)+'\n')
@@ -247,6 +267,7 @@ if __name__ == '__main__':
     img_dir = os.path.join(current_dir, 'data', 'croppedPics')
     train_imgs, train_labels, val_imgs, val_labels = source_data(data_file,
                                                                  img_dir,
-                                                                 rand_val=True)
+                                                                 rand_val=False,
+                                                                 gender='m')
     model_train(train_imgs, train_labels, val_imgs, val_labels)
 
