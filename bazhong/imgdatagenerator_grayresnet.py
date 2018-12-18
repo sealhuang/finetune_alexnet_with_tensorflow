@@ -99,7 +99,6 @@ class ImageDataGenerator(object):
         one_hot = tf.one_hot(label, self.num_classes)
 
         # load and preprocess the image
-        print 'Load image %s'%(filename)
         img_string = tf.read_file(filename)
         img_decoded = tf.image.decode_jpeg(img_string, channels=3)
         img_resized = tf.image.resize_images(img_decoded, [256, 256])
