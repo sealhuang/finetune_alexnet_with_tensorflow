@@ -56,9 +56,10 @@ def source_data(data_info_file, img_dir, rand_val=False, gender=None):
     
 def model_train(train_imgs, train_labels, val_imgs, val_labels):
     # Learning params
-    init_lr = 0.001
-    change_lr_per_epoch = 20
-    num_epochs = 30
+    init_lr = 0.0001
+    change_lr_per_epoch = 15
+    lr_decay = 0.2
+    num_epochs = 20
     batch_size = 50
     #batch_size = 60
 
@@ -195,7 +196,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
             print("{} Epoch number: {}".format(datetime.now(), epoch+1))
 
             # calculate learning rate
-            current_lr = 0.2**(epoch/change_lr_per_epoch) * init_lr
+            current_lr = lr_decay**(epoch/change_lr_per_epoch) * init_lr
             #print 'Current Learning Rate: %s'%(current_lr)
 
             # Initialize iterator with the training dataset
@@ -267,7 +268,7 @@ if __name__ == '__main__':
     img_dir = os.path.join(current_dir, 'data', 'croppedPics')
     train_imgs, train_labels, val_imgs, val_labels = source_data(data_file,
                                                                  img_dir,
-                                                                 rand_val=False,
-                                                                 gender='m')
+                                                                 rand_val=True,
+                                                                 gender='f')
     model_train(train_imgs, train_labels, val_imgs, val_labels)
 

@@ -63,11 +63,9 @@ class ImageDataGenerator(object):
         if mode == 'training':
             data = data.map(self._parse_function_train,
                             num_parallel_calls=8)
-            data = data.prefetch(batch_size*10)
         elif mode == 'inference':
             data = data.map(self._parse_function_inference,
                             num_parallel_calls=8)
-            data = data.prefetch(batch_size*10)
         elif mode == 'test':
             data = data.map(self._parse_function_test,
                             num_parallel_calls=8)
@@ -80,6 +78,7 @@ class ImageDataGenerator(object):
 
         # create a new dataset with batches of images
         data = data.batch(batch_size)
+        data = data.prefetch(batch_size)
 
         self.data = data
 
