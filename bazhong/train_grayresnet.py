@@ -269,6 +269,6 @@ if __name__ == '__main__':
     train_imgs, train_labels, val_imgs, val_labels = source_data(data_file,
                                                                  img_dir,
                                                                  rand_val=True,
-                                                                 gender='f')
+                                                                 gender='m')
     model_train(train_imgs, train_labels, val_imgs, val_labels)
 
