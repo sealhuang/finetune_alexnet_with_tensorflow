@@ -24,7 +24,7 @@ class FCNet(object):
 
     def create(self):
         """Create the network graph."""
-        fc1 = fc(self.X, 1, 10, relu=True, name='fc1')
+        fc1 = fc(tf.expand_dims(self.X, 1), 1, 10, relu=True, name='fc1')
         fc2 = fc(fc1, 10, 100, relu=True, name='fc2')
         dropout2 = dropout(fc2, self.KEEP_PROB)
         fc3 = fc(dropout2, 100, 50, relu=True, name='fc3')
