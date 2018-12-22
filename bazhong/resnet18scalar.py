@@ -79,6 +79,8 @@ class ResNet(object):
             x = self._fc(x, 128, name='fc1')
             x = self._relu(x)
             x = tf.nn.dropout(x, self.KEEP_PROB)
+            x = self._fc(x, 128, name='fc2')
+            x = self._relu(x)
             x = self._fc(x, self.NUM_CLASSES)
         
         # model output
