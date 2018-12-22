@@ -102,6 +102,8 @@ class ImageDataGenerator(object):
         # convert label number into one-hot-encoding
         one_hot = tf.one_hot(label, self.num_classes)
 
+        age = age - 1
+
         # load and preprocess the image
         img_string = tf.read_file(filename)
         img_decoded = tf.image.decode_jpeg(img_string, channels=3)
@@ -123,6 +125,8 @@ class ImageDataGenerator(object):
         # convert label number into one-hot-encoding
         one_hot = tf.one_hot(label, self.num_classes)
 
+        age = age - 1
+        
         # load and preprocess the image
         img_string = tf.read_file(filename)
         img_decoded = tf.image.decode_jpeg(img_string, channels=3)
