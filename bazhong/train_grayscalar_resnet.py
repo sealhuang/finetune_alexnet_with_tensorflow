@@ -64,7 +64,7 @@ def source_data(data_info_file, img_dir, rand_val=False, gender=None):
     train_imgs = low_imgs[:train_sample_num] + high_imgs[:train_sample_num]
     train_ages = low_ages[:train_sample_num] + high_ages[:train_sample_num]
     val_imgs = low_imgs[train_sample_num:] + high_imgs[train_sample_num:]
-    val_ages = low_ages[train_sample_num:] + high_agess[train_sample_num:]
+    val_ages = low_ages[train_sample_num:] + high_ages[train_sample_num:]
     train_labels = [0]*train_sample_num + [1]*train_sample_num
     val_labels = [0]*(all_sample_num-train_sample_num) + \
                  [1]*(all_sample_num-train_sample_num)
