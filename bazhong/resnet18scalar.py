@@ -75,7 +75,8 @@ class ResNet(object):
             print('\tBuilding unit: %s' % scope.name)
             x = tf.reduce_mean(x, [1, 2])
             x = tf.concat([x, tf.expand_dims(self.SCALAR, 1)], axis=1)
-            x = self._fc(x, 128)
+            x = self._fc(x, 128, name='fc1')
+            x = self._bn(x, name='bn1')
             x = self._fc(x, self.NUM_CLASSES)
         
         # model output
