@@ -79,7 +79,7 @@ def model_train(train_imgs, train_ages, train_labels,
     init_lr = 0.01
     change_lr_per_epoch = 15
     lr_decay = 0.1
-    num_epochs = 30
+    num_epochs = 50
     batch_size = 50
 
     # Network params
@@ -128,11 +128,11 @@ def model_train(train_imgs, train_ages, train_labels,
     age = tf.placeholder(tf.float32, [batch_size])
     y = tf.placeholder(tf.float32, [batch_size, num_classes])
     is_train = tf.placeholder(tf.bool, name='is_train')
-    #keep_prob = tf.placeholder(tf.float32)
+    keep_prob = tf.placeholder(tf.float32)
     lr = tf.placeholder(tf.float32)
 
     # Initialize model
-    model = ResNet(x, age, num_classes, [], is_train, dropout_rate)
+    model = ResNet(x, age, num_classes, [], is_train, keep_prob)
 
     # Link variable to model output
     score = model.logits
@@ -229,14 +229,16 @@ def model_train(train_imgs, train_ages, train_labels,
                                               age: age_batch,
                                               y: label_batch,
                                               is_train: True,
-                                              lr: current_lr})
+                                              lr: current_lr,
+                                              keep_prob: dropout_rate})
                 # Generate summary with the current batch of data and write to file
                 if step % display_step == 0:
                     s = sess.run(merged_summary, feed_dict={x: img_batch,
                                                             age: age_batch,
                                                             y: label_batch,
                                                             is_train: False,
-                                                            lr: current_lr})
+                                                            lr: current_lr,
+                                                            keep_prob: 1.})
                     writer.add_summary(s, epoch*train_batches_per_epoch + step)
 
             # Test the model on the entire training set to check over-fitting
@@ -250,7 +252,8 @@ def model_train(train_imgs, train_ages, train_labels,
                                                     age: age_batch,
                                                     y: label_batch,
                                                     is_train: False,
-                                                    lr: current_lr})
+                                                    lr: current_lr,
+                                                    keep_prob: 1.})
                 val_acc += acc
                 val_count += 1
             val_acc /= val_count
@@ -265,7 +268,7 @@ def model_train(train_imgs, train_ages, train_labels,
             trues = []
             for _ in range(val_batches_per_epoch):
                 img_batch, age_batch, label_batch = sess.run(next_batch)
-                acc, pl, tl = sess.run([accuracy, pred_label, true_label], feed_dict={x:img_batch, age:age_batch, y:label_batch, is_train:False, lr:current_lr})
+                acc, pl, tl = sess.run([accuracy, pred_label, true_label], feed_dict={x:img_batch, age:age_batch, y:label_batch, is_train:False, lr:current_lr, keep_prob: 1.})
                 test_acc += acc
                 test_count += 1
                 preds = np.concatenate((preds, pl))
