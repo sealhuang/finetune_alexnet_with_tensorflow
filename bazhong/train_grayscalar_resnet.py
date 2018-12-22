@@ -79,7 +79,7 @@ def model_train(train_imgs, train_ages, train_labels,
     init_lr = 0.01
     change_lr_per_epoch = 15
     lr_decay = 0.1
-    num_epochs = 50
+    num_epochs = 100
     batch_size = 50
     #batch_size = 60
 
@@ -287,7 +287,7 @@ if __name__ == '__main__':
     # Path to the textfiles for the dataset
     data_file = os.path.join(current_dir, 'data', 'data_list.csv')
     img_dir = os.path.join(current_dir, 'data', 'croppedPics')
-    train_imgs, train_ages, train_labels, val_imgs, val_ages, val_labels = source_data(data_file, img_dir, rand_val=False, gender='m')
+    train_imgs, train_ages, train_labels, val_imgs, val_ages, val_labels = source_data(data_file, img_dir, rand_val=False, gender='f')
     model_train(train_imgs, train_ages, train_labels,
                 val_imgs, val_ages, val_labels)
 
