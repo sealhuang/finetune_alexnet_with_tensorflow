@@ -81,7 +81,6 @@ def model_train(train_imgs, train_ages, train_labels,
     lr_decay = 0.1
     num_epochs = 30
     batch_size = 50
-    #batch_size = 60
 
     # Network params
     dropout_rate = 0.5
@@ -133,7 +132,7 @@ def model_train(train_imgs, train_ages, train_labels,
     lr = tf.placeholder(tf.float32)
 
     # Initialize model
-    model = ResNet(x, age, num_classes, [], is_train)
+    model = ResNet(x, age, num_classes, [], is_train, dropout_rate)
 
     # Link variable to model output
     score = model.logits

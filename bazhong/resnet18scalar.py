@@ -8,7 +8,7 @@ import numpy as np
 class ResNet(object):
     """Implementation of 18-layer ResNet."""
     def __init__(self, images, scalars, num_classes, skip_layer, is_train,
-                 weights_path='DEFAULT'):
+                 keep_prob, weights_path='DEFAULT'):
         """Create the graph of ResNet-18 model.
 
         Args:
@@ -23,6 +23,7 @@ class ResNet(object):
         # Parse input arguments into variables
         self.X = images
         self.SCALAR = scalars
+        self.KEEP_PROB = keep_prob
         self.NUM_CLASSES = num_classes
         self.SKIP_LAYER = skip_layer
         # pretrained parameters config
@@ -77,6 +78,7 @@ class ResNet(object):
             x = tf.concat([x, tf.expand_dims(self.SCALAR, 1)], axis=1)
             x = self._fc(x, 128, name='fc1')
             x = self._relu(x)
+            x = tf.nn.dropout(x, self.KEEP_PROB)
             x = self._fc(x, self.NUM_CLASSES)
         
         # model output
