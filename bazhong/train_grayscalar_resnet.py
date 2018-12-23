@@ -79,7 +79,7 @@ def model_train(train_imgs, train_ages, train_labels,
     init_lr = 0.01
     change_lr_per_epoch = 40
     lr_decay = 0.5
-    num_epochs = 150
+    num_epochs = 80
     batch_size = 50
 
     # Network params
