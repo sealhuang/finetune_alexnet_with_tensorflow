@@ -19,10 +19,10 @@ from imgdatagenerator_grayscalar_resnet import ImageDataGenerator
 def source_data(data_info_file, img_dir, rand_val=False, gender=None):
     """Read sample information, get split train- and test-dataset."""
     # config sample number per class
-    #all_sample_num = 1500
-    #train_sample_num = 1350
-    all_sample_num = 1000
-    train_sample_num = 900
+    all_sample_num = 1500
+    train_sample_num = 1350
+    #all_sample_num = 1000
+    #train_sample_num = 900
 
     # read sample info
     all_info = open(data_info_file).readlines()
@@ -289,7 +289,7 @@ if __name__ == '__main__':
     # Path to the textfiles for the dataset
     data_file = os.path.join(current_dir, 'data', 'data_list.csv')
     img_dir = os.path.join(current_dir, 'data', 'croppedPics')
-    train_imgs, train_ages, train_labels, val_imgs, val_ages, val_labels = source_data(data_file, img_dir, rand_val=False, gender='f')
+    train_imgs, train_ages, train_labels, val_imgs, val_ages, val_labels = source_data(data_file, img_dir, rand_val=False, gender=None)
     model_train(train_imgs, train_ages, train_labels,
                 val_imgs, val_ages, val_labels)
 
