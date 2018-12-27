@@ -21,7 +21,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
     init_lr = 0.001
     lr_decay = 0.5
     epoch_decay = 5
-    num_epochs = 25
+    num_epochs = 20
     batch_size = 50
 
     # Network params
