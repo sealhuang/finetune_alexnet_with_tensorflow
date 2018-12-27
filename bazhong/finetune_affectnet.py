@@ -18,10 +18,10 @@ from imgdatagenerator import ImageDataGenerator
 
 def model_train(train_imgs, train_labels, val_imgs, val_labels):
     # Learning params
-    init_lr = 0.0002
+    init_lr = 0.0001
     lr_decay = 0.1
     epoch_decay = 10
-    num_epochs = 30
+    num_epochs = 20
     batch_size = 50
 
     # Network params
@@ -161,7 +161,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
             print("{} Epoch number: {}".format(datetime.now(), epoch+1))
 
             # calculate learning rate
-            current_lr = lr_decay**(epoch/epoch_decay) * init_lr
+            current_lr = lr_decay**((epoch+1)/epoch_decay) * init_lr
 
             # Initialize iterator with the training dataset
             sess.run(training_init_op)
