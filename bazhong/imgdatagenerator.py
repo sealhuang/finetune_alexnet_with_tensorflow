@@ -8,8 +8,8 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.data import Dataset
 
-IMAGENET_MEAN = tf.constant([255*0.485, 255*0.456, 255*0.406], dtype=tf.float32)
-IMAGENET_STD = tf.constant([255*0.229, 255*0.224, 255*0.225], dtype=tf.float32)
+IMAGENET_MEAN = tf.constant([255*0.651, 255*0.609, 255*0.600], dtype=tf.float32)
+IMAGENET_STD = tf.constant([255*0.289, 255*0.278, 255*0.294], dtype=tf.float32)
 
 class ImageDataGenerator(object):
     """Wrapper class around the Tensorflows dataset pipeline.
