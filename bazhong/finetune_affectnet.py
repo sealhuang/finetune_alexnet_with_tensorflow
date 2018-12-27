@@ -18,9 +18,11 @@ from imgdatagenerator import ImageDataGenerator
 
 def model_train(train_imgs, train_labels, val_imgs, val_labels):
     # Learning params
-    learning_rate = 0.0001
-    num_epochs = 60
-    batch_size = 30
+    init_lr = 0.001
+    lr_decay = 0.1
+    epoch_decay = 10
+    num_epochs = 50
+    batch_size = 50
 
     # Network params
     dropout_rate = 0.5
@@ -32,8 +34,8 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
 
     # Path for tf.summary.FileWriter and to store model checkpoints
     current_dir = os.getcwd()
-    filewriter_path = os.path.join(current_dir, 'log','cls_tensorboard')
-    checkpoint_path = os.path.join(current_dir, 'log','cls_checkpoints')
+    filewriter_path = os.path.join(current_dir, 'log','alex_cls_tensorboard')
+    checkpoint_path = os.path.join(current_dir, 'log','alex_cls_checkpoints')
 
     #-- Main Part of the finetuning Script.
 
@@ -69,6 +71,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
     y = tf.placeholder(tf.float32, [batch_size, num_classes])
     is_train = tf.placeholder(tf.bool, name='is_train')
     keep_prob = tf.placeholder(tf.float32)
+    lr = tf.placeholder(tf.float32)
 
     # Initialize model
     model = SalexNet(x, keep_prob, num_classes, train_layers, is_train)
@@ -96,7 +99,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
         #optimizer = tf.train.GradientDescentOptimizer(learning_rate)
         #train_op = optimizer.apply_gradients(grads_and_vars=gradients)
         #optimizer = tf.train.AdamOptimizer(learning_rate)
-        optimizer = tf.train.MomentumOptimizer(learning_rate, 0.9, use_nesterov=True)
+        optimizer = tf.train.MomentumOptimizer(lr, 0.9, use_nesterov=True)
         with tf.control_dependencies(update_ops):
             train_op = optimizer.minimize(loss, var_list=var_list)
 
@@ -157,6 +160,9 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
 
             print("{} Epoch number: {}".format(datetime.now(), epoch+1))
 
+            # calculate learning rate
+            current_lr = lr_decay**(epoch/epoch_decay) * init_lr
+
             # Initialize iterator with the training dataset
             sess.run(training_init_op)
             for step in range(train_batches_per_epoch):
@@ -166,13 +172,15 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
                 sess.run(train_op, feed_dict={x: img_batch,
                                               y: label_batch,
                                               keep_prob: dropout_rate,
-                                              is_train: True})
+                                              is_train: True,
+                                              lr: current_lr})
                 # Generate summary with the current batch of data and write to file
                 if step % display_step == 0:
                     s = sess.run(merged_summary, feed_dict={x: img_batch,
                                                             y: label_batch,
                                                             keep_prob: 1.,
-                                                            is_train: False})
+                                                            is_train: False,
+                                                            lr: current_lr})
                     writer.add_summary(s, epoch*train_batches_per_epoch + step)
 
             # Test the model on the entire training set to check over-fitting
@@ -185,7 +193,8 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
                 acc = sess.run(accuracy, feed_dict={x: img_batch,
                                                     y: label_batch,
                                                     keep_prob: 1.,
-                                                    is_train: False})
+                                                    is_train: False,
+                                                    lr: current_lr})
                 val_acc += acc
                 val_count += 1
             val_acc /= val_count
@@ -200,10 +209,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
             trues = []
             for _ in range(val_batches_per_epoch):
                 img_batch, label_batch = sess.run(next_batch)
-                acc, pl, tl = sess.run([accuracy, pred_label, true_label], feed_dict={x: img_batch,
-                                                                     y: label_batch,
-                                                                     keep_prob: 1.,
-                                                                     is_train: False})
+                acc, pl, tl = sess.run([accuracy, pred_label, true_label], feed_dict={x: img_batch, y: label_batch, keep_prob: 1., is_train: False, lr: current_lr})
                 test_acc += acc
                 test_count += 1
                 preds = np.concatenate((preds, pl))
