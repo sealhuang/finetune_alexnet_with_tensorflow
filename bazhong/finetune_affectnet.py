@@ -21,7 +21,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
     init_lr = 0.001
     lr_decay = 0.1
     epoch_decay = 10
-    num_epochs = 50
+    num_epochs = 20
     batch_size = 50
 
     # Network params
@@ -219,6 +219,9 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
             print 'Confusion matrix'
             cm = sess.run(tf.confusion_matrix(preds, trues))
             print cm
+
+        with open('test_acc.csv', 'a') as f:
+            f.write(str(test_acc)+'\n')
         
 
 if __name__ == '__main__':
