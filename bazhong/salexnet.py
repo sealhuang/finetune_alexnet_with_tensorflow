@@ -88,8 +88,9 @@ class SalexNet(object):
         dropout6 = dropout(fc6, self.KEEP_PROB)
 
         # 7th Layer: FC (w ReLu) -> Dropout
-        self.fc7 = fc(dropout6, 128, self.NUM_CLASSES, relu=False, name='fc7')
+        fc7 = fc(dropout6, 128, self.NUM_CLASSES, relu=False, name='fc7')
         #self.fc7 = fc(fc6, 128, self.NUM_CLASSES, relu=False, name='fc7')
+        self.logits = fc7
 
     def load_initial_weights(self, session):
         """Load weights from file into network.

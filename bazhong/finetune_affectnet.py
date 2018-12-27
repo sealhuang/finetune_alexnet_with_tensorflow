@@ -10,39 +10,12 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.data import Iterator
 from datetime import datetime
-from random import shuffle as list_shuffle
 
 from salexnet import SalexNet
+from datasource import source_data
 from imgdatagenerator import ImageDataGenerator
 
 
-def source_data(data_info_file, img_dir):
-    """Read sample information, get split train- and test-dataset."""
-    # config sample number per class
-    all_sample_num = 1500
-    train_sample_num = 1350
-
-    # read sample info
-    all_info = open(data_info_file).readlines()
-    all_info.pop(0)
-    all_info = [line.strip().split(',') for line in all_info]
-    imgs = [os.path.join(img_dir, line[2]) for line in all_info]
-    vals = [float(line[3]) for line in all_info]
-    sorted_idx = np.argsort(vals)
-    low_part = sorted_idx[0:all_sample_num]
-    high_part = sorted_idx[(-1*all_sample_num):]
-    low_imgs = [imgs[i] for i in low_part]
-    high_imgs = [imgs[i] for i in high_part]
-    list_shuffle(low_imgs)
-    list_shuffle(high_imgs)
-    train_imgs = low_imgs[:train_sample_num] + high_imgs[:train_sample_num]
-    val_imgs = low_imgs[train_sample_num:] + high_imgs[train_sample_num:]
-    train_labels = [0]*train_sample_num + [1]*train_sample_num
-    val_labels = [0]*(all_sample_num-train_sample_num) + \
-                 [1]*(all_sample_num-train_sample_num)
-
-    return train_imgs, train_labels, val_imgs, val_labels
-    
 def model_train(train_imgs, train_labels, val_imgs, val_labels):
     # Learning params
     learning_rate = 0.0001
@@ -101,7 +74,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
     model = AlexNet(x, keep_prob, num_classes, train_layers, is_train)
 
     # Link variable to model output
-    score = model.fc7
+    score = model.logits
 
     # List of trainable variables of the layers we want to train
     var_list = [v for v in tf.trainable_variables()
@@ -123,7 +96,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
         #optimizer = tf.train.GradientDescentOptimizer(learning_rate)
         #train_op = optimizer.apply_gradients(grads_and_vars=gradients)
         #optimizer = tf.train.AdamOptimizer(learning_rate)
-        optimizer = tf.train.MomentumOptimizer(learning_rate, 0.95, use_nesterov=True)
+        optimizer = tf.train.MomentumOptimizer(learning_rate, 0.9, use_nesterov=True)
         with tf.control_dependencies(update_ops):
             train_op = optimizer.minimize(loss, var_list=var_list)
 
@@ -249,6 +222,6 @@ if __name__ == '__main__':
     data_file = os.path.join(current_dir, 'data', 'data_list.csv')
     img_dir = os.path.join(current_dir, 'data', 'croppedPics')
     train_imgs, train_labels, val_imgs, val_labels = source_data(data_file,
-                                                                 img_dir)
+                                    img_dir, rand_val=False, gender=None)
     model_train(train_imgs, train_labels, val_imgs, val_labels)
 
