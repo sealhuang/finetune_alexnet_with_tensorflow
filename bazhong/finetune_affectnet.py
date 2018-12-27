@@ -18,7 +18,7 @@ from imgdatagenerator import ImageDataGenerator
 
 def model_train(train_imgs, train_labels, val_imgs, val_labels):
     # Learning params
-    init_lr = 0.0001
+    init_lr = 0.001
     lr_decay = 0.1
     epoch_decay = 10
     num_epochs = 20
@@ -27,7 +27,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
     # Network params
     dropout_rate = 0.5
     num_classes = 2
-    train_layers = ['fc7', 'fc6', 'bn5', 'conv5', 'conv4']
+    train_layers = ['fc7', 'fc6', 'bn5', 'conv5', 'conv4', 'conv3']
 
     # How often we want to write the tf.summary data to disk
     display_step = 15

@@ -84,7 +84,7 @@ class SalexNet(object):
         # 6th Layer: Flatten -> FC (w ReLu) -> Dropout
         flattened = tf.reshape(bn5, [-1, 256])
         #flattened = tf.reshape(pool5, [-1, 256])
-        fc6 = fc(flattened, 256, 128, name='fc6')
+        fc6 = fc(flattened, 256, 128, relu=True, name='fc6')
         dropout6 = dropout(fc6, self.KEEP_PROB)
 
         # 7th Layer: FC (w ReLu) -> Dropout

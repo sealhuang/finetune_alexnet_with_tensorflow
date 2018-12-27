@@ -35,8 +35,8 @@ def source_data(data_info_file, img_dir, rand_val=False, gender=None):
         ages.append(a)
     
     # select samples within specific age range
-    vals = [vals[i] for i in range(len(ages)) if ages[i]>=1.5]
     imgs = [imgs[i] for i in range(len(ages)) if ages[i]>=1.5]
+    vals = [vals[i] for i in range(len(ages)) if ages[i]>=1.5]
     ages = [item for item in ages if item>=1.5]
 
     # sort the IQs, and split dataset into high and low parts
@@ -45,27 +45,30 @@ def source_data(data_info_file, img_dir, rand_val=False, gender=None):
     high_part = sorted_idx[(-1*all_sample_num):]
     low_imgs = [imgs[i] for i in low_part]
     high_imgs = [imgs[i] for i in high_part]
-    low_ages = [ages[i] for i in low_part]
-    high_ages = [ages[i] for i in high_part]
+    #low_ages = [ages[i] for i in low_part]
+    #high_ages = [ages[i] for i in high_part]
     # shuffle the sample parts
     rand_low_idx = range(len(low_imgs))
     list_shuffle(rand_low_idx)
     low_imgs = [low_imgs[i] for i in rand_low_idx]
-    low_ages = [low_ages[i] for i in rand_low_idx]
+    #low_ages = [low_ages[i] for i in rand_low_idx]
     rand_high_idx = range(len(high_imgs))
     list_shuffle(rand_high_idx)
     high_imgs = [high_imgs[i] for i in rand_high_idx]
-    high_ages = [high_ages[i] for i in rand_high_idx]
+    #high_ages = [high_ages[i] for i in rand_high_idx]
     
     train_imgs = low_imgs[:train_sample_num] + high_imgs[:train_sample_num]
-    train_ages = low_ages[:train_sample_num] + high_ages[:train_sample_num]
+    #train_ages = low_ages[:train_sample_num] + high_ages[:train_sample_num]
     val_imgs = low_imgs[train_sample_num:] + high_imgs[train_sample_num:]
-    val_ages = low_ages[train_sample_num:] + high_ages[train_sample_num:]
+    #val_ages = low_ages[train_sample_num:] + high_ages[train_sample_num:]
     train_labels = [0]*train_sample_num + [1]*train_sample_num
     val_labels = [0]*(all_sample_num-train_sample_num) + \
                  [1]*(all_sample_num-train_sample_num)
     if rand_val:
         list_shuffle(val_labels)
+
+    print 'Training samples %s'%(len(train_imgs))
+    print 'Validation samples %s'%(len(val_imgs))
 
     return train_imgs, train_labels, val_imgs, val_labels
     
