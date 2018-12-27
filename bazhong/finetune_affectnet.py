@@ -71,7 +71,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
     keep_prob = tf.placeholder(tf.float32)
 
     # Initialize model
-    model = AlexNet(x, keep_prob, num_classes, train_layers, is_train)
+    model = SalexNet(x, keep_prob, num_classes, train_layers, is_train)
 
     # Link variable to model output
     score = model.logits
