@@ -3,7 +3,7 @@
 
 import numpy as np
 
-def load_raw_data(data_file):
+def load_raw_data(data_file='norm_landmark_data_list.csv'):
     data = open(data_file).readlines()
     data = [line.strip().split(',') for line in data]
     ids = [line[0].split('_')[0] for line in data]

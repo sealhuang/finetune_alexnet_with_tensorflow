@@ -19,10 +19,10 @@ from imgdatagenerator_grayscalar_resnet import ImageDataGenerator
 def source_data(data_info_file, img_dir, rand_val=False, gender=None):
     """Read sample information, get split train- and test-dataset."""
     # config sample number per class
-    all_sample_num = 1500
-    train_sample_num = 1350
-    #all_sample_num = 1000
-    #train_sample_num = 900
+    #all_sample_num = 1500
+    #train_sample_num = 1350
+    all_sample_num = 1000
+    train_sample_num = 900
 
     # read sample info
     all_info = open(data_info_file).readlines()
@@ -43,6 +43,11 @@ def source_data(data_info_file, img_dir, rand_val=False, gender=None):
         a = 2008 - birth_year + (12-birth_month)*1.0/12
         ages.append(a)
     vals = [float(line[3]) for line in all_info]
+    
+    # select samples within specific age range
+    vals = [vals[i] for i in range(len(ages)) if ages[i]>=1.5]
+    ages = [item for item in ages if item>=1.5]
+
     # sort the IQs, and split dataset into high and low parts
     sorted_idx = np.argsort(vals)
     low_part = sorted_idx[0:all_sample_num]
@@ -77,9 +82,9 @@ def model_train(train_imgs, train_ages, train_labels,
                 val_imgs, val_ages, val_labels):
     # Learning params
     init_lr = 0.01
-    change_lr_per_epoch = 40
-    lr_decay = 0.5
-    num_epochs = 80
+    change_lr_per_epoch = 15
+    lr_decay = 0.2
+    num_epochs = 50
     batch_size = 50
 
     # Network params
