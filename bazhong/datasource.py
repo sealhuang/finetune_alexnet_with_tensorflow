@@ -18,7 +18,7 @@ def source_data(data_info_file, img_dir, rand_val=False, gender=None):
     all_info = open(data_info_file).readlines()
     all_info.pop(0)
     all_info = [line.strip().split(',') for line in all_info]
-    # select specific gender samples
+    # select samples of specific gender
     if gender=='m':
         all_info = [line for line in all_info if int(line[1][16])%2==1]
     elif gender=='f':
@@ -38,6 +38,7 @@ def source_data(data_info_file, img_dir, rand_val=False, gender=None):
     imgs = [imgs[i] for i in range(len(ages)) if ages[i]>=1.5]
     vals = [vals[i] for i in range(len(ages)) if ages[i]>=1.5]
     ages = [item for item in ages if item>=1.5]
+    print '%s samples collected'%(len(imgs))
 
     # sort the IQs, and split dataset into high and low parts
     sorted_idx = np.argsort(vals)
