@@ -12,7 +12,7 @@ from tensorflow.data import Iterator
 from datetime import datetime
 
 from salexnet import SalexNet
-from datasource import source_data_expand
+from datasource import source_data_with_age_sampling
 from imgdatagenerator import ImageDataGenerator
 
 
@@ -235,7 +235,7 @@ if __name__ == '__main__':
     # Path to the textfiles for the dataset
     data_file = os.path.join(current_dir, 'data', 'data_list.csv')
     img_dir = os.path.join(current_dir, 'data', 'croppedPics')
-    train_imgs, train_labels, val_imgs, val_labels = source_data_expand(data_file,
-                                    img_dir, rand_val=True, gender=None)
+    train_imgs, train_labels, val_imgs, val_labels = source_data_with_age_sampling(data_file,
+                                    img_dir, rand_val=False, gender=None)
     model_train(train_imgs, train_labels, val_imgs, val_labels)
 
