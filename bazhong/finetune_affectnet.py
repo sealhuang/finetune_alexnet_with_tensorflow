@@ -20,7 +20,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
     # Learning params
     init_lr = 0.001
     lr_decay = 0.2
-    epoch_decay = 30
+    epoch_decay = 100
     num_epochs = 80
     batch_size = 50
 
