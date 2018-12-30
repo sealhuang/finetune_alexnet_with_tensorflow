@@ -12,16 +12,16 @@ from tensorflow.data import Iterator
 from datetime import datetime
 
 from salexnet import SalexNet
-from datasource import source_data
+from datasource import source_data_expand
 from imgdatagenerator import ImageDataGenerator
 
 
 def model_train(train_imgs, train_labels, val_imgs, val_labels):
     # Learning params
     init_lr = 0.001
-    lr_decay = 0.1
+    lr_decay = 0.2
     epoch_decay = 15
-    num_epochs = 25
+    num_epochs = 40
     batch_size = 50
 
     # Network params
@@ -155,6 +155,8 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
         print("{} Open Tensorboard at --logdir {}".format(datetime.now(),
                                                           filewriter_path))
 
+        test_acc_list = []
+
         # Loop over number of epochs
         for epoch in range(num_epochs):
 
@@ -220,11 +222,10 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
             cm = sess.run(tf.confusion_matrix(preds, trues))
             print cm
 
-            with open('test_acc.csv', 'a') as f:
-                f.write(str(test_acc)+',')
+            test_acc_list.append(test_acc)
         
         with open('test_acc.csv', 'a') as f:
-            f.write('\n')
+            f.write(','.join([str(item) for item in test_acc_list])+'\n')
 
         
 
@@ -234,7 +235,7 @@ if __name__ == '__main__':
     # Path to the textfiles for the dataset
     data_file = os.path.join(current_dir, 'data', 'data_list.csv')
     img_dir = os.path.join(current_dir, 'data', 'croppedPics')
-    train_imgs, train_labels, val_imgs, val_labels = source_data(data_file,
-                                    img_dir, rand_val=False, gender=None)
+    train_imgs, train_labels, val_imgs, val_labels = source_data_expand(data_file,
+                                    img_dir, rand_val=True, gender=None)
     model_train(train_imgs, train_labels, val_imgs, val_labels)
 
