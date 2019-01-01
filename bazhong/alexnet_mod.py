@@ -25,7 +25,7 @@ import tensorflow as tf
 import numpy as np
 
 
-class SalexNet(object):
+class AlexNetMod(object):
     """Implementation of the AlexNet."""
 
     def __init__(self, x, keep_prob, num_classes, skip_layer, is_train,
@@ -76,21 +76,23 @@ class SalexNet(object):
 
         # 5th Layer: Conv (w ReLu) -> Pool splitted into two groups
         conv5 = conv(conv4, 3, 3, 256, 1, 1, groups=2, name='conv5')
-        pool5 = tf.reduce_mean(conv5, axis=[1, 2])
-        bn5 = tf.layers.batch_normalization(pool5, axis=1,
-                                            training=self.IS_TRAIN, name='bn5')
-        #pool5 = max_pool(conv5, 3, 3, 2, 2, padding='VALID', name='pool5')
+        #pool5 = tf.reduce_mean(conv5, axis=[1, 2])
+        #bn5 = tf.layers.batch_normalization(pool5, axis=1,
+        #                                    training=self.IS_TRAIN, name='bn5')
+        pool5 = max_pool(conv5, 3, 3, 2, 2, padding='VALID', name='pool5')
 
         # 6th Layer: Flatten -> FC (w ReLu) -> Dropout
-        flattened = tf.reshape(bn5, [-1, 256])
-        #flattened = tf.reshape(pool5, [-1, 256])
-        fc6 = fc(flattened, 256, 128, relu=True, name='fc6')
+        flattened = tf.reshape(pool5, [-1, 6*6*256])
+        #flattened = tf.reshape(bn5, [-1, 256])
+        fc6 = fc(flattened, 6*6*256, 1024, relu=True, name='fc6')
         dropout6 = dropout(fc6, self.KEEP_PROB)
 
+        fc7 = fc(dropout6, 1024, 256, relu=True, name='fc7')
+        dropout7 = dropout(fc7, self.KEEP_PROB)
+        
         # 7th Layer: FC (w ReLu) -> Dropout
-        fc7 = fc(dropout6, 128, self.NUM_CLASSES, relu=False, name='fc7')
-        #self.fc7 = fc(fc6, 128, self.NUM_CLASSES, relu=False, name='fc7')
-        self.logits = fc7
+        fc8 = fc(dropout7, 256, self.NUM_CLASSES, relu=False, name='fc8')
+        self.logits = fc8
 
     def load_initial_weights(self, session):
         """Load weights from file into network.

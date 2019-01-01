@@ -11,7 +11,7 @@ import tensorflow as tf
 from tensorflow.data import Iterator
 from datetime import datetime
 
-from salexnet import SalexNet
+from alexnet_mod import AlexNetMod
 from datasource import source_data_with_age_sampling
 from imgdatagenerator import ImageDataGenerator
 
@@ -27,7 +27,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
     # Network params
     dropout_rate = 0.5
     num_classes = 2
-    train_layers = ['fc7', 'fc6', 'bn5', 'conv5', 'conv4', 'conv3']
+    train_layers = ['fc8', 'fc7', 'fc6', 'conv5', 'conv4', 'conv3']
 
     # How often we want to write the tf.summary data to disk
     display_step = 15
@@ -74,7 +74,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
     lr = tf.placeholder(tf.float32)
 
     # Initialize model
-    model = SalexNet(x, keep_prob, num_classes, train_layers, is_train)
+    model = AlexNetMod(x, keep_prob, num_classes, train_layers, is_train)
 
     # Link variable to model output
     score = model.logits
