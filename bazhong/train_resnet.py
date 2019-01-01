@@ -10,39 +10,12 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.data import Iterator
 from datetime import datetime
-from random import shuffle as list_shuffle
 
 from resnet18 import ResNet
+from datasource import source_data_with_age_sampling
 from imgdatagenerator_resnet import ImageDataGenerator
 
 
-def source_data(data_info_file, img_dir):
-    """Read sample information, get split train- and test-dataset."""
-    # config sample number per class
-    all_sample_num = 1500
-    train_sample_num = 1350
-
-    # read sample info
-    all_info = open(data_info_file).readlines()
-    all_info.pop(0)
-    all_info = [line.strip().split(',') for line in all_info]
-    imgs = [os.path.join(img_dir, line[2]) for line in all_info]
-    vals = [float(line[3]) for line in all_info]
-    sorted_idx = np.argsort(vals)
-    low_part = sorted_idx[0:all_sample_num]
-    high_part = sorted_idx[(-1*all_sample_num):]
-    low_imgs = [imgs[i] for i in low_part]
-    high_imgs = [imgs[i] for i in high_part]
-    list_shuffle(low_imgs)
-    list_shuffle(high_imgs)
-    train_imgs = low_imgs[:train_sample_num] + high_imgs[:train_sample_num]
-    val_imgs = low_imgs[train_sample_num:] + high_imgs[train_sample_num:]
-    train_labels = [0]*train_sample_num + [1]*train_sample_num
-    val_labels = [0]*(all_sample_num-train_sample_num) + \
-                 [1]*(all_sample_num-train_sample_num)
-
-    return train_imgs, train_labels, val_imgs, val_labels
-    
 def model_train(train_imgs, train_labels, val_imgs, val_labels):
     # Learning params
     learning_rate = 0.01
@@ -240,7 +213,6 @@ if __name__ == '__main__':
     # Path to the textfiles for the dataset
     data_file = os.path.join(current_dir, 'data', 'data_list.csv')
     img_dir = os.path.join(current_dir, 'data', 'croppedPics')
-    train_imgs, train_labels, val_imgs, val_labels = source_data(data_file,
-                                                                 img_dir)
+    train_imgs, train_labels, val_imgs, val_labels = source_data_with_age_sampling(data_file, img_dir, rand_val=False, gender=None)
     model_train(train_imgs, train_labels, val_imgs, val_labels)
 
