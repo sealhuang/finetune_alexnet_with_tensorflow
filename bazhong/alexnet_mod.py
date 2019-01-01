@@ -83,17 +83,17 @@ class AlexNetMod(object):
 
         # 6th Layer: Flatten -> FC (w ReLu) -> Dropout
         flattened = tf.reshape(pool5, [-1, 6*6*256])
-        bn5 = tf.layers.batch_normalization(flattened, axis=1,
-                                            training=self.IS_TRAIN, name='bn5')
+        #bn5 = tf.layers.batch_normalization(flattened, axis=1,
+        #                                    training=self.IS_TRAIN, name='bn5')
         #flattened = tf.reshape(bn5, [-1, 256])
-        fc6 = fc(bn5, 6*6*256, 1024, relu=True, name='fc6')
+        fc6 = fc(flattened, 6*6*256, 1024, relu=True, name='fc6')
         dropout6 = dropout(fc6, self.KEEP_PROB)
 
-        fc7 = fc(dropout6, 1024, 256, relu=True, name='fc7')
+        fc7 = fc(dropout6, 1024, 128, relu=True, name='fc7')
         dropout7 = dropout(fc7, self.KEEP_PROB)
         
         # 7th Layer: FC (w ReLu) -> Dropout
-        fc8 = fc(dropout7, 256, self.NUM_CLASSES, relu=False, name='fc8')
+        fc8 = fc(dropout7, 128, self.NUM_CLASSES, relu=False, name='fc8')
         self.logits = fc8
 
     def load_initial_weights(self, session):
