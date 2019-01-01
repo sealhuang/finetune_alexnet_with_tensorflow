@@ -80,11 +80,11 @@ class AlexNetMod(object):
         #bn5 = tf.layers.batch_normalization(pool5, axis=1,
         #                                    training=self.IS_TRAIN, name='bn5')
         pool5 = max_pool(conv5, 3, 3, 2, 2, padding='VALID', name='pool5')
+        bn5 = tf.layers.batch_normalization(pool5, axis=0,
+                                            training=self.IS_TRAIN, name='bn5')
 
         # 6th Layer: Flatten -> FC (w ReLu) -> Dropout
-        flattened = tf.reshape(pool5, [-1, 6*6*256])
-        #bn5 = tf.layers.batch_normalization(flattened, axis=1,
-        #                                    training=self.IS_TRAIN, name='bn5')
+        flattened = tf.reshape(bn5, [-1, 6*6*256])
         #flattened = tf.reshape(bn5, [-1, 256])
         fc6 = fc(flattened, 6*6*256, 1024, relu=True, name='fc6')
         dropout6 = dropout(fc6, self.KEEP_PROB)

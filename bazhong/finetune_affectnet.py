@@ -18,10 +18,10 @@ from imgdatagenerator import ImageDataGenerator
 
 def model_train(train_imgs, train_labels, val_imgs, val_labels):
     # Learning params
-    init_lr = 0.0001
+    init_lr = 0.001
     lr_decay = 0.2
-    epoch_decay = 50
-    num_epochs = 80
+    epoch_decay = 200
+    num_epochs = 100
     batch_size = 50
 
     # Network params
@@ -228,7 +228,6 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
             f.write(','.join([str(item) for item in test_acc_list])+'\n')
 
         
-
 if __name__ == '__main__':
     current_dir = os.getcwd()
 
