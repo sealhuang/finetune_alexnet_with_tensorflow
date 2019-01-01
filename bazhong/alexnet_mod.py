@@ -151,7 +151,7 @@ def conv(x, filter_height, filter_width, num_filters, stride_y, stride_x, name,
                                                     num_filters],
                                   dtype=tf.float32,
                                   initializer=tf.random_normal_initializer(
-                                      stddev=np.sqrt(2.0/input_channels*groups/input_channel*groups/num_filters)))
+                                      stddev=np.sqrt(2.0/input_channels*groups/input_channels*groups/num_filters)))
         biases = tf.get_variable('biases', shape=[num_filters])
 
     if groups == 1:
