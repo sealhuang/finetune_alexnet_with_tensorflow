@@ -18,7 +18,7 @@ from imgdatagenerator import ImageDataGenerator
 
 def model_train(train_imgs, train_labels, val_imgs, val_labels):
     # Learning params
-    init_lr = 0.0001
+    init_lr = 0.1
     lr_decay = 0.2
     epoch_decay = 200
     num_epochs = 100
