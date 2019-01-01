@@ -86,7 +86,7 @@ class AlexNetMod(object):
         bn5 = tf.layers.batch_normalization(flattened, axis=1,
                                             training=self.IS_TRAIN, name='bn5')
         #flattened = tf.reshape(bn5, [-1, 256])
-        fc6 = fc(flattened, 6*6*256, 1024, relu=True, name='fc6')
+        fc6 = fc(bn5, 6*6*256, 1024, relu=True, name='fc6')
         dropout6 = dropout(fc6, self.KEEP_PROB)
 
         fc7 = fc(dropout6, 1024, 256, relu=True, name='fc7')
