@@ -27,7 +27,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
     # Network params
     dropout_rate = 0.5
     num_classes = 2
-    train_layers = ['fc8', 'fc7', 'fc6', 'bn5', 'conv5', 'conv4', 'conv3','conv2']
+    train_layers = ['fc8', 'fc7', 'fc6', 'bn5', 'conv5', 'conv4', 'conv3']
 
     # How often we want to write the tf.summary data to disk
     display_step = 15
