@@ -19,8 +19,8 @@ from imgdatagenerator_resnet import ImageDataGenerator
 def model_train(train_imgs, train_labels, val_imgs, val_labels):
     # Learning params
     learning_rate = 0.01
-    num_epochs = 500
-    batch_size = 30
+    num_epochs = 100
+    batch_size = 50
 
     # Network params
     dropout_rate = 0.5
