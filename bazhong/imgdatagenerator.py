@@ -8,8 +8,8 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.data import Dataset
 
-IMAGENET_MEAN = tf.constant([0.651, 0.609, 0.600], dtype=tf.float32)
-IMAGENET_STD = tf.constant([0.289, 0.278, 0.294], dtype=tf.float32)
+IMG_MEAN = tf.constant([171.08, 148.2, 139.49], dtype=tf.float32)
+IMG_STD = tf.constant([32.07, 25.23, 25.67], dtype=tf.float32)
 
 class ImageDataGenerator(object):
     """Wrapper class around the Tensorflows dataset pipeline.
@@ -102,16 +102,15 @@ class ImageDataGenerator(object):
         # load and preprocess the image
         img_string = tf.read_file(filename)
         img_decoded = tf.image.decode_jpeg(img_string, channels=3)
-        img_decoded = tf.div(img_decoded, 255)
-        img_resized = tf.image.resize_images(img_decoded, [256, 256])
+        img_resized = tf.image.resize_images(img_decoded, [250, 250])
         """
         Dataaugmentation comes here.
         """
         img_distorted = tf.random_crop(img_resized, [227, 227, 3])
         img_distorted = tf.image.random_flip_left_right(img_distorted)
-        img_distorted = tf.image.random_brightness(img_distorted, max_delta=0.3)
-        img_centered = tf.subtract(img_distorted, IMAGENET_MEAN)
-        img_centered = tf.div(img_centered, IMAGENET_STD)
+        #img_distorted = tf.image.random_brightness(img_distorted, max_delta=0.3)
+        img_centered = tf.subtract(img_distorted, IMG_MEAN)
+        img_centered = tf.div(img_centered, IMG_STD)
 
         # RGB -> BGR
         img_bgr = img_centered[:, :, ::-1]
@@ -126,10 +125,9 @@ class ImageDataGenerator(object):
         # load and preprocess the image
         img_string = tf.read_file(filename)
         img_decoded = tf.image.decode_jpeg(img_string, channels=3)
-        img_decoded = tf.div(img_decoded, 255)
         img_resized = tf.image.resize_images(img_decoded, [227, 227])
-        img_centered = tf.subtract(img_resized, IMAGENET_MEAN)
-        img_centered = tf.div(img_centered, IMAGENET_STD)
+        img_centered = tf.subtract(img_resized, IMG_MEAN)
+        img_centered = tf.div(img_centered, IMG_STD)
 
         # RGB -> BGR
         img_bgr = img_centered[:, :, ::-1]

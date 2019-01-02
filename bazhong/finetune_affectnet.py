@@ -18,14 +18,14 @@ from imgdatagenerator import ImageDataGenerator
 
 def model_train(train_imgs, train_labels, val_imgs, val_labels):
     # Learning params
-    init_lr = 0.001
-    lr_decay = 0.2
-    epoch_decay = 200
-    num_epochs = 100
+    init_lr = 0.01
+    lr_decay = 0.5
+    epoch_decay = 100
+    num_epochs = 200
     batch_size = 50
 
     # Network params
-    dropout_rate = 0.7
+    dropout_rate = 1.0
     num_classes = 2
     train_layers = ['fc8', 'fc7', 'fc6', 'bn5', 'conv5', 'conv4', 'conv3', 'conv2', 'conv1']
 

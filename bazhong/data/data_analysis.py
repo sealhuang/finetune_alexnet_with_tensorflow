@@ -1,7 +1,10 @@
 # emacs: -*- mode: python; py-indent-offset: 4; indent-tabs-mode: nil -*-
 # vi: set ft=python sts=4 ts=4 sw=4 et:
 
+import os
 import numpy as np
+from matplotlib.pyplot import imread
+
 
 def load_landmark_data(data_file='norm_landmark_data_list.csv'):
     data = open(data_file).readlines()
@@ -66,4 +69,23 @@ def age_sampling(data):
         iq_list.append(np.concatenate((tmp_iq[:snum], tmp_iq[-snum:])))
         age_list.append(np.concatenate((tmp_age[:snum], tmp_age[-snum:])))
     return iq_list, age_list
+
+def get_img_stats(img_dir, data_file='data_list.csv'):
+    """Get mean and std of images."""
+    data = open(data_file).readlines()
+    data.pop(0)
+    data = [line.strip().split(',') for line in data]
+    imgs = [os.path.join(img_dir, line[2]) for line in data]
+
+    img_vals = []
+    for img in imgs:
+        x = imread(img)
+        x = x.reshape(-1, 3)
+        mx = x.mean(axis=0)
+        img_vals.append(mx)
+    img_vals = np.array(img_vals)
+    print img_vals.shape
+    m = img_vals.mean(axis=0)
+    s = img_vals.std(axis=0)
+    return m, s
 
