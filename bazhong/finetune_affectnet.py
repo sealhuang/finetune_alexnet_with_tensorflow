@@ -21,7 +21,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
     init_lr = 0.01
     lr_decay = 0.5
     epoch_decay = 100
-    num_epochs = 100
+    num_epochs = 50
     batch_size = 50
 
     # Network params
@@ -235,6 +235,6 @@ if __name__ == '__main__':
     data_file = os.path.join(current_dir, 'data', 'data_list.csv')
     img_dir = os.path.join(current_dir, 'data', 'croppedPics')
     train_imgs, train_labels, val_imgs, val_labels = source_data_with_age_sampling(data_file,
-                                    img_dir, rand_val=False, gender=None)
+                                    img_dir, rand_val=True, gender=None)
     model_train(train_imgs, train_labels, val_imgs, val_labels)
 
