@@ -198,7 +198,7 @@ class LandmarkDataGenerator(object):
             self._shuffle_lists()
 
         # convert lists to TF tensor
-        self.landmarks = tf.convert_to_tensor(self.landmarks, dtype=tf.float32)
+        self.landmarks = tf.convert_to_tensor(self.landmark_list, dtype=tf.float32)
         self.labels = tf.convert_to_tensor(self.label_list, dtype=tf.int32)
 
         # create dataset
@@ -245,7 +245,7 @@ class LandmarkDataGenerator(object):
         # convert label number into one-hot-encoding
         one_hot = tf.one_hot(label, self.num_classes)
 
-        norm_lm = tf.substract(landmark, LM_MEAN)
+        norm_lm = tf.subtract(landmark, LM_MEAN)
         norm_lm = tf.div(norm_lm, LM_STD)
 
         return norm_lm, one_hot
@@ -255,7 +255,7 @@ class LandmarkDataGenerator(object):
         # convert label number into one-hot-encoding
         one_hot = tf.one_hot(label, self.num_classes)
 
-        norm_lm = tf.substract(landmark, LM_MEAN)
+        norm_lm = tf.subtract(landmark, LM_MEAN)
         norm_lm = tf.div(norm_lm, LM_STD)
 
         return norm_lm, one_hot

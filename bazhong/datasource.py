@@ -339,5 +339,5 @@ def source_landmark_with_age_sampling(data_file, rand_val=False, gender=None):
     print 'Training samples %s'%(len(train_landmarks))
     print 'Validation samples %s'%(len(val_landmarks))
 
-    return train_landamrks, train_labels, val_landmarks, val_labels
+    return train_landmarks, train_labels, val_landmarks, val_labels
  

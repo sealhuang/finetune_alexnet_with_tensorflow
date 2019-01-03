@@ -10,21 +10,22 @@ from tensorflow.data import Iterator
 from datetime import datetime
 
 from fcnet import FCNet
+from datasource import source_landmark_with_age_sampling
 from imgdatagenerator import LandmarkDataGenerator
 
 
 def model_train(train_landmarks, train_labels, val_landmarks, val_labels):
     # learning params
-    init_lr = 0.01
+    init_lr = 0.001
     lr_decay = 0.1
     epoch_decay = 100
-    num_epochs = 100
+    num_epochs = 30
     batch_size = 50
 
     # Network params
-    dropout_rate = 0.8
+    dropout_rate = 0.5
     num_classes = 2
-    train_layers = ['fc1', 'fc2', 'fc3', 'fc4', 'bn4','fc5']]
+    train_layers = ['fc1', 'fc2', 'fc3', 'fc4', 'bn4','fc5']
     
     # How often we want to write the tf.summary data to disk
     display_step = 15
@@ -83,7 +84,7 @@ def model_train(train_landmarks, train_labels, val_landmarks, val_labels):
     # Op for calculating the loss
     with tf.name_scope("cross_ent"):
         logits = tf.nn.softmax_cross_entropy_with_logits(logits=score,
-                                                         label=y)
+                                                         labels=y)
         loss = tf.reduce_mean(logits)
 
     # Train op
@@ -230,6 +231,6 @@ if __name__ == '__main__':
 
     # path to the textfiles for the dataset
     data_file = os.path.join(current_dir, 'data', 'norm_landmark_data_list.csv')
-    train_landmarks, train_labels, val_landmarks, val_labels = source_landmarks_with_age_sampling(data_file, rand_val=False, gender=None)
+    train_landmarks, train_labels, val_landmarks, val_labels = source_landmark_with_age_sampling(data_file, rand_val=False, gender=None)
     model_train(train_landmarks, train_labels, val_landmarks, val_labels)
 
