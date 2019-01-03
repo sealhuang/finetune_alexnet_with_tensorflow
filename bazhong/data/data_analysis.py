@@ -3,8 +3,9 @@
 
 import os
 import numpy as np
-from matplotlib.pyplot import imread
-
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 def load_landmark_data(data_file='norm_landmark_data_list.csv'):
     data = open(data_file).readlines()
@@ -70,6 +71,54 @@ def age_sampling(data):
         age_list.append(np.concatenate((tmp_age[:snum], tmp_age[-snum:])))
     return iq_list, age_list
 
+def zone_dist(data):
+    """Get the distribution across zones of BJ."""
+    zone_info = {'110101': 'DongCheng', '110102': 'XiCheng',
+                 '110103': 'ChongWen', '110104': 'XuanWu',
+                 '110105': 'ChaoYang', '110106': 'FengTai',
+                 '110107': 'ShiJingShan', '110108': 'HaiDian',
+                 '110109': 'MenTouGou', '110111': 'FangShan',
+                 '110112': 'TongZhou', '110113': 'ShunYi',
+                 '110114': 'ChangPing', '110115': 'DaXing',
+                 '110116': 'HuaiRou', '110117': 'PingGu',
+                 '110228': 'MiYun', '110229': 'YanQing'}
+    
+    iqs_of_zone = {}
+    for i in range(len(data['id'])):
+        id_str = data['id'][i]
+        if id_str[:6] in zone_info:
+            if not id_str[:6] in iqs_of_zone:
+                iqs_of_zone[id_str[:6]] = [data['iq'][i]]
+            else:
+                iqs_of_zone[id_str[:6]].append(data['iq'][i])
+   
+    f = plt.figure(figsize=(12, 7))
+    # plot distribution of student number
+    sorted_key = sorted(iqs_of_zone)
+    student_num = [len(iqs_of_zone[key]) for key in sorted_key]
+    ax1 = f.add_subplot(211)
+    ax1.bar(range(len(sorted_key)), student_num, align='center')
+    ax1.set_xlim(-0.6, 17.5)
+    plt.xticks([], [])
+    #plt.xticks(range(len(sorted_key)), [zone_info[key] for key in sorted_key],
+    #           rotation=30)
+    plt.title('Distribution of student number')
+    # plot iq distribution for each student
+    df = pd.DataFrame()
+    for key in sorted_key:
+        x = pd.DataFrame({key: iqs_of_zone[key]})
+        df = pd.concat([df, x], axis=1, ignore_index=True)
+    ax2 = f.add_subplot(212)
+    sns.boxplot(data=df, whis='range', ax=ax2)
+    sns.swarmplot(data=df, size=2, color='.3', linewidth=0, ax=ax2)
+    plt.xticks(range(len(sorted_key)), [zone_info[key] for key in sorted_key],
+               rotation=30)
+    plt.ylabel('IQ')
+    plt.title('Distribution of IQs')
+    plt.savefig('iq_zone_dist.png')
+    
+    return zone_info, iqs_of_zone
+
 def get_img_stats(img_dir, data_file='data_list.csv'):
     """Get mean and std of images."""
     data = open(data_file).readlines()
@@ -79,7 +128,7 @@ def get_img_stats(img_dir, data_file='data_list.csv'):
 
     img_vals = []
     for img in imgs:
-        x = imread(img)
+        x = plt.imread(img)
         x = x.reshape(-1, 3)
         mx = x.mean(axis=0)
         img_vals.append(mx)
