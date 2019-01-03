@@ -16,16 +16,16 @@ from imgdatagenerator import LandmarkDataGenerator
 
 def model_train(train_landmarks, train_labels, val_landmarks, val_labels):
     # learning params
-    init_lr = 0.001
+    init_lr = 0.01
     lr_decay = 0.1
     epoch_decay = 20
-    num_epochs = 30
+    num_epochs = 50
     batch_size = 50
 
     # Network params
     dropout_rate = 0.5
     num_classes = 2
-    train_layers = ['fc1', 'fc2', 'fc3', 'fc4', 'bn4','fc5']
+    train_layers = ['fc1', 'fc2', 'fc3', 'fc4', 'bn3']
     
     # How often we want to write the tf.summary data to disk
     display_step = 15
