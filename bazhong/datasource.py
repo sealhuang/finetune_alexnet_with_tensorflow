@@ -268,3 +268,76 @@ def source_data_with_age_sampling(data_info_file, img_dir, rand_val=False,
 
     return train_imgs, train_labels, val_imgs, val_labels
  
+def source_landmark_with_age_sampling(data_file, rand_val=False, gender=None):
+    """Read sample information, get split train- and test-dataset."""
+    # config sample number per class
+    sample_num = 100
+    small_sample_num = 75
+
+    # read sample info
+    all_info = open(data_file).readlines()
+    all_info = [line.strip().split(',') for line in all_info]
+    # select specific gender samples
+    if gender=='m':
+        all_info = [line for line in all_info
+                        if int(line[0].split('_')[0][16])%2==1]
+    elif gender=='f':
+        all_info = [line for line in all_info
+                        if int(line[0].split('_')[0][16])%2==0]
+    else:
+        pass
+    # get landmarks and IQs
+    landmarks = [[float(line[2+i]) for i in range(144)] for line in all_info]
+    vals = [float(line[1]) for line in all_info]
+    ages = []
+    for line in all_info:
+        birth_year = int(line[0].split('_')[0][6:10])
+        birth_month = int(line[0].split('_')[0][10:12])
+        a = 2008 - birth_year + (12-birth_month)*1.0/12
+        ages.append(a)
+   
+    # select samples within each age group
+    landmark_list = []
+    label_list = []
+    for a in np.unique(ages):
+        tmp_landmarks = [landmarks[i] for i in range(len(ages)) if ages[i]==a]
+        tmp_vals = [vals[i] for i in range(len(ages)) if ages[i]==a]
+        if len(tmp_landmarks)<200:
+            snum = small_sample_num
+        else:
+            snum = sample_num
+        # select top- and bottom- part of samples
+        sorted_idx = np.argsort(tmp_vals)
+        low_part = sorted_idx[:snum]
+        high_part = sorted_idx[-snum:]
+        sel_idx = np.concatenate((low_part, high_part))
+        tmp_landmarks = [tmp_landmarks[i] for i in sel_idx]
+        tmp_labels = [0]*snum + [1]*snum
+        # shuffle the sample parts
+        rand_idx = range(len(tmp_landmarks))
+        list_shuffle(rand_idx)
+        tmp_landmarks = [tmp_landmarks[i] for i in rand_idx]
+        tmp_labels = [tmp_labels[i] for i in rand_idx]
+        landmark_list.append(tmp_landmarks)
+        label_list.append(tmp_labels)
+
+    # select two subsets of the age groups as validation dataset
+    group_idx = range(len(landmark_list))
+    list_shuffle(group_idx)
+    landmark_list = [landmark_list[i] for i in group_idx]
+    label_list = [label_list[i] for i in group_idx]
+    val_landmarks = []
+    val_labels = []
+    val_landmarks = [item for line in landmark_list[:2] for item in line]
+    val_labels = [item for line in label_list[:2] for item in line]
+    train_landmarks = [item for line in landmark_list[2:] for item in line]
+    train_labels = [item for line in label_list[2:] for item in line]
+
+    if rand_val:
+        list_shuffle(val_labels)
+
+    print 'Training samples %s'%(len(train_landmarks))
+    print 'Validation samples %s'%(len(val_landmarks))
+
+    return train_landamrks, train_labels, val_landmarks, val_labels
+ 
