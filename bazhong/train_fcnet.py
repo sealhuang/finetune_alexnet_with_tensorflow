@@ -18,7 +18,7 @@ def model_train(train_landmarks, train_labels, val_landmarks, val_labels):
     # learning params
     init_lr = 0.001
     lr_decay = 0.1
-    epoch_decay = 100
+    epoch_decay = 20
     num_epochs = 30
     batch_size = 50
 
@@ -139,7 +139,6 @@ def model_train(train_landmarks, train_labels, val_landmarks, val_labels):
 
     # Start Tensorflow session
     with tf.Session() as sess:
-
         # Initialize all variables
         sess.run(tf.global_variables_initializer())
 
@@ -154,9 +153,7 @@ def model_train(train_landmarks, train_labels, val_landmarks, val_labels):
 
         # Loop over number of epochs
         for epoch in range(num_epochs):
-
             print("{} Epoch number: {}".format(datetime.now(), epoch+1))
-
             # Initialize iterator with the training dataset
             sess.run(training_init_op)
 

@@ -25,16 +25,15 @@ class FCNet(object):
     def create(self):
         """Create the network graph."""
         #dropout1 = dropout(self.X, self.KEEP_PROB)
-        fc1 = fc(self.X, 144, 512, relu=True, name='fc1')
-        fc2 = fc(fc1, 512, 512, relu=True, name='fc2')
+        fc1 = fc(self.X, 144, 256, relu=True, name='fc1')
+        fc2 = fc(fc1, 256, 256, relu=True, name='fc2')
         dropout2 = dropout(fc2, self.KEEP_PROB)
-        fc3 = fc(dropout2, 512, 256, relu=True, name='fc3')
-        fc4 = fc(fc3, 256, 128, relu=False, name='fc4')
-        bn4 = tf.layers.batch_normalization(fc4, axis=1,
-                                            training=self.IS_TRAIN, name='bn4')
-        relu4 = tf.nn.relu(bn4)
-        fc5 = fc(relu4, 128, self.NUM_CLASSES, relu=False, name='fc5')
-        self.logits = fc5
+        fc3 = fc(dropout2, 256, 128, relu=False, name='fc3')
+        bn3 = tf.layers.batch_normalization(fc3, axis=1,
+                                            training=self.IS_TRAIN, name='bn3')
+        relu3 = tf.nn.relu(bn3)
+        fc4 = fc(relu3, 128, self.NUM_CLASSES, relu=False, name='fc4')
+        self.logits = fc4
 
 
 def fc(x, num_in, num_out, name, relu=True):

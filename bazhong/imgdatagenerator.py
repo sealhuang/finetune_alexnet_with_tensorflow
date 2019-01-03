@@ -198,7 +198,8 @@ class LandmarkDataGenerator(object):
             self._shuffle_lists()
 
         # convert lists to TF tensor
-        self.landmarks = tf.convert_to_tensor(self.landmark_list, dtype=tf.float32)
+        self.landmarks = tf.convert_to_tensor(self.landmark_list,
+                                              dtype=tf.float32)
         self.labels = tf.convert_to_tensor(self.label_list, dtype=tf.int32)
 
         # create dataset
