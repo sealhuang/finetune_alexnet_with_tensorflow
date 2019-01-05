@@ -57,19 +57,25 @@ def load_data(data_file='data_list.csv'):
     return data
 
 def age_sampling(data):
-    iq_list = []
-    age_list = []
+    sel_data = {'iq': [], 'age': [], 'gender': []}
     for a in np.unique(data['age']):
         tmp_iq = data['iq'][data['age']==a]
         tmp_age = data['age'][data['age']==a]
+        tmp_gender = data['gender'][data['age']==a]
         if len(tmp_iq)<200:
             snum = 80
         else:
             snum = 100
-        tmp_iq.sort()
-        iq_list.append(np.concatenate((tmp_iq[:snum], tmp_iq[-snum:])))
-        age_list.append(np.concatenate((tmp_age[:snum], tmp_age[-snum:])))
-    return iq_list, age_list
+        sorted_idx = np.argsort(tmp_iq)
+        sel_idx = np.concatenate((sorted_idx[:snum], sorted_idx[-snum:]))
+        sel_iq = [tmp_iq[i] for i in sel_idx]
+        sel_age = [tmp_age[i] for i in sel_idx]
+        sel_gender = [tmp_gender[i] for i in sel_idx]
+        sel_data['iq'] += sel_iq
+        sel_data['age'] += sel_age
+        sel_data['gender'] += sel_gender
+        
+    return sel_data
 
 def zone_dist(data):
     """Get the distribution across zones of BJ."""

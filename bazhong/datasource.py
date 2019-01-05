@@ -196,12 +196,13 @@ def source_data_with_age(data_info_file, img_dir, rand_val=False, gender=None):
 
     return train_imgs, train_ages, train_labels, val_imgs, val_ages, val_labels
  
-def source_data_with_age_sampling(data_info_file, img_dir, rand_val=False,
-                                  gender=None):
+def source_data_with_age_sampling(data_info_file, img_dir,
+                                  sample_num, small_sample_num,
+                                  rand_val=False, gender=None):
     """Read sample information, get split train- and test-dataset."""
     # config sample number per class
-    sample_num = 100
-    small_sample_num = 75
+    #sample_num = 100
+    #small_sample_num = 75
 
     # read sample info
     all_info = open(data_info_file).readlines()
