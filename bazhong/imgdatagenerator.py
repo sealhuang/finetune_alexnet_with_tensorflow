@@ -103,8 +103,12 @@ class ImageDataGenerator(object):
         # convert label number into one-hot-encoding
         one_hot = tf.one_hot(label, self.num_classes)
 
-        # load and preprocess the image
-        img_string = tf.read_file(filename)
+        # radnomly load an image and preprocess the image
+        null_flag = tf.equal(filename, tf.constant(['null']))
+        null_size = tf.reduce_sum(tf.cast(null_flag, tf.int32))
+        non_null_size = tf.size(filename) - null_size
+        rand_idx = tf.random_uniform([1], 0, non_null_size, dtype=tf.int32)[0]
+        img_string = tf.read_file(filename[rand_idx])
         img_decoded = tf.image.decode_jpeg(img_string, channels=3)
         img_resized = tf.image.resize_images(img_decoded, [250, 250])
         """
@@ -112,7 +116,7 @@ class ImageDataGenerator(object):
         """
         img_distorted = tf.random_crop(img_resized, [227, 227, 3])
         img_distorted = tf.image.random_flip_left_right(img_distorted)
-        #img_distorted = tf.image.random_brightness(img_distorted, max_delta=0.3)
+        #img_distorted = tf.image.random_brightness(img_distorted,max_delta=0.3)
         img_centered = tf.subtract(img_distorted, IMG_MEAN)
         img_centered = tf.div(img_centered, IMG_STD)
 
@@ -127,7 +131,8 @@ class ImageDataGenerator(object):
         one_hot = tf.one_hot(label, self.num_classes)
 
         # load and preprocess the image
-        img_string = tf.read_file(filename)
+        # load first image and preprocess the image
+        img_string = tf.read_file(filename[0])
         img_decoded = tf.image.decode_jpeg(img_string, channels=3)
         img_resized = tf.image.resize_images(img_decoded, [227, 227])
         img_centered = tf.subtract(img_resized, IMG_MEAN)

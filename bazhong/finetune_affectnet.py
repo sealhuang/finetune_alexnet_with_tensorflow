@@ -234,8 +234,8 @@ if __name__ == '__main__':
     # Path to the textfiles for the dataset
     data_file = os.path.join(current_dir, 'data', 'data_list.csv')
     img_dir = os.path.join(current_dir, 'data', 'croppedPics')
-    #train_imgs, train_labels, val_imgs, val_labels = source_data_with_age_sampling(data_file, img_dir, 100, 75, rand_val=False, gender=None)
-    train_imgs, train_labels, val_imgs, val_labels = source_data_with_age_sampling(data_file, img_dir, 90, 60, rand_val=False, gender='m')
+    train_imgs, train_labels, val_imgs, val_labels = source_data_with_age_sampling(data_file, img_dir, 100, 75, rand_val=False, gender=None)
+    #train_imgs, train_labels, val_imgs, val_labels = source_data_with_age_sampling(data_file, img_dir, 90, 60, rand_val=False, gender='m')
     #train_imgs, train_labels, val_imgs, val_labels = source_data_with_age_sampling(data_file, img_dir, 68, 34, rand_val=False, gender='f')
     model_train(train_imgs, train_labels, val_imgs, val_labels)
 

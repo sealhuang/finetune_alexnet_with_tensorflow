@@ -210,17 +210,27 @@ def source_data_with_age_sampling(data_info_file, img_dir,
     all_info = [line.strip().split(',') for line in all_info]
     # select specific gender samples
     if gender=='m':
-        all_info = [line for line in all_info if int(line[1][16])%2==1]
+        all_info = [line for line in all_info if int(line[0][16])%2==1]
     elif gender=='f':
-        all_info = [line for line in all_info if int(line[1][16])%2==0]
+        all_info = [line for line in all_info if int(line[0][16])%2==0]
     else:
         pass
-    imgs = [os.path.join(img_dir, line[2]) for line in all_info]
-    vals = [float(line[3]) for line in all_info]
+
+    # remove 2 2006-students
+    all_info = [line for line in all_info if not int(line[0][6:10])==2006]
+
+    imgs = []
+    for line in all_info:
+        tmp = []
+        for item in line[5:]:
+            tmp.append(os.path.join(img_dir, item))
+        imgs.append(tmp)
+    # index 1: graphic reasoning, 2: expanding graph
+    vals = [float(line[1]) for line in all_info]
     ages = []
     for line in all_info:
-        birth_year = int(line[1][6:10])
-        birth_month = int(line[1][10:12])
+        birth_year = int(line[0][6:10])
+        birth_month = int(line[0][10:12])
         a = 2008 - birth_year + (12-birth_month)*1.0/12
         ages.append(a)
    
@@ -230,7 +240,7 @@ def source_data_with_age_sampling(data_info_file, img_dir,
     for a in np.unique(ages):
         tmp_imgs = [imgs[i] for i in range(len(ages)) if ages[i]==a]
         tmp_vals = [vals[i] for i in range(len(ages)) if ages[i]==a]
-        if len(tmp_imgs)<200:
+        if len(tmp_imgs)<(2*sample_num):
             snum = small_sample_num
         else:
             snum = sample_num
@@ -260,6 +270,12 @@ def source_data_with_age_sampling(data_info_file, img_dir,
     val_labels = [item for line in label_list[:2] for item in line]
     train_imgs = [item for line in img_list[2:] for item in line]
     train_labels = [item for line in label_list[2:] for item in line]
+
+    # make a full size image array
+    train_mlen = max([len(line) for line in train_imgs])
+    train_imgs = [line+['null']*(train_mlen-len(line)) for line in train_imgs]
+    val_mlen = max([len(line) for line in val_imgs])
+    val_imgs = [line+['null']*(val_mlen-len(line)) for line in val_imgs]
 
     if rand_val:
         list_shuffle(val_labels)
