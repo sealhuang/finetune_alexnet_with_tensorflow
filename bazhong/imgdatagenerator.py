@@ -8,8 +8,8 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.data import Dataset
 
-IMG_MEAN = tf.constant([171.08, 148.2, 139.49], dtype=tf.float32)
-IMG_STD = tf.constant([32.07, 25.23, 25.67], dtype=tf.float32)
+IMG_MEAN = tf.constant([171.0, 148.0, 139.0], dtype=tf.float32)
+IMG_STD = tf.constant([32.0, 25.0, 25.0], dtype=tf.float32)
 
 lmstats = np.load('./data/norm_landmark_stats.npz')
 LM_MEAN = tf.constant(lmstats['meanall'], dtype=tf.float32)
@@ -115,10 +115,10 @@ class ImageDataGenerator(object):
         Dataaugmentation comes here.
         """
         img_distorted = tf.random_crop(img_resized, [227, 227, 3])
-        img_distorted = tf.image.random_flip_left_right(img_distorted)
-        #img_distorted = tf.image.random_brightness(img_distorted,max_delta=0.3)
+        #img_distorted = tf.image.random_flip_left_right(img_distorted)
         img_centered = tf.subtract(img_distorted, IMG_MEAN)
         img_centered = tf.div(img_centered, IMG_STD)
+        img_centered = tf.image.random_brightness(img_centered, max_delta=0.3)
 
         # RGB -> BGR
         img_bgr = img_centered[:, :, ::-1]
@@ -131,8 +131,13 @@ class ImageDataGenerator(object):
         one_hot = tf.one_hot(label, self.num_classes)
 
         # load and preprocess the image
-        # load first image and preprocess the image
-        img_string = tf.read_file(filename[0])
+        # radnomly load an image and preprocess the image
+        null_flag = tf.equal(filename, tf.constant(['null']))
+        null_size = tf.reduce_sum(tf.cast(null_flag, tf.int32))
+        non_null_size = tf.size(filename) - null_size
+        rand_idx = tf.random_uniform([1], 0, non_null_size, dtype=tf.int32)[0]
+        img_string = tf.read_file(filename[rand_idx])
+        #img_string = tf.read_file(filename[0])
         img_decoded = tf.image.decode_jpeg(img_string, channels=3)
         img_resized = tf.image.resize_images(img_decoded, [227, 227])
         img_centered = tf.subtract(img_resized, IMG_MEAN)

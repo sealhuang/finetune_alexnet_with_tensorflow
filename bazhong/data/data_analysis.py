@@ -130,7 +130,10 @@ def get_img_stats(img_dir, data_file='data_list.csv'):
     data = open(data_file).readlines()
     data.pop(0)
     data = [line.strip().split(',') for line in data]
-    imgs = [os.path.join(img_dir, line[2]) for line in data]
+    imgs = []
+    for line in data:
+        for item in line[5:]:
+            imgs.append(os.path.join(img_dir, item))
 
     img_vals = []
     for img in imgs:
