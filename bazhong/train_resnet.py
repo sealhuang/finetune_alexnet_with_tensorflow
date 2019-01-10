@@ -98,7 +98,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
         #with tf.control_dependencies(update_ops):
         #    train_op = optimizer.apply_gradients(grads_and_vars=gradients)
         #optimizer = tf.train.AdamOptimizer(learning_rate)
-        optimizer = tf.train.MomentumOptimizer(learning_rate, 0.9)
+        optimizer = tf.train.MomentumOptimizer(lr, 0.9)
         with tf.control_dependencies(update_ops):
             train_op = optimizer.minimize(loss, var_list=var_list)
 
