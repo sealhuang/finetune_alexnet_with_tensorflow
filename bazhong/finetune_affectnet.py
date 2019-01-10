@@ -5,7 +5,7 @@
 
 import os
 os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
-os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+os.environ['CUDA_VISIBLE_DEVICES'] = '3'
 import numpy as np
 import tensorflow as tf
 from tensorflow.data import Iterator
@@ -18,14 +18,14 @@ from imgdatagenerator import ImageDataGenerator
 
 def model_train(train_imgs, train_labels, val_imgs, val_labels):
     # Learning params
-    init_lr = 0.01
-    lr_decay = 0.5
-    epoch_decay = 100
+    init_lr = 0.007
+    lr_decay = 0.3
+    epoch_decay = 50
     num_epochs = 50
-    batch_size = 30
+    batch_size = 50
 
     # Network params
-    dropout_rate = 1.0
+    dropout_rate = 0.5
     num_classes = 2
     train_layers = ['fc8', 'fc7', 'fc6', 'bn5', 'conv5', 'conv4', 'conv3', 'conv2', 'conv1']
 
@@ -234,7 +234,7 @@ if __name__ == '__main__':
     # Path to the textfiles for the dataset
     data_file = os.path.join(current_dir, 'data', 'data_list.csv')
     img_dir = os.path.join(current_dir, 'data', 'croppedPics')
-    train_imgs, train_labels, val_imgs, val_labels = source_data_with_age_sampling(data_file, img_dir, 100, 75, rand_val=False, gender=None)
+    train_imgs, train_labels, val_imgs, val_labels = source_data_with_age_sampling(data_file, img_dir, 150, 125, rand_val=False, gender=None)
     #train_imgs, train_labels, val_imgs, val_labels = source_data_with_age_sampling(data_file, img_dir, 90, 60, rand_val=False, gender='m')
     #train_imgs, train_labels, val_imgs, val_labels = source_data_with_age_sampling(data_file, img_dir, 68, 34, rand_val=False, gender='f')
     model_train(train_imgs, train_labels, val_imgs, val_labels)
