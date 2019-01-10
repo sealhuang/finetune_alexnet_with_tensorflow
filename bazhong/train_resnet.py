@@ -13,12 +13,14 @@ from datetime import datetime
 
 from resnet18 import ResNet
 from datasource import source_data_with_age_sampling
-from imgdatagenerator_resnet import ImageDataGenerator
+from imgdatagenerator import ResnetDataGenerator as ImageDataGenerator
 
 
 def model_train(train_imgs, train_labels, val_imgs, val_labels):
     # Learning params
-    learning_rate = 0.01
+    init_lr = 0.01
+    lr_decay = 0.2
+    epoch_decay = 50
     num_epochs = 100
     batch_size = 50
 
@@ -27,7 +29,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
     num_classes = 2
 
     # How often we want to write the tf.summary data to disk
-    display_step = 45
+    display_step = 15
 
     # Path for tf.summary.FileWriter and to store model checkpoints
     current_dir = os.getcwd()
@@ -68,6 +70,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
     y = tf.placeholder(tf.float32, [batch_size, num_classes])
     is_train = tf.placeholder(tf.bool, name='is_train')
     #keep_prob = tf.placeholder(tf.float32)
+    lr = tf.placeholer(tf.float32)
 
     # Initialize model
     model = ResNet(x, num_classes, [], is_train)
@@ -148,10 +151,14 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
         print("{} Open Tensorboard at --logdir {}".format(datetime.now(),
                                                           filewriter_path))
 
+        test_acc_list = []
+
         # Loop over number of epochs
         for epoch in range(num_epochs):
 
             print("{} Epoch number: {}".format(datetime.now(), epoch+1))
+
+            current_lr = lr_decay**((epoch+1)/epoch_decay) * init_lr
 
             # Initialize iterator with the training dataset
             sess.run(training_init_op)
@@ -161,12 +168,14 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
                 # And run the training op
                 sess.run(train_op, feed_dict={x: img_batch,
                                               y: label_batch,
-                                              is_train: True})
+                                              is_train: True,
+                                              lr: current_lr})
                 # Generate summary with the current batch of data and write to file
                 if step % display_step == 0:
                     s = sess.run(merged_summary, feed_dict={x: img_batch,
                                                             y: label_batch,
-                                                            is_train: False})
+                                                            is_train: False,
+                                                            lr: current_lr})
                     writer.add_summary(s, epoch*train_batches_per_epoch + step)
 
             # Test the model on the entire training set to check over-fitting
@@ -178,7 +187,8 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
                 img_batch, label_batch = sess.run(next_batch)
                 acc = sess.run(accuracy, feed_dict={x: img_batch,
                                                     y: label_batch,
-                                                    is_train: False})
+                                                    is_train: False,
+                                                    lr: current_lr})
                 val_acc += acc
                 val_count += 1
             val_acc /= val_count
@@ -193,9 +203,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
             trues = []
             for _ in range(val_batches_per_epoch):
                 img_batch, label_batch = sess.run(next_batch)
-                acc, pl, tl = sess.run([accuracy, pred_label, true_label], feed_dict={x: img_batch,
-                                                                     y: label_batch,
-                                                                     is_train: False})
+                acc, pl, tl = sess.run([accuracy, pred_label, true_label], feed_dict={x: img_batch, y: label_batch, is_train: False, lr: current_lr})
                 test_acc += acc
                 test_count += 1
                 preds = np.concatenate((preds, pl))
@@ -205,6 +213,11 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
             print 'Confusion matrix'
             cm = sess.run(tf.confusion_matrix(preds, trues))
             print cm
+
+            test_acc_list.append(test_acc)
+
+        with open('resnet_test_acc.csv', 'a') as f:
+            f.write(','.join([str(item) for item in test_acc_list])+'\n')
         
 
 if __name__ == '__main__':

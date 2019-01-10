@@ -13,7 +13,7 @@ from datetime import datetime
 
 from alexnet_mod import AlexNetMod
 from datasource import source_data_with_age_sampling
-from imgdatagenerator import ImageDataGenerator
+from imgdatagenerator import AlexDataGenerator as ImageDataGenerator
 
 
 def model_train(train_imgs, train_labels, val_imgs, val_labels):
