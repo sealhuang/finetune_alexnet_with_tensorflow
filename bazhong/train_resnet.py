@@ -5,7 +5,7 @@
 
 import os
 os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
-os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+os.environ['CUDA_VISIBLE_DEVICES'] = '3'
 import numpy as np
 import tensorflow as tf
 from tensorflow.data import Iterator
@@ -70,7 +70,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
     y = tf.placeholder(tf.float32, [batch_size, num_classes])
     is_train = tf.placeholder(tf.bool, name='is_train')
     #keep_prob = tf.placeholder(tf.float32)
-    lr = tf.placeholer(tf.float32)
+    lr = tf.placeholder(tf.float32)
 
     # Initialize model
     model = ResNet(x, num_classes, [], is_train)
