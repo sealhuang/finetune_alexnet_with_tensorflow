@@ -28,7 +28,7 @@ class AlexNetLite(object):
     def create(self):
         """Create the network graph."""
         # 1st Layer: Conv (w ReLu) -> Lrn -> Pool
-        conv1 = conv(self.X, 11, 11, 64, 4, 4, padding='VALID', name='conv1')
+        conv1 = conv(self.X, 11, 11, 48, 4, 4, padding='VALID', name='conv1')
         norm1 = lrn(conv1, 2, 1e-04, 0.75, name='norm1')
         pool1 = max_pool(norm1, 3, 3, 2, 2, padding='VALID', name='pool1')
         
@@ -42,19 +42,20 @@ class AlexNetLite(object):
 
         # 4th Layer: Conv (w ReLu) -> Pool splitted into two groups
         conv4 = conv(conv3, 3, 3, 128, 1, 1, name='conv4')
-        #pool4 = max_pool(conv4, 3, 3, 2, 2, padding='VALID', name='pool4')
-        #pool4 = tf.reshape(pool4, [-1, 6*6*128])
-        pool4 = tf.reduce_mean(conv4, axis=[1, 2])
-        #bn5 = tf.layers.batch_normalization(pool5, axis=1,
-        #                                    training=self.IS_TRAIN, name='bn5')
+        pool4 = max_pool(conv4, 3, 3, 2, 2, padding='VALID', name='pool4')
+        pool4 = tf.reshape(pool4, [-1, 6*6*128])
+        #pool4 = tf.reduce_mean(conv4, axis=[1, 2])
+        #bn4 = tf.layers.batch_normalization(pool4, axis=1,
+        #                                    training=self.IS_TRAIN, name='bn4')
 
         # 5th Layer: Flatten -> FC (w ReLu) -> Dropout
-        fc5 = fc(pool4, 128, 64, relu=True, name='fc5')
+        fc5 = fc(pool4, 6*6*128, 256, relu=True, name='fc5')
         dropout5 = dropout(fc5, self.KEEP_PROB)
-        fc6 = fc(dropout5, 64, 16, relu=True, name='fc6')
+        fc6 = fc(dropout5, 256, 256, relu=True, name='fc6')
+        dropout6 = dropout(fc6, self.KEEP_PROB)
         
         # 7th Layer: FC (w ReLu) -> Dropout
-        fc7 = fc(fc6, 16, self.NUM_CLASSES, relu=False, name='fc7')
+        fc7 = fc(fc6, 256, self.NUM_CLASSES, relu=False, name='fc7')
         self.logits = fc7
 
     def load_initial_weights(self, session):

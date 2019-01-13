@@ -11,23 +11,25 @@ import tensorflow as tf
 from tensorflow.data import Iterator
 from datetime import datetime
 
-from alexnet_mod import AlexNetMod
+from alexnet_lite import AlexNetLite
+#from alexnet_mod import AlexNetMod
 from datasource import source_data_with_age_sampling
 from imgdatagenerator import AlexDataGenerator as ImageDataGenerator
 
 
 def model_train(train_imgs, train_labels, val_imgs, val_labels):
     # Learning params
-    init_lr = 0.005
-    lr_decay = 0.2
-    epoch_decay = 30
-    num_epochs = 60
+    init_lr = 0.003
+    lr_decay = 0.3
+    epoch_decay = 60
+    num_epochs = 120
     batch_size = 50
 
     # Network params
     dropout_rate = 0.5
     num_classes = 2
-    train_layers = ['fc8', 'fc7', 'fc6', 'bn5', 'conv5', 'conv4', 'conv3', 'conv2', 'conv1']
+    train_layers = ['fc7', 'fc6', 'fc5', 'conv4', 'conv3', 'conv2', 'conv1']
+    #train_layers = ['fc8', 'fc7', 'fc6', 'bn5', 'conv5', 'conv4', 'conv3', 'conv2', 'conv1']
 
     # How often we want to write the tf.summary data to disk
     display_step = 15
@@ -74,7 +76,8 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
     lr = tf.placeholder(tf.float32)
 
     # Initialize model
-    model = AlexNetMod(x, keep_prob, num_classes, train_layers, is_train)
+    model = AlexNetLite(x, keep_prob, num_classes, is_train)
+    #model = AlexNetMod(x, keep_prob, num_classes, train_layers, is_train)
 
     # Link variable to model output
     score = model.logits
