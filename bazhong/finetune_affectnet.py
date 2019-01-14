@@ -19,10 +19,10 @@ from imgdatagenerator import AlexDataGenerator as ImageDataGenerator
 
 def model_train(train_imgs, train_labels, val_imgs, val_labels):
     # Learning params
-    init_lr = 0.003
-    lr_decay = 0.3
-    epoch_decay = 30
-    num_epochs = 100
+    init_lr = 0.002
+    lr_decay = 0.4
+    epoch_decay = 25
+    num_epochs = 60
     batch_size = 50
 
     # Network params
