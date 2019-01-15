@@ -110,7 +110,6 @@ class AlexDataGenerator(object):
         rand_idx = tf.random_uniform([1], 0, non_null_size, dtype=tf.int32)[0]
         img_string = tf.read_file(filename[rand_idx])
         img_decoded = tf.image.decode_jpeg(img_string, channels=3)
-        #img_decoded = tf.image.rgb_to_grayscale(img_decoded)
         img_resized = tf.image.resize_images(img_decoded, [250, 250])
         """
         Dataaugmentation comes here.
@@ -119,12 +118,13 @@ class AlexDataGenerator(object):
         #img_distorted = tf.image.random_flip_left_right(img_distorted)
         img_centered = tf.subtract(img_distorted, IMG_MEAN)
         img_centered = tf.div(img_centered, IMG_STD)
-        img_centered = tf.image.random_brightness(img_centered, max_delta=0.3)
+        #img_centered = tf.image.random_brightness(img_centered, max_delta=0.3)
 
         # RGB -> BGR
-        img_bgr = img_centered[:, :, ::-1]
+        img_out = img_centered[:, :, ::1]
+        #img_out = tf.image.rgb_to_grayscale(img_centered)
 
-        return img_bgr, one_hot
+        return img_out, one_hot
 
     def _parse_function_inference(self, filename, label):
         """Input parser for samples of the validation/test set."""
@@ -140,15 +140,15 @@ class AlexDataGenerator(object):
         img_string = tf.read_file(filename[rand_idx])
         #img_string = tf.read_file(filename[0])
         img_decoded = tf.image.decode_jpeg(img_string, channels=3)
-        #img_decoded = tf.image.rgb_to_grayscale(img_decoded)
         img_resized = tf.image.resize_images(img_decoded, [227, 227])
         img_centered = tf.subtract(img_resized, IMG_MEAN)
         img_centered = tf.div(img_centered, IMG_STD)
 
         # RGB -> BGR
-        img_bgr = img_centered[:, :, ::-1]
+        img_out = img_centered[:, :, ::1]
+        #img_out = tf.image.rgb_to_grayscale(img_centered)
 
-        return img_bgr, one_hot
+        return img_out, one_hot
     
     def _parse_function_test(self, filename, label):
         """Input parser for samples of the test set."""

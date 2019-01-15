@@ -47,10 +47,10 @@ class AlexNetLite(object):
         pool4 = tf.reduce_mean(conv4, axis=[1, 2])
 
         # 5th Layer: Flatten -> FC (w ReLu) -> Dropout
-        fc5 = fc(pool4, 256, 128, relu=True, name='fc5')
-        #bn5 = tf.layers.batch_normalization(fc5, axis=1,
-        #                                    training=self.IS_TRAIN, name='bn5')
-        #fc5 = tf.nn.relu(bn5)
+        fc5 = fc(pool4, 256, 128, relu=False, name='fc5')
+        bn5 = tf.layers.batch_normalization(fc5, axis=1,
+                                            training=self.IS_TRAIN, name='bn5')
+        fc5 = tf.nn.relu(bn5)
         dropout5 = dropout(fc5, self.KEEP_PROB)
         fc6 = fc(dropout5, 128, 32, relu=True, name='fc6')
         dropout6 = dropout(fc6, self.KEEP_PROB)

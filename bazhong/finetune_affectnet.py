@@ -19,16 +19,16 @@ from imgdatagenerator import AlexDataGenerator as ImageDataGenerator
 
 def model_train(train_imgs, train_labels, val_imgs, val_labels):
     # Learning params
-    init_lr = 0.002
+    init_lr = 0.005
     lr_decay = 0.4
-    epoch_decay = 25
-    num_epochs = 60
+    epoch_decay = [20, 40]
+    num_epochs = 50
     batch_size = 50
 
     # Network params
     dropout_rate = 0.5
     num_classes = 2
-    train_layers = ['fc7', 'fc6', 'fc5', 'conv4', 'conv3', 'conv2', 'conv1']
+    train_layers = ['fc7', 'fc6', 'bn5', 'fc5', 'conv4', 'conv3', 'conv2', 'conv1']
     #train_layers = ['fc8', 'fc7', 'fc6', 'bn5', 'conv5', 'conv4', 'conv3', 'conv2', 'conv1']
 
     # How often we want to write the tf.summary data to disk
@@ -166,7 +166,9 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
             print("{} Epoch number: {}".format(datetime.now(), epoch+1))
 
             # calculate learning rate
-            current_lr = lr_decay**((epoch+1)/epoch_decay) * init_lr
+            epoch_count = sum([(epoch+1)>item for item in epoch_decay])
+            current_lr = lr_decay**(epoch_count) * init_lr
+            print 'Current learning rate: %s'%(current_lr)
 
             # Initialize iterator with the training dataset
             sess.run(training_init_op)
