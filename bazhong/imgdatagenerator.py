@@ -118,10 +118,9 @@ class AlexDataGenerator(object):
         #img_distorted = tf.image.random_flip_left_right(img_distorted)
         img_centered = tf.subtract(img_distorted, IMG_MEAN)
         img_centered = tf.div(img_centered, IMG_STD)
-        #img_centered = tf.image.random_brightness(img_centered, max_delta=0.3)
+        img_centered = tf.image.random_brightness(img_centered, max_delta=0.3)
 
-        # RGB -> BGR
-        img_out = img_centered[:, :, ::1]
+        img_out = img_centered
         #img_out = tf.image.rgb_to_grayscale(img_centered)
 
         return img_out, one_hot
@@ -144,8 +143,7 @@ class AlexDataGenerator(object):
         img_centered = tf.subtract(img_resized, IMG_MEAN)
         img_centered = tf.div(img_centered, IMG_STD)
 
-        # RGB -> BGR
-        img_out = img_centered[:, :, ::1]
+        img_out = img_centered
         #img_out = tf.image.rgb_to_grayscale(img_centered)
 
         return img_out, one_hot

@@ -261,7 +261,7 @@ def source_data_with_age_sampling(data_info_file, img_dir,
 
     # select two subsets of the age groups as validation dataset
     group_idx = range(len(img_list))
-    list_shuffle(group_idx)
+    #list_shuffle(group_idx)
     img_list = [img_list[i] for i in group_idx]
     label_list = [label_list[i] for i in group_idx]
     val_imgs = []
