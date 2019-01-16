@@ -36,7 +36,7 @@ def load_data(data_file='data_list.csv'):
     data.pop(0)
     data = [line.strip().split(',') for line in data]
     ids = [line[0] for line in data]
-    iqs = [float(line[1]) for line in data]
+    iqs = [float(line[2]) for line in data]
     gender = []
     for item in ids:
         if int(item[16])%2:
