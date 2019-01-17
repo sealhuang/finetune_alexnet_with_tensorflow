@@ -222,6 +222,8 @@ def source_data_with_age_sampling(data_info_file, img_dir,
     # remove 2 2006-students
     all_info = [line for line in all_info if not int(line[0][6:10])==2006]
 
+    print '%s samples selected'%(len(all_info))
+
     imgs = []
     for line in all_info:
         tmp = []
@@ -240,7 +242,7 @@ def source_data_with_age_sampling(data_info_file, img_dir,
     # select samples within each age group
     img_list = []
     label_list = []
-    unique_ages = np.unique(ages):
+    unique_ages = np.unique(ages)
     for a in unique_ages:
         tmp_imgs = [imgs[i] for i in range(len(ages)) if ages[i]==a]
         tmp_vals = [vals[i] for i in range(len(ages)) if ages[i]==a]
@@ -266,7 +268,8 @@ def source_data_with_age_sampling(data_info_file, img_dir,
     # select two subsets of the age groups as validation dataset
     val_set_num = 2
     group_idx = range(len(img_list))
-    #list_shuffle(group_idx)
+    #group_idx = group_idx[2:] + group_idx[:2]
+    list_shuffle(group_idx)
     print 'Age groups for validation: %s and %s'%(unique_ages[group_idx[0]],
                                                   unique_ages[group_idx[1]])
     img_list = [img_list[i] for i in group_idx]

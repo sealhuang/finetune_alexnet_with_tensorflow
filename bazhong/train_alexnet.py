@@ -19,10 +19,10 @@ from imgdatagenerator import AlexDataGenerator as ImageDataGenerator
 
 def model_train(train_imgs, train_labels, val_imgs, val_labels):
     # Learning params
-    init_lr = 0.0001
+    init_lr = 0.0004
     lr_decay = 0.5
-    epoch_decay = [20]
-    num_epochs = 30
+    epoch_decay = [15]
+    num_epochs = 40
     batch_size = 50
 
     # Network params
@@ -164,7 +164,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
             # calculate learning rate
             epoch_count = sum([(epoch+1)>item for item in epoch_decay])
             current_lr = lr_decay**(epoch_count) * init_lr
-            print 'Current learning rate: %s'%(current_lr)
+            #print 'Current learning rate: %s'%(current_lr)
 
             # Initialize iterator with the training dataset
             sess.run(training_init_op)

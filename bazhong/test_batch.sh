@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for ((i=0; i<50; i++));do
+for ((i=0; i<100; i++));do
 	python train_alexnet.py
 done
 

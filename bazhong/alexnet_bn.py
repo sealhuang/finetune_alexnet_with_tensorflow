@@ -30,31 +30,30 @@ class AlexNetBN(object):
         # 1st Layer: Conv (w ReLu) -> Lrn -> Pool
         conv1 = conv(self.X, 11, 11, 48, 4, 4, padding='VALID', name='conv1',
                      is_train=self.IS_TRAIN)
-        #norm1 = lrn(conv1, 2, 1e-04, 0.75, name='norm1')
         pool1 = max_pool(conv1, 3, 3, 2, 2, padding='VALID', name='pool1')
         
         # 2nd Layer: Conv (w ReLu)  -> Lrn -> Pool with 2 groups
-        conv2 = conv(pool1, 5, 5, 128, 1, 1, name='conv2',
+        conv2 = conv(pool1, 5, 5, 64, 1, 1, name='conv2',
                      is_train=self.IS_TRAIN)
-        #norm2 = lrn(conv2, 2, 1e-04, 0.75, name='norm2')
         pool2 = max_pool(conv2, 3, 3, 2, 2, padding='VALID', name='pool2')
         
         # 3rd Layer: Conv (w ReLu)
-        conv3 = conv(pool2, 3, 3, 256, 1, 1, name='conv3',
-                     is_train=self.IS_TRAIN)
+        #conv3 = conv(pool2, 3, 3, 64, 1, 1, name='conv3',
+        #             is_train=self.IS_TRAIN)
 
         # 4th Layer: Conv (w ReLu) -> Pool splitted into two groups
-        conv4 = conv(conv3, 3, 3, 256, 1, 1, name='conv4',
+        conv4 = conv(pool2, 3, 3, 96, 1, 1, name='conv4',
                      is_train=self.IS_TRAIN)
-        #pool4 = max_pool(conv4, 3, 3, 2, 2, padding='VALID', name='pool4')
-        #pool4 = tf.reshape(pool4, [-1, 6*6*64])
-        pool4 = tf.reduce_mean(conv4, axis=[1, 2])
+        pool4 = max_pool(conv4, 13, 13, 1, 1, padding='VALID', name='pool4')
+        pool4 = tf.reshape(pool4, [-1, 96])
+        #pool4 = tf.reduce_mean(conv4, axis=[1, 2])
 
-        fc5 = fc(pool4, 256, 128, is_train=self.IS_TRAIN, relu=True, name='fc5')
-        dropout5 = dropout(fc5, self.KEEP_PROB)
-        fc6 = fc(dropout5, 128, 32, is_train=self.IS_TRAIN, relu=True,
-                 name='fc6')
-        fc7 = fc(fc6, 32, self.NUM_CLASSES, is_train=self.IS_TRAIN, relu=False,
+        fc5 = fc(pool4, 96, 32, is_train=self.IS_TRAIN, relu=True,
+                 name='fc5')
+        #dropout5 = dropout(fc5, self.KEEP_PROB)
+        #fc6 = fc(fc5, 64, 16, is_train=self.IS_TRAIN, relu=True,
+        #         name='fc6')
+        fc7 = fc(fc5, 32, self.NUM_CLASSES, is_train=self.IS_TRAIN, relu=False,
                  name='fc7')
         self.logits = fc7
 
