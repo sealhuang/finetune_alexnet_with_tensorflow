@@ -77,7 +77,10 @@ def conv(x, filter_height, filter_width, num_filters, stride_y, stride_x, name,
         weights = tf.get_variable('weights', shape=[filter_height,
                                                     filter_width,
                                                     input_channels,
-                                                    num_filters])
+                                                    num_filters],
+                                  dtype=tf.float32,
+                                  initializer=tf.random_normal_initializer(
+                    stddev=np.sqrt(2.0/filter_height/filter_width/num_filters)))
         biases = tf.get_variable('biases', shape=[num_filters])
 
     conv = convolve(x, weights)
@@ -98,8 +101,12 @@ def fc(x, num_in, num_out, name, is_train,  relu=True):
     with tf.variable_scope(name) as scope:
 
         # Create tf variables for the weights and biases
-        weights = tf.get_variable('weights', shape=[num_in, num_out], trainable=True)
-        biases = tf.get_variable('biases', [num_out], trainable=True)
+        weights = tf.get_variable('weights', shape=[num_in, num_out], trainable=True,
+                                  dtype=tf.float32,
+                                  initializer=tf.random_normal_initializer(
+                                      stddev=np.sqrt(1.0/num_out)))
+        biases = tf.get_variable('biases', [num_out], trainable=True, dtype=tf.float32,
+                                 initializer=tf.constant_initializer(0.0))
 
         # Matrix multiply weights and inputs and add bias
         act = tf.nn.xw_plus_b(x, weights, biases, name=scope.name)

@@ -196,8 +196,8 @@ def source_data_with_age(data_info_file, img_dir, rand_val=False, gender=None):
 
     return train_imgs, train_ages, train_labels, val_imgs, val_ages, val_labels
  
-def source_data_with_age_sampling(data_info_file, img_dir,
-                                  sample_num, small_sample_num,
+def source_data_with_age_sampling(data_info_file, img_dir, sample_num,
+                                  small_sample_num, val_set_idx,
                                   rand_val=False, gender=None):
     """Read sample information, get split train- and test-dataset."""
     # config sample number per class
@@ -266,20 +266,24 @@ def source_data_with_age_sampling(data_info_file, img_dir,
         label_list.append(tmp_labels)
 
     # select two subsets of the age groups as validation dataset
-    val_set_num = 2
-    group_idx = range(len(img_list))
-    #group_idx = group_idx[2:] + group_idx[:2]
-    list_shuffle(group_idx)
-    print 'Age groups for validation: %s and %s'%(unique_ages[group_idx[0]],
-                                                  unique_ages[group_idx[1]])
-    img_list = [img_list[i] for i in group_idx]
-    label_list = [label_list[i] for i in group_idx]
-    val_imgs = []
-    val_labels = []
-    val_imgs = [item for line in img_list[:val_set_num] for item in line]
-    val_labels = [item for line in label_list[:val_set_num] for item in line]
-    train_imgs = [item for line in img_list[val_set_num:] for item in line]
-    train_labels = [item for line in label_list[val_set_num:] for item in line]
+    val_set_ids = []
+    for i in range(len(img_list)):
+        for j in range(i+1, len(img_list)):
+            val_set_ids.append([i, j])
+    val_set_ids = val_set_ids[val_set_idx]
+    set_ids = range(len(img_list))
+    train_set_ids = [item for item in set_ids if not item in val_set_ids]
+    print 'Age groups for validation: %s and %s'%(unique_ages[val_set_ids[0]],
+                                                  unique_ages[val_set_ids[1]])
+
+    val_imgs = [line for i in val_set_ids
+                     for line in img_list[i]]
+    val_labels = [item for i in val_set_ids
+                       for item in label_list[i]]
+    train_imgs = [line for i in train_set_ids
+                       for line in img_list[i]]
+    train_labels = [item for i in train_set_ids
+                         for item in label_list[i]]
 
     # make a full size image array
     train_mlen = max([len(line) for line in train_imgs])

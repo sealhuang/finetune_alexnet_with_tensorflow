@@ -10,6 +10,8 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.data import Iterator
 from datetime import datetime
+from multiprocessing import Process
+import contextlib
 
 from alexnet_bn import AlexNetBN
 #from alexnet_mod import AlexNetMod
@@ -19,10 +21,10 @@ from imgdatagenerator import AlexDataGenerator as ImageDataGenerator
 
 def model_train(train_imgs, train_labels, val_imgs, val_labels):
     # Learning params
-    init_lr = 0.0004
-    lr_decay = 0.5
-    epoch_decay = [15]
-    num_epochs = 40
+    init_lr = 0.0008
+    lr_decay = 0.25
+    epoch_decay = [10]
+    num_epochs = 50
     batch_size = 50
 
     # Network params
@@ -97,8 +99,8 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
         # Create optimizer and apply gradient descent to the trainable variables
         #optimizer = tf.train.GradientDescentOptimizer(learning_rate)
         #train_op = optimizer.apply_gradients(grads_and_vars=gradients)
-        #optimizer = tf.train.AdamOptimizer(learning_rate)
-        optimizer = tf.train.MomentumOptimizer(lr, 0.9, use_nesterov=True)
+        #optimizer = tf.train.AdamOptimizer(lr)
+        optimizer = tf.train.MomentumOptimizer(lr, 0.85, use_nesterov=False)
         with tf.control_dependencies(update_ops):
             train_op = optimizer.minimize(loss, var_list=var_list)
 
@@ -228,15 +230,20 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
         with open('alexnet_test_acc.csv', 'a') as f:
             f.write(','.join([str(item) for item in test_acc_list])+'\n')
 
-        
-if __name__ == '__main__':
+def model_cell(val_idx):
     current_dir = os.getcwd()
-
     # Path to the textfiles for the dataset
     data_file = os.path.join(current_dir, 'data', 'data_list.csv')
     img_dir = os.path.join(current_dir, 'data', 'croppedPics')
-    train_imgs, train_labels, val_imgs, val_labels = source_data_with_age_sampling(data_file, img_dir, 150, 125, rand_val=False, gender=None)
-    #train_imgs, train_labels, val_imgs, val_labels = source_data_with_age_sampling(data_file, img_dir, 90, 60, rand_val=False, gender='m')
-    #train_imgs, train_labels, val_imgs, val_labels = source_data_with_age_sampling(data_file, img_dir, 68, 34, rand_val=False, gender='f')
+    train_imgs, train_labels, val_imgs, val_labels = source_data_with_age_sampling(data_file, img_dir, 150, 125, val_idx,
+                                                                                   rand_val=False, gender=None)
     model_train(train_imgs, train_labels, val_imgs, val_labels)
+
+        
+if __name__ == '__main__':
+    for i in range(100):
+        p = Process(target=model_cell, args=(i,))
+        p.start()
+        p.join()
+
 

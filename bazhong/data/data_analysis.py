@@ -147,3 +147,14 @@ def get_img_stats(img_dir, data_file='data_list.csv'):
     s = img_vals.std(axis=0)
     return m, s
 
+def get_test_acc(acc_file):
+    x = open(acc_file).readlines()
+    x = [line.strip().split(',') for line in x]
+    acc = []
+    for line in x:
+        t = []
+        for item in line:
+            t.append(float(item))
+        acc.append(t)
+    return np.array(acc)
+
