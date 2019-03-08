@@ -379,3 +379,51 @@ def source_landmark_with_age_sampling(data_file, rand_val=False, gender=None):
 
     return train_landmarks, train_labels, val_landmarks, val_labels
  
+def source_mbti_data(data_info_file, img_dir, rand_val=False, gender=None):
+    """Read sample information, get split train- and test-dataset."""
+    # config sample selection criteria for each class
+    # for E-I factor, <8 : 2971 subjects, >13: 3070 subjects
+    low_thresh = 8
+    high_thresh = 13
+    # select 200 subjects from each class for validation
+    val_sample_num = 200
+
+    # read sample info
+    all_info = open(data_info_file).readlines()
+    all_info.pop(0)
+    all_info = [line.strip().split(',') for line in all_info]
+    # select samples of specific gender
+    if gender=='m':
+        all_info = [line for line in all_info if line[1]=='male']
+    elif gender=='f':
+        all_info = [line for line in all_info if line[1]=='female']
+    else:
+        pass
+    imgs = [os.path.join(img_dir, line[9]) for line in all_info]
+    vals = [float(line[5]) for line in all_info]
+
+    # select samples based on specific criteria
+    assert len(imgs)==len(vals)
+    high_imgs = []
+    low_imgs = []
+    for i in range(len(vals)):
+        if vals[i]<low_thresh:
+            low_imgs.append(imgs[i])
+        elif vals[i]>high_thresh:
+            high_imgs.append(imgs[i])
+
+    # shuffle the samples and split training/validation dataset
+    list_shuffle(low_imgs)
+    list_shuffle(high_imgs)
+    train_imgs = low_imgs[:(-1*val_sample_num)] + high_imgs[:(-1*val_sample_num)]
+    val_imgs = low_imgs[(-1*val_sample_num):] + high_imgs[(-1*val_sample_num):]
+    train_labels = [0]*(len(low_imgs)-val_sample_num) + [1]*(len(high_imgs)-val_sample_num)
+    val_labels = [0]*val_sample_num + [1]*val_sample_num
+    if rand_val:
+        list_shuffle(val_labels)
+
+    print('Training samples %s - %s'%(len(train_imgs), len(train_labels)))
+    print('Validation samples %s - %s'%(len(val_imgs), len(val_labels)))
+
+    return train_imgs, train_labels, val_imgs, val_labels
+ 

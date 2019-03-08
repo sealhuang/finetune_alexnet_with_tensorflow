@@ -38,11 +38,11 @@ class AlexNetBN(object):
         pool2 = max_pool(conv2, 3, 3, 2, 2, padding='VALID', name='pool2')
         
         # 3rd Layer: Conv (w ReLu)
-        #conv3 = conv(pool2, 3, 3, 64, 1, 1, name='conv3',
-        #             is_train=self.IS_TRAIN)
+        conv3 = conv(pool2, 3, 3, 64, 1, 1, name='conv3',
+                     is_train=self.IS_TRAIN)
 
         # 4th Layer: Conv (w ReLu) -> Pool splitted into two groups
-        conv4 = conv(pool2, 3, 3, 96, 1, 1, name='conv4',
+        conv4 = conv(conv3, 3, 3, 96, 1, 1, name='conv4',
                      is_train=self.IS_TRAIN)
         pool4 = max_pool(conv4, 13, 13, 1, 1, padding='VALID', name='pool4')
         pool4 = tf.reshape(pool4, [-1, 96])
