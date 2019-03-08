@@ -38,7 +38,7 @@ def source_data(data_info_file, img_dir, rand_val=False, gender=None):
     imgs = [imgs[i] for i in range(len(ages)) if ages[i]>=1.5]
     vals = [vals[i] for i in range(len(ages)) if ages[i]>=1.5]
     ages = [item for item in ages if item>=1.5]
-    print '%s samples collected'%(len(imgs))
+    print('%s samples collected'%(len(imgs)))
 
     # sort the IQs, and split dataset into high and low parts
     sorted_idx = np.argsort(vals)
@@ -68,8 +68,8 @@ def source_data(data_info_file, img_dir, rand_val=False, gender=None):
     if rand_val:
         list_shuffle(val_labels)
 
-    print 'Training samples %s'%(len(train_imgs))
-    print 'Validation samples %s'%(len(val_imgs))
+    print('Training samples %s'%(len(train_imgs)))
+    print('Validation samples %s'%(len(val_imgs)))
 
     return train_imgs, train_labels, val_imgs, val_labels
     
@@ -102,12 +102,12 @@ def source_data_expand(data_info_file, img_dir, rand_val=False, gender=None):
     # select training samples within specific age range
     timgs = [imgs[i] for i in range(len(ages)) if ages[i]>=1.5]
     tvals = [vals[i] for i in range(len(ages)) if ages[i]>=1.5]
-    print '%s training samples collected'%(len(timgs))
+    print('%s training samples collected'%(len(timgs)))
 
     # select validation samples within specific age range
     vimgs = [imgs[i] for i in range(len(ages)) if (ages[i]>=1.0) and (ages[i]<1.5)]
     vvals = [vals[i] for i in range(len(ages)) if (ages[i]>=1.0) and (ages[i]<1.5)]
-    print '%s validation samples collected'%(len(vimgs))
+    print('%s validation samples collected'%(len(vimgs)))
 
     # sort the IQs, and split dataset into high and low parts
     train_sorted_idx = np.argsort(tvals)
@@ -128,8 +128,8 @@ def source_data_expand(data_info_file, img_dir, rand_val=False, gender=None):
     if rand_val:
         list_shuffle(val_labels)
 
-    print 'Training samples %s'%(len(train_imgs))
-    print 'Validation samples %s'%(len(val_imgs))
+    print('Training samples %s'%(len(train_imgs)))
+    print('Validation samples %s'%(len(val_imgs)))
 
     return train_imgs, train_labels, val_imgs, val_labels
     
@@ -222,7 +222,7 @@ def source_data_with_age_sampling(data_info_file, img_dir, sample_num,
     # remove 2 2006-students
     all_info = [line for line in all_info if not int(line[0][6:10])==2006]
 
-    print '%s samples selected'%(len(all_info))
+    print('%s samples selected'%(len(all_info)))
 
     imgs = []
     for line in all_info:
@@ -258,7 +258,7 @@ def source_data_with_age_sampling(data_info_file, img_dir, sample_num,
         tmp_imgs = [tmp_imgs[i] for i in sel_idx]
         tmp_labels = [0]*snum + [1]*snum
         # shuffle the sample parts
-        rand_idx = range(len(tmp_imgs))
+        rand_idx = list(range(len(tmp_imgs)))
         list_shuffle(rand_idx)
         tmp_imgs = [tmp_imgs[i] for i in rand_idx]
         tmp_labels = [tmp_labels[i] for i in rand_idx]
@@ -280,7 +280,7 @@ def source_data_with_age_sampling(data_info_file, img_dir, sample_num,
     val_set_ids = val_set_ids[val_set_idx]
     set_ids = range(len(img_list))
     train_set_ids = [item for item in set_ids if not item in val_set_ids]
-    print 'Age groups for validation: %s'%(unique_ages[val_set_ids[0]])
+    print('Age groups for validation: %s'%(unique_ages[val_set_ids[0]]))
 
 
     val_imgs = [line for i in val_set_ids
@@ -301,8 +301,8 @@ def source_data_with_age_sampling(data_info_file, img_dir, sample_num,
     if rand_val:
         list_shuffle(val_labels)
 
-    print 'Training samples %s'%(len(train_imgs))
-    print 'Validation samples %s'%(len(val_imgs))
+    print('Training samples %s'%(len(train_imgs)))
+    print('Validation samples %s'%(len(val_imgs)))
 
     return train_imgs, train_labels, val_imgs, val_labels
  
@@ -374,8 +374,8 @@ def source_landmark_with_age_sampling(data_file, rand_val=False, gender=None):
     if rand_val:
         list_shuffle(val_labels)
 
-    print 'Training samples %s'%(len(train_landmarks))
-    print 'Validation samples %s'%(len(val_landmarks))
+    print('Training samples %s'%(len(train_landmarks)))
+    print('Validation samples %s'%(len(val_landmarks)))
 
     return train_landmarks, train_labels, val_landmarks, val_labels
  

@@ -43,7 +43,7 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
 
     # Create parent path if it doesn't exist
     if not os.path.isdir(checkpoint_path):
-        os.makedirs(checkpoint_path, mode=0755)
+        os.makedirs(checkpoint_path)
 
     # Place data loading and preprocessing on the cpu
     with tf.device('/cpu:0'):
@@ -136,8 +136,8 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
     train_batches_per_epoch = int(np.floor(tr_data.data_size / batch_size))
     val_batches_per_epoch = int(np.floor(val_data.data_size / batch_size))
     #test_batches_per_epoch = int(np.floor(test_data.data_size / batch_size))
-    print 'Train data batches per epoch: %s'%(train_batches_per_epoch)
-    print 'Val data batches per epoch: %s'%(val_batches_per_epoch)
+    print('Train data batches per epoch: %s'%(train_batches_per_epoch))
+    print('Val data batches per epoch: %s'%(val_batches_per_epoch))
 
 
     # Start Tensorflow session
@@ -221,9 +221,9 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
                 trues = np.concatenate((trues, tl))
             test_acc /= test_count
             print("{} Test Accuracy = {:.4f}".format(datetime.now(), test_acc))
-            print 'Confusion matrix'
+            print('Confusion matrix')
             cm = sess.run(tf.confusion_matrix(preds, trues))
-            print cm
+            print(cm)
 
             test_acc_list.append(test_acc)
         
