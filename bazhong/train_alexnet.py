@@ -21,10 +21,10 @@ from imgdatagenerator import AlexDataGenerator as ImageDataGenerator
 
 def model_train(train_imgs, train_labels, val_imgs, val_labels):
     # Learning params
-    init_lr = 0.0008
+    init_lr = 0.01
     lr_decay = 0.25
-    epoch_decay = [10]
-    num_epochs = 50
+    epoch_decay = [150]
+    num_epochs = 150
     batch_size = 50
 
     # Network params
@@ -99,8 +99,8 @@ def model_train(train_imgs, train_labels, val_imgs, val_labels):
         # Create optimizer and apply gradient descent to the trainable variables
         #optimizer = tf.train.GradientDescentOptimizer(learning_rate)
         #train_op = optimizer.apply_gradients(grads_and_vars=gradients)
-        #optimizer = tf.train.AdamOptimizer(lr)
-        optimizer = tf.train.MomentumOptimizer(lr, 0.85, use_nesterov=False)
+        optimizer = tf.train.AdamOptimizer(lr)
+        #optimizer = tf.train.MomentumOptimizer(lr, 0.85, use_nesterov=False)
         with tf.control_dependencies(update_ops):
             train_op = optimizer.minimize(loss, var_list=var_list)
 
@@ -241,7 +241,7 @@ def model_cell(val_idx):
 
         
 if __name__ == '__main__':
-    for i in range(100):
+    for i in range(12):
         p = Process(target=model_cell, args=(i,))
         p.start()
         p.join()

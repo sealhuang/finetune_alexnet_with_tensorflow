@@ -267,14 +267,21 @@ def source_data_with_age_sampling(data_info_file, img_dir, sample_num,
 
     # select two subsets of the age groups as validation dataset
     val_set_ids = []
+    #for i in range(len(img_list)):
+    #    for j in range(i+1, len(img_list)):
+    #        val_set_ids.append([i, j])
+    #val_set_ids = val_set_ids[val_set_idx]
+    #set_ids = range(len(img_list))
+    #train_set_ids = [item for item in set_ids if not item in val_set_ids]
+    #print 'Age groups for validation: %s and %s'%(unique_ages[val_set_ids[0]],
+    #                                              unique_ages[val_set_ids[1]])
     for i in range(len(img_list)):
-        for j in range(i+1, len(img_list)):
-            val_set_ids.append([i, j])
+        val_set_ids.append([i])
     val_set_ids = val_set_ids[val_set_idx]
     set_ids = range(len(img_list))
     train_set_ids = [item for item in set_ids if not item in val_set_ids]
-    print 'Age groups for validation: %s and %s'%(unique_ages[val_set_ids[0]],
-                                                  unique_ages[val_set_ids[1]])
+    print 'Age groups for validation: %s'%(unique_ages[val_set_ids[0]])
+
 
     val_imgs = [line for i in val_set_ids
                      for line in img_list[i]]
